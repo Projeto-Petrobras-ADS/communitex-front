@@ -1,12 +1,12 @@
 import './Header.css';
-import logo from '../../asserts/logo/logo.png';
+import logoPetrobras from '../../asserts/logo/logo.png';
 
 const Header = () => {
   return (
     <header className="petrobras-header">
       <div className="header-container">
         <div className="logo">
-          <img src="" alt="Petrobras Logo" />
+          <img src={logoPetrobras} alt="Logo da Petrobras" />
         </div>
         <nav className="navigation">
           <ul>
@@ -20,5 +20,4 @@ const Header = () => {
     </header>
   );
 };
-
 export default Header;

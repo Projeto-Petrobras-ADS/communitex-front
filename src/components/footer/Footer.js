@@ -1,11 +1,12 @@
 import './Footer.css';
+import logoPetrobras from '../../asserts/logo/logo.png'
 
 const Footer = () => {
   return (
     <footer className="petrobras-footer">
       <div className="footer-container">
         <div className="footer-logo">
-          <img src="https://www.petrobras.com.br/content/dam/petrobras-site/imagems/logo.svg" alt="Petrobras Logo" width="120" />
+          <img src={logoPetrobras} alt="Petrobras Logo" width="120" />
         </div>
         <div className="footer-links">
           <h4>Links Rápidos</h4>
@@ -27,5 +28,4 @@ const Footer = () => {
     </footer>
   );
 };
-
 export default Footer;

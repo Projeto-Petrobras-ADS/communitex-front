@@ -1,47 +1,51 @@
 .petrobras-footer {
-    background-color: #003554;
-    color: white;
-    padding: 2rem 0 0;
-    margin-top: 2rem;
-  }
-  
-  .footer-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 2rem;
-  }
-  
-  .footer-logo img {
-    margin-bottom: 1rem;
-  }
-  
-  .footer-links h4, .footer-contact h4 {
-    color: #00a5e3;
-    margin-bottom: 1rem;
-  }
-  
-  .footer-links ul {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .footer-links a {
-    color: white;
-    text-decoration: none;
-    line-height: 2;
-  }
-  
-  .footer-links a:hover {
-    text-decoration: underline;
-  }
-  
-  .footer-bottom {
-    text-align: center;
-    padding: 1rem;
-    margin-top: 2rem;
-    background-color: #00263a;
-    font-size: 0.9rem;
-  }
+  background-color: #003554;
+  color: white;
+  padding: 2rem 0 0;
+  margin-top: 2rem;
+}
+
+.footer-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.footer-logo img {
+  margin-bottom: 1rem;
+}
+
+.footer-links h4, .footer-contact h4 {
+  color: #00a5e3;
+  margin-bottom: 1rem;
+}
+
+.footer-links ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-links a {
+  color: white;
+  text-decoration: none;
+  line-height: 2;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
+}
+
+.footer-bottom {
+  height: 5vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* text-align: center; */
+  /* padding: 1rem; */
+  /* margin-top: 2rem; */
+  background-color: #00263a;
+  font-size: 0.9rem;
+}
