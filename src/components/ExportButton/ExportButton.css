@@ -1,0 +1,109 @@
+/* Estilos para o container do botão de exportação */
+.export-button-container {
+  display: inline-block;
+  margin-left: 10px;
+}
+
+/* Estilos para o botão de exportação principal */
+.export-button {
+  padding: 8px 16px;
+  background-color: var(--petrobras-green);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.export-button:hover {
+  background-color: var(--petrobras-dark-green);
+}
+
+/* Estilos para o modal de exportação */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.export-modal {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.export-options {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.export-options label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.layout-options {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.layout-options span {
+  margin-right: 10px;
+  font-weight: 500;
+}
+
+.export-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.export-pdf, .export-excel, .cancel {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.export-pdf {
+  background-color: #e15759;
+  color: white;
+}
+
+.export-excel {
+  background-color: #59a14f;
+  color: white;
+}
+
+.cancel {
+  background-color: #f5f5f5;
+}
+
+.export-pdf:hover {
+  background-color: #c94547;
+}
+
+.export-excel:hover {
+  background-color: #4a8a3f;
+}
+
+.cancel:hover {
+  background-color: #e0e0e0;
+}

@@ -13,6 +13,7 @@ import ListarUFPage from './pages/UF/ListarUFPage';
 import CadastroUFPage from './pages/UF/CadastroUFPage';
 import ListarMunicipioPage from './pages/Municipio/ListarMunicipioPage';
 import CadastroMunicipioPage from './pages/Municipio/CadastroMunicipioPage';
+import SocioeconomicCharts from './components/Grafico/SocioeconomicCharts';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
           <Route path="/municipios" element={<ListarMunicipioPage />} />
           <Route path="/municipios/cadastro" element={<CadastroMunicipioPage />} />
           <Route path="/municipios/cadastro/:id" element={<CadastroMunicipioPage />} />
+          <Route path="/graficos" element={<SocioeconomicCharts/>} />
         </Routes>
         <Footer />
       </div>

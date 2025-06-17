@@ -75,6 +75,16 @@ const Menu = () => {
             Indicadores
           </NavLink>
         </li>
+               <li className="menu-item">
+          <NavLink 
+            to="/graficos" 
+            className={({ isActive }) => 
+              `menu-link ${isActive ? 'active' : ''}`
+            }
+          >
+            Graficos
+          </NavLink>
+        </li>
       </ul>
     </nav>
   );
