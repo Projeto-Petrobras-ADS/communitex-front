@@ -13,6 +13,7 @@ const Home = () => {
       <header className="home-header">
         <img src={PetrobrasLogo} alt="Petrobras" className="home-logo" />
         <h1 className="home-title">Sistema de Gestão Territorial</h1>
+        <h3 className="home-subtitle">Communitex</h3>
         <p className="home-subtitle">
           Ferramenta integrada para mapeamento e análise de dados socioeconômicos
         </p>
@@ -23,13 +24,13 @@ const Home = () => {
           <div className="about-text">
             <h2>Sobre o Projeto</h2>
             <p>
-              Este sistema foi desenvolvido para auxiliar a Petrobras no mapeamento e gestão 
-              de informações territoriais, proporcionando uma visão integrada das comunidades 
+              Este sistema foi desenvolvido para auxiliar a Petrobras no mapeamento e gestão
+              de informações territoriais, proporcionando uma visão integrada das comunidades
               e regiões onde a empresa atua.
             </p>
             <p>
-              Com recursos completos de CRUD para unidades territoriais e indicadores 
-              socioeconômicos, a plataforma permite o acompanhamento detalhado necessário 
+              Com recursos completos de cadastro para unidades territoriais e indicadores
+              socioeconômicos, a plataforma permite o acompanhamento detalhado necessário
               para tomadas de decisão estratégicas.
             </p>
           </div>
@@ -44,21 +45,21 @@ const Home = () => {
             <div className="feature-card">
               <h3>Gestão Territorial</h3>
               <p>
-                Cadastro completo de UFs, municípios, bairros, logradouros e comunidades 
+                Cadastro completo de UFs, municípios, bairros, logradouros e comunidades
                 com relacionamento hierárquico.
               </p>
             </div>
             <div className="feature-card">
               <h3>Indicadores Socioeconômicos</h3>
               <p>
-                Armazenamento e análise de dados demográficos, econômicos e sociais para 
+                Armazenamento e análise de dados demográficos, econômicos e sociais para
                 embasar projetos de responsabilidade social.
               </p>
             </div>
             <div className="feature-card">
               <h3>Relacionamento de Dados</h3>
               <p>
-                Visualização integrada das informações com cruzamento de dados territoriais 
+                Visualização integrada das informações com cruzamento de dados territoriais
                 e indicadores.
               </p>
             </div>

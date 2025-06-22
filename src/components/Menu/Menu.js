@@ -7,11 +7,13 @@ const Menu = () => {
   return (
     <nav className="petrobras-menu">
       <div className="menu-logo-container">
-        <img 
-          src={PetrobrasLogo} 
-          alt="Logo Petrobras" 
-          className="menu-logo"
-        />
+        <NavLink to="/">
+          <img 
+            src={PetrobrasLogo} 
+            alt="Logo Petrobras" 
+            className="menu-logo"
+          />
+        </NavLink>
       </div>
       
       <ul className="menu-items">
@@ -47,16 +49,6 @@ const Menu = () => {
         </li>
         <li className="menu-item">
           <NavLink 
-            to="/logradouro" 
-            className={({ isActive }) => 
-              `menu-link ${isActive ? 'active' : ''}`
-            }
-          >
-            Logradouros
-          </NavLink>
-        </li>
-        <li className="menu-item">
-          <NavLink 
             to="/comunidades" 
             className={({ isActive }) => 
               `menu-link ${isActive ? 'active' : ''}`
@@ -75,14 +67,14 @@ const Menu = () => {
             Indicadores
           </NavLink>
         </li>
-               <li className="menu-item">
+        <li className="menu-item">
           <NavLink 
-            to="/graficos" 
+            to="/relatorios" 
             className={({ isActive }) => 
               `menu-link ${isActive ? 'active' : ''}`
             }
           >
-            Graficos
+            Relatórios
           </NavLink>
         </li>
       </ul>

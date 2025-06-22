@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Table from '../../components/Table/Table';
-import Button from '../../components/Button/Button';
+import Listagem from '../../components/Listagem/Listagem';
 import localStorageService from '../../services/localStorageService';
 import './ListarBairroPage.css';
 
@@ -93,36 +92,19 @@ const ListarBairroPage = () => {
   });
 
   return (
-    <div className="bairros-page">
-      <div className="page-header">
-        <div className="header-title">
-          <h1>Bairros</h1>
-          <p>Gerencie o cadastro de bairros</p>
-        </div>
-
-        <div className="header-actions">
-          <Button
-            variant="primary"
-            onClick={handleAddNew}
-          >
-            Novo Bairro 
-          </Button>
-        </div>
-      </div>
-
-      <div className="table-container">
-        <Table
-          columns={columns}
-          data={filteredBairros}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onSearch={handleSearch}
-          enablePagination={true}
-          itemsPerPage={10}
-          searchPlaceholder="Pesquisar por nome, município ou região..."
-        />
-      </div>
-    </div>
+    <Listagem
+      title="Bairros"
+      subtitle="Gerencie o cadastro de bairros"
+      buttonAddNewTile="Novo Bairro"
+      handleAddNew={handleAddNew}
+      onDelete={handleDelete}
+      onEdit={handleEdit}
+      onSearch={handleSearch}
+      columns={columns}
+      data={filteredBairros}
+      enablePagination={true}
+      itemsPerPage={10}
+    />
   );
 };
 

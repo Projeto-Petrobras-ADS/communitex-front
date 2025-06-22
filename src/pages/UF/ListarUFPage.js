@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Table from '../../components/Table/Table';
 import Button from '../../components/Button/Button';
+import Listagem from '../../components/Listagem/Listagem';
 import localStorageService from '../../services/localStorageService';
 import './ListarUFPage.css';
 
@@ -91,36 +92,19 @@ const ListarUFPage = () => {
   });
 
   return (
-    <div className="ufs-page">
-      <div className="page-header">
-        <div className="header-title">
-          <h1>Unidades Federativas</h1>
-          <p>Gerencie o cadastro de UFs</p>
-        </div>
-
-        <div className="header-actions">
-          <Button
-            variant="primary"
-            onClick={handleAddNew}
-          >
-            Nova UF
-          </Button>
-        </div>
-      </div>
-
-      <div className="table-container">
-        <Table
-          columns={columns}
-          data={filteredUFs}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onSearch={handleSearch}
-          enablePagination={true}
-          itemsPerPage={10}
-          searchPlaceholder="Pesquisar por sigla, nome, região..."
-        />
-      </div>
-    </div>
+    <Listagem
+      title="Unidades Federativas"
+      subtitle="Gerencie o cadastro de UFs"
+      buttonAddNewTile="Nova UF"
+      handleAddNew={handleAddNew}
+      onDelete={handleDelete}
+      onEdit={handleEdit}
+      onSearch={handleSearch}
+      columns={columns}
+      data={filteredUFs}
+      enablePagination={true}
+      itemsPerPage={10}
+    />
   );
 };
 

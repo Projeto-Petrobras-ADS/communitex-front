@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Table from '../../components/Table/Table';
-import Button from '../../components/Button/Button';
+import Listagem from '../../components/Listagem/Listagem';
 import localStorageService from '../../services/localStorageService';
 import './ListarMunicipioPage.css';
 
@@ -71,35 +70,19 @@ const ListarMunicipioPage = () => {
   });
 
   return (
-    <div className="municipios-page">
-      <div className="page-header">
-        <div className="header-title">
-          <h1>Municípios</h1>
-          <p>Gerencie o cadastro de municípios</p>
-        </div>
-        <div className="header-actions">
-          <Button
-            variant="primary"
-            onClick={handleAddNew}
-          >
-            Novo Município
-          </Button>
-        </div>
-      </div>
-
-      <div className="table-container">
-        <Table
-          columns={columns}
-          data={filteredMunicipios}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onSearch={handleSearch}
-          enablePagination={true}
-          itemsPerPage={10}
-          searchPlaceholder="Pesquisar por nome ou UF..."
-        />
-      </div>
-    </div>
+    <Listagem
+      title="Municípios"
+      subtitle="Gerencie o cadastro de municípios"
+      buttonAddNewTile=" Novo Município"
+      handleAddNew={handleAddNew}
+      onDelete={handleDelete}
+      onEdit={handleEdit}
+      onSearch={handleSearch}
+      columns={columns}
+      data={filteredMunicipios}
+      enablePagination={true}
+      itemsPerPage={10}
+    />
   );
 };
 

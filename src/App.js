@@ -14,6 +14,8 @@ import CadastroUFPage from './pages/UF/CadastroUFPage';
 import ListarMunicipioPage from './pages/Municipio/ListarMunicipioPage';
 import CadastroMunicipioPage from './pages/Municipio/CadastroMunicipioPage';
 import SocioeconomicCharts from './components/Grafico/SocioeconomicCharts';
+import Mapa from './pages/Mapa/Mapa';
+import LoginPage from './pages/Login/LoginPage';
 
 function App() {
   return (
@@ -21,6 +23,7 @@ function App() {
       <div className="app-container">
         <Menu />
         <Routes>
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<Home />} />
           <Route path="/indicadores" element={<ListarIndicadoresPage />} />
           <Route path="/indicadores/cadastro" element={<CadastroIndicadores />} />
@@ -37,7 +40,8 @@ function App() {
           <Route path="/municipios" element={<ListarMunicipioPage />} />
           <Route path="/municipios/cadastro" element={<CadastroMunicipioPage />} />
           <Route path="/municipios/cadastro/:id" element={<CadastroMunicipioPage />} />
-          <Route path="/graficos" element={<SocioeconomicCharts/>} />
+          <Route path="/relatorios" element={<SocioeconomicCharts/>} />
+          <Route path='/maps' element={<Mapa/>}/>
         </Routes>
         <Footer />
       </div>

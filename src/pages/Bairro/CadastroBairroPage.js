@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Form from '../../components/Form/Form';
+import Cadastro from '../../components/Cadastro/Cadastro';
 import localStorageService from '../../services/localStorageService';
 import './CadastroBairroPage.css';
 
@@ -105,24 +105,14 @@ const CadastroBairroPage = () => {
   }
 
   return (
-    <div className="cadastro-bairro-page">
-      <div className="page-header">
-        <div className="header-title">
-          <h1>{id ? 'Editar Bairro' : 'Novo Bairro'}</h1>
-          <p>{id ? 'Atualize os dados do bairro' : 'Preencha os dados do novo bairro'}</p>
-        </div>
-      </div>
-
-      <div className="form-container">
-        <Form
-          fields={formFields}
-          initialData={initialData || {}}
-          onSubmit={handleSubmit}
-          onCancel={handleCancel}
-          submitLabel={id ? 'Atualizar' : 'Salvar'}
-        />
-      </div>
-    </div>
+    <Cadastro
+      formFields={formFields}
+      id={id}
+      title="Bairro"
+      initialData={initialData || {}}
+      onSubmit={handleSubmit}
+      onCancel={handleCancel}
+    />
   );
 };
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Table from '../../components/Table/Table';
 import Button from '../../components/Button/Button';
+import Listagem from '../../components/Listagem/Listagem';
 import localStorageService from '../../services/localStorageService';
 import './ListarComunidadePage.css';
 
@@ -93,36 +94,19 @@ const ListarComunidadePage = () => {
   });
 
   return (
-    <div className="comunidades-page">
-      <div className="page-header">
-        <div className="header-title">
-          <h1>Comunidades</h1>
-          <p>Gerencie o cadastro de comunidades</p>
-        </div>
-
-        <div className="header-actions">
-          <Button
-            variant="primary"
-            onClick={handleAddNew}
-          >
-            Nova Comunidade
-          </Button>
-        </div>
-      </div>
-
-      <div className="table-container">
-        <Table
-          columns={columns}
-          data={filteredComunidades}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onSearch={handleSearch}
-          enablePagination={true}
-          itemsPerPage={10}
-          searchPlaceholder="Pesquisar por nome, bairro, município..."
-        />
-      </div>
-    </div>
+    <Listagem
+      title="Comunidades"
+      subtitle="Gerencie o cadastro de comunidades"
+      buttonAddNewTile="Nova Comunidade"
+      handleAddNew={handleAddNew}
+      onDelete={handleDelete}
+      onEdit={handleEdit}
+      onSearch={handleSearch}
+      columns={columns}
+      data={filteredComunidades}
+      enablePagination={true}
+      itemsPerPage={10}
+    />
   );
 };
 

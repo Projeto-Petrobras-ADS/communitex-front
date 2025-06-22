@@ -20,16 +20,15 @@ const Footer = () => {
             <h4 className="footer-title">Navegação</h4>
             <ul className="footer-links">
               <li><a href="/uf">UFs</a></li>
-              <li><a href="/municipio">Municípios</a></li>
-              <li><a href="/bairro">Bairros</a></li>
-              <li><a href="/logradouro">Logradouros</a></li>
+              <li><a href="/municipios">Municípios</a></li>
+              <li><a href="/bairros">Bairros</a></li>
             </ul>
           </div>
 
           <div className="footer-links-column">
             <h4 className="footer-title">Recursos</h4>
             <ul className="footer-links">
-              <li><a href="/comunidade">Comunidades</a></li>
+              <li><a href="/comunidades">Comunidades</a></li>
               <li><a href="/indicadores">Indicadores</a></li>
               <li><a href="/ajuda">Ajuda</a></li>
               <li><a href="/documentacao">Documentação</a></li>
@@ -39,7 +38,7 @@ const Footer = () => {
           <div className="footer-links-column">
             <h4 className="footer-title">Institucional</h4>
             <ul className="footer-links">
-              <li><a href="/sobre">Sobre o Sistema</a></li>
+              <li><a href="/">Sobre o Sistema</a></li>
               <li><a href="/privacidade">Política de Privacidade</a></li>
               <li><a href="/termos">Termos de Uso</a></li>
               <li><a href="/contato">Contato</a></li>

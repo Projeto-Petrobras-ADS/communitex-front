@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Form from '../../components/Form/Form';
+import Cadastro from '../../components/Cadastro/Cadastro';
 import localStorageService from '../../services/localStorageService';
 import './CadastroComunidadePage.css';
 
@@ -91,7 +91,7 @@ const CadastroComunidadePage = () => {
       // Adicionar dados do município e bairro
       const bairro = bairros.find(b => b.id === formData.bairroId);
       const municipio = municipios.find(m => m.id === formData.municipioId);
-      
+
       comunidadeData.bairro = bairro?.nome;
       comunidadeData.municipio = municipio?.nome;
       comunidadeData.uf = municipio?.uf;
@@ -113,24 +113,14 @@ const CadastroComunidadePage = () => {
   }
 
   return (
-    <div className="cadastro-comunidade-page">
-      <div className="page-header">
-        <div className="header-title">
-          <h1>{id ? 'Editar Comunidade' : 'Nova Comunidade'}</h1>
-          <p>{id ? 'Atualize os dados da comunidade' : 'Preencha os dados da nova comunidade'}</p>
-        </div>
-      </div>
-
-      <div className="form-container">
-        <Form
-          fields={formFields}
-          initialData={initialData || {}}
-          onSubmit={handleSubmit}
-          onCancel={handleCancel}
-          submitLabel={id ? 'Atualizar' : 'Salvar'}
-        />
-      </div>
-    </div>
+    <Cadastro
+      formFields={formFields}
+      id={id}
+      title="Comunidade"
+      initialData={initialData || {}}
+      onSubmit={handleSubmit}
+      onCancel={handleCancel}
+    />
   );
 };
 

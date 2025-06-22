@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Form from '../../components/Form/Form';
+import Cadastro from '../../components/Cadastro/Cadastro';
 import localStorageService from '../../services/localStorageService';
 import './CadastroUFPage.css';
 
@@ -110,24 +110,14 @@ const CadastroUFPage = () => {
   }
 
   return (
-    <div className="cadastro-uf-page">
-      <div className="page-header">
-        <div className="header-title">
-          <h1>{id ? 'Editar UF' : 'Nova UF'}</h1>
-          <p>{id ? 'Atualize os dados da UF' : 'Preencha os dados da nova UF'}</p>
-        </div>
-      </div>
-
-      <div className="form-container">
-        <Form
-          fields={formFields}
-          initialData={initialData || {}}
-          onSubmit={handleSubmit}
-          onCancel={handleCancel}
-          submitLabel={id ? 'Atualizar' : 'Salvar'}
-        />
-      </div>
-    </div>
+    <Cadastro
+      formFields={formFields}
+      id={id}
+      title="Unidade Federativa"
+      initialData={initialData}
+      onSubmit={handleSubmit}
+      onCancel={handleCancel}
+    />
   );
 };
 

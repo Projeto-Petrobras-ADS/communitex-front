@@ -1,18 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Form from '../../components/Form/Form';
+import Cadastro from '../../components/Cadastro/Cadastro';
 import localStorageService from '../../services/localStorageService';
 import './CadastroIndicadores.css';
 
 const CadastroIndicadores = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
   const [comunidades, setComunidades] = useState([]);
+  const [initialData, setInitialData] = useState(null);
 
   useEffect(() => {
     // Carregar lista de comunidades
-    const loadedComunidades = localStorageService.getItems('comunidades');
-    setComunidades(loadedComunidades);
-  }, []);
+    setComunidades(localStorageService.getItems('comunidades'));
+    // Carregar dados iniciais se estiver editando
+    if (id) {
+      const indicador = localStorageService.getItemById('indicadores', id);
+      if (indicador) {
+        setInitialData(indicador);
+      }
+    }
+  }, [id]);
 
   const formFields = [
     {
@@ -20,10 +29,7 @@ const CadastroIndicadores = () => {
       label: 'Comunidade',
       type: 'select',
       required: true,
-      options: comunidades.map(c => ({
-        value: c.id,
-        label: c.nome
-      }))
+      options: comunidades.map(c => ({ value: c.id, label: c.nome }))
     },
     {
       name: 'ano',
@@ -53,12 +59,12 @@ const CadastroIndicadores = () => {
     },
     {
       name: 'escolaridadeMedia',
-      label: 'Escolaridade Média (anos)',
+      label: 'Escolaridade Média (%)',
       type: 'number',
       min: 0,
-      max: 30,
+      max: 100,
       step: 0.1,
-      placeholder: 'Ex: 12.5'
+      placeholder: 'Ex: 85.0'
     },
     {
       name: 'taxaDesemprego',
@@ -88,12 +94,11 @@ const CadastroIndicadores = () => {
         escolaridadeMedia: formData.escolaridadeMedia ? parseFloat(formData.escolaridadeMedia) : null,
         taxaDesemprego: formData.taxaDesemprego ? parseFloat(formData.taxaDesemprego) : null
       };
-
       localStorageService.saveItem('indicadores', indicadorData);
-      alert('Indicador cadastrado com sucesso!');
+      alert(id ? 'Indicador atualizado com sucesso!' : 'Indicador cadastrado com sucesso!');
       navigate('/indicadores');
     } catch (error) {
-      alert('Erro ao cadastrar indicador: ' + error.message);
+      alert('Erro ao salvar indicador: ' + error.message);
     }
   };
 
@@ -101,23 +106,19 @@ const CadastroIndicadores = () => {
     navigate('/indicadores');
   };
 
-  return (
-    <div className="cadastro-indicadores">
-      <div className="page-header">
-        <div className="header-title">
-          <h1>Cadastro de Indicadores</h1>
-          <p>Preencha os dados do novo indicador socioeconômico</p>
-        </div>
-      </div>
+  if (id && !initialData) {
+    return <div>Carregando...</div>;
+  }
 
-      <Form
-        fields={formFields}
-        onSubmit={handleSubmit}
-        onCancel={handleCancel}
-        submitLabel="Salvar"
-        initialData={{ ano: new Date().getFullYear() }}
-      />
-    </div>
+  return (
+    <Cadastro
+      formFields={formFields}
+      id={id}
+      title="Indicadores Socioeconômicos"
+      initialData={initialData || { ano: new Date().getFullYear() }}
+      onSubmit={handleSubmit}
+      onCancel={handleCancel}
+    />
   );
 };
 
