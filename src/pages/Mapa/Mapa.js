@@ -15,10 +15,7 @@ function Mapa() {
             <div className="table-container">
                 <MapaLocalizacao latitude={latitude} longitude={longitude} />
             </div>
-
         </div>
-
-
     );
 }
 
