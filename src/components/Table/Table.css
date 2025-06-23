@@ -1,4 +1,3 @@
-/* Container principal */
 .petrobras-table-container {
   width: 100%;
   margin: 1.5rem 0;
@@ -68,6 +67,7 @@
   text-transform: uppercase;
   font-size: 0.8rem;
   letter-spacing: 0.5px;
+  text-align: center;
 }
 
 .petrobras-table tbody tr:hover {
@@ -129,6 +129,14 @@
 
 .delete-btn:hover {
   background-color: rgba(211, 47, 47, 0.1);
+}
+
+.location-btn {
+  color: var(--petrobras-blue, #0066FF);
+}
+
+.location-btn:hover {
+  background-color: rgba(0, 102, 255, 0.1);
 }
 
 /* Mensagem sem dados */

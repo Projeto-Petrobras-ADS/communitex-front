@@ -14,6 +14,7 @@ function Listagem({
   onDelete,
   onSort,
   onSearch,
+  onLocation,
   enablePagination = true,
   itemsPerPage = 10
 }) {
@@ -44,6 +45,7 @@ function Listagem({
           onEdit={onEdit}
           onDelete={onDelete}
           onSearch={onSearch}
+          onLocation={onLocation}
           enablePagination={enablePagination}
           itemsPerPage={itemsPerPage}
           searchPlaceholder="Pesquisar..."

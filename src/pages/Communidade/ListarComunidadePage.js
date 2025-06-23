@@ -79,6 +79,14 @@ const ListarComunidadePage = () => {
     setSearchTerm(term.toLowerCase());
   };
 
+  const handleLocation = (comunidade) => {
+    // Pega nome do bairro e município
+    const bairro = comunidade.bairro;
+    const municipio = comunidade.municipio;
+    // Redireciona para /maps com query params
+    navigate(`/maps?bairro=${encodeURIComponent(bairro)}&municipio=${encodeURIComponent(municipio)}`);
+  };
+
   // Filtra as comunidades baseado no termo de pesquisa
   const filteredComunidades = comunidades.filter(comunidade => {
     if (!searchTerm) return true;
@@ -102,6 +110,7 @@ const ListarComunidadePage = () => {
       onDelete={handleDelete}
       onEdit={handleEdit}
       onSearch={handleSearch}
+      onLocation={handleLocation}
       columns={columns}
       data={filteredComunidades}
       enablePagination={true}

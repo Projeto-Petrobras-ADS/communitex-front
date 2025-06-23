@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import './Table.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSort, faSortUp, faSortDown, faEdit, faTrash, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faSort, faSortUp, faSortDown, faEdit, faTrash, faSearch, faLocationDot } from '@fortawesome/free-solid-svg-icons';
 
 const Table = ({
   columns,
   data,
   onEdit,
   onDelete,
+  onLocation,
   onSort,
   onSearch,
   enablePagination = true,
@@ -103,7 +104,7 @@ const Table = ({
                   </div>
                 </th>
               ))}
-              {(onEdit || onDelete) && <th>Ações</th>}
+              {(onEdit || onDelete || onLocation) && <th>Ações</th>}
             </tr>
           </thead>
           <tbody>
@@ -117,8 +118,17 @@ const Table = ({
                         : row[column.key]}
                     </td>
                   ))}
-                  {(onEdit || onDelete) && (
+                  {(onEdit || onDelete || onLocation) && (
                     <td className="actions-cell">
+                      {onLocation && (
+                        <button 
+                          onClick={() => onLocation(row)}
+                          className="action-btn location-btn"
+                          title="Ver localização"
+                        >
+                          <FontAwesomeIcon icon={faLocationDot} />
+                        </button>
+                      )}
                       {onEdit && (
                         <button 
                           onClick={() => onEdit(row)}

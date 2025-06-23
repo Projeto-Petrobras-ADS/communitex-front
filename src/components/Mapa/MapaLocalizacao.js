@@ -2,18 +2,21 @@ import React, { useState, useEffect, useRef } from "react";
 import { MapContainer, TileLayer, Circle, Popup } from "react-leaflet";
 import axios from "axios";
 import "leaflet/dist/leaflet.css";
+import { useLocation } from "react-router-dom";
+import "./MapaLocalizacao.css"
 
 const MapaLocalizacao = () => {
     const [inputValue, setInputValue] = useState("");
     const [suggestions, setSuggestions] = useState([]);
     const [selectedBairro, setSelectedBairro] = useState("");
-    const [coords, setCoords] = useState([-23.5505, -46.6333]); // Posição inicial (ex: São Paulo)
+    const [coords, setCoords] = useState([-23.5505, -46.6333]);
     const [error, setError] = useState("");
     const mapRef = useRef(null);
+    const location = useLocation();
 
-    // Busca sugestões de bairros enquanto o usuário digita
+
     const fetchSuggestions = async (query) => {
-        if (query.length < 3) return; // Só busca após 3 caracteres
+        if (query.length < 3) return;
 
         try {
             const response = await axios.get(
@@ -38,9 +41,8 @@ const MapaLocalizacao = () => {
                 setCoords(newCoords);
                 setSelectedBairro(display_name);
                 setError("");
-                setSuggestions([]); // Limpa as sugestões após seleção
+                setSuggestions([]);
 
-                // Animação do mapa
                 if (mapRef.current) {
                     mapRef.current.flyTo(newCoords, 15, { duration: 1 });
                 }
@@ -52,40 +54,36 @@ const MapaLocalizacao = () => {
         }
     };
 
-    // Atualiza sugestões quando o input muda
+
     useEffect(() => {
         if (inputValue) fetchSuggestions(inputValue);
     }, [inputValue]);
 
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const bairro = params.get('bairro');
+        const municipio = params.get('municipio');
+        if (bairro && municipio) {
+            setInputValue(`${bairro}, ${municipio}`);
+            buscarBairro(`${bairro}, ${municipio}`);
+        }
+    }, [location.search]);
+
     return (
-        <div style={{ width: "100%", height: "500px" }}>
-            <div style={{ marginBottom: "10px", position: "relative" }}>
+        <div className="mapa-localizacao-container">
+            <div className="mapa-localizacao-search">
                 <input
                     type="text"
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyPress={(e) => e.key === "Enter" && buscarBairro(inputValue)}
                     placeholder="Digite um bairro (ex: Copacabana)"
-                    style={{ width: "100%", padding: "8px" }}
+                    className="mapa-localizacao-input"
                 />
                 <button onClick={() => buscarBairro(inputValue)}>Buscar</button>
 
-                {/* Lista de sugestões */}
                 {suggestions.length > 0 && (
-                    <ul style={{
-                        position: "absolute",
-                        top: "100%",
-                        left: 0,
-                        right: 0,
-                        backgroundColor: "white",
-                        border: "1px solid #ddd",
-                        zIndex: 1000,
-                        listStyle: "none",
-                        padding: 0,
-                        margin: 0,
-                        maxHeight: "200px",
-                        overflowY: "auto"
-                    }}>
+                    <ul className="mapa-localizacao-suggestions">
                         {suggestions.map((item, index) => (
                             <li
                                 key={index}
@@ -93,20 +91,20 @@ const MapaLocalizacao = () => {
                                     setInputValue(item);
                                     buscarBairro(item);
                                 }}
-                                style={{ padding: "8px", cursor: "pointer", borderBottom: "1px solid #eee" }}
+                                className="mapa-localizacao-suggestion-item"
                             >
                                 {item}
                             </li>
                         ))}
                     </ul>
                 )}
-                {error && <p style={{ color: "red" }}>{error}</p>}
+                {error && <p className="mapa-localizacao-error">{error}</p>}
             </div>
 
             <MapContainer
                 center={coords}
                 zoom={15}
-                style={{ height: "100%", width: "100%" }}
+                className="mapa-localizacao-map"
                 ref={mapRef}
             >
                 <TileLayer
@@ -115,7 +113,7 @@ const MapaLocalizacao = () => {
                 />
                 <Circle
                     center={coords}
-                    radius={1000} // Raio em metros
+                    radius={1000}
                     color="blue"
                     fillOpacity={0.2}
                 >
