@@ -16,6 +16,7 @@ import CadastroMunicipioPage from './pages/Municipio/CadastroMunicipioPage';
 import SocioeconomicCharts from './components/Grafico/SocioeconomicCharts';
 import Mapa from './pages/Mapa/Mapa';
 import LoginPage from './pages/Login/LoginPage';
+import PontoDeInterrese from './pages/PontoDeInterrese/PontoDeInterrese';
 
 function App() {
   return (
@@ -34,7 +35,7 @@ function App() {
           <Route path="/bairros" element={<ListarBairroPage />} />
           <Route path="/bairros/cadastro" element={<CadastroBairroPage />} />
           <Route path="/bairros/cadastro/:id" element={<CadastroBairroPage />} />
-          <Route path="bairros/cadastroPontoInterrese/:id" element={<CadastroBairroPage/>} />
+          <Route path="bairros/cadastroPontoInterrese/:id" element={<PontoDeInterrese/>} />
           <Route path="/uf" element={<ListarUFPage />} />
           <Route path="/uf/cadastro" element={<CadastroUFPage />} />
           <Route path="/uf/cadastro/:id" element={<CadastroUFPage />} />

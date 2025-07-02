@@ -1,0 +1,86 @@
+/* PontoDeInteresse.css */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centraliza o conteúdo horizontalmente */
+  padding: 20px;
+  max-width: 800px; /* Limita a largura máxima para melhor leitura */
+  margin: 40px auto; /* Centraliza o container na página */
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  color: #333;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.description {
+  color: #666;
+  text-align: center;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.form {
+  width: 100%;
+  max-width: 500px; /* Define a largura máxima do formulário para campos menores */
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #555;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group select,
+.form-group textarea {
+  width: 100%; /* Ocupa 100% da largura do form */
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px; /* Bordas arredondadas */
+  font-size: 1rem;
+  box-sizing: border-box; /* Garante que padding e border sejam incluídos na largura total */
+}
+
+.form-group textarea {
+  resize: vertical; /* Permite redimensionar verticalmente */
+  min-height: 80px; /* Altura mínima para a textarea */
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="number"]:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #007bff; /* Borda azul ao focar */
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+.submit-btn {
+  display: block;
+  width: 100%;
+  padding: 12px 20px;
+  background-color: #28a745; /* Cor verde para o botão */
+  color: white;
+  border: none;
+  border-radius: 8px; /* Bordas arredondadas */
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 20px;
+}
+
+.submit-btn:hover {
+  background-color: #218838; /* Escurece um pouco ao passar o mouse */
+}

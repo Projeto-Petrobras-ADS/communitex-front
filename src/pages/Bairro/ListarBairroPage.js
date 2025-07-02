@@ -65,10 +65,9 @@ const ListarBairroPage = () => {
     navigate(`/bairros/cadastro/${bairro.id}`);
   };
   
-  const handlePointInterest = (bairro) =>{
-    navigate(`bairros/cadastroPontoInterrese/${bairro.id}`);
-  }
-
+ const handlePointInterest = (bairro) => {
+  navigate(`/bairros/cadastroPontoInterrese/${bairro.id}`);
+  };
   const handleDelete = (bairro) => {
     if (window.confirm(`Deseja excluir o bairro ${bairro.nome}?`)) {
       localStorageService.deleteItem('bairros', bairro.id);
