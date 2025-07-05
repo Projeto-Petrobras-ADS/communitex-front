@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './Table.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortUp, faSortDown, faEdit, faTrash, faSearch, faLocationDot, faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -20,7 +20,6 @@ const Table = ({
   const [sortDirection, setSortDirection] = useState('asc');
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Filtragem e ordenação
   const filteredData = data.filter(item => 
     columns.some(column => 
       String(item[column.key]).toLowerCase().includes(searchTerm.toLowerCase())
@@ -38,7 +37,6 @@ const Table = ({
     return 0;
   });
 
-  // Paginação
   const totalPages = Math.ceil(sortedData.length / itemsPerPage);
   const paginatedData = enablePagination 
     ? sortedData.slice(

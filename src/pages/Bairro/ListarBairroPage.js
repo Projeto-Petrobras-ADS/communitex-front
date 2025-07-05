@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Listagem from '../../components/Listagem/Listagem';
 import localStorageService from '../../services/localStorageService';
@@ -10,7 +10,6 @@ const ListarBairroPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
-  // Carregar dados do localStorage
   useEffect(() => {
     const loadData = () => {
       const loadedBairros = localStorageService.getItems('bairros');
@@ -22,7 +21,6 @@ const ListarBairroPage = () => {
     loadData();
   }, []);
 
-  // Configuração das colunas da tabela
   const columns = [
     {
       key: 'nome',
@@ -79,7 +77,6 @@ const ListarBairroPage = () => {
     setSearchTerm(term.toLowerCase());
   };
 
-  // Filtra os bairros baseado no termo de pesquisa
   const filteredBairros = bairros.filter(bairro => {
     if (!searchTerm) return true;
 

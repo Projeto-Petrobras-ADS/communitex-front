@@ -1,4 +1,3 @@
-import React from 'react';
 import './Footer.css';
 import PetrobrasLogo from '../../assets/logo/logo.png';
 

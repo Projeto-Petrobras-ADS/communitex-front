@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Cadastro from '../../components/Cadastro/Cadastro';
 import localStorageService from '../../services/localStorageService';
@@ -10,7 +10,6 @@ const CadastroUFPage = () => {
   const [initialData, setInitialData] = useState(null);
 
   useEffect(() => {
-    // Carregar dados iniciais se estiver editando
     if (id) {
       const uf = localStorageService.getItemById('ufs', id);
       if (uf) {
@@ -27,7 +26,6 @@ const CadastroUFPage = () => {
       required: true,
       maxLength: 2,
       placeholder: 'Ex: SP',
-      // Converter para maiúsculo
       transform: value => value.toUpperCase()
     },
     {
@@ -84,7 +82,6 @@ const CadastroUFPage = () => {
 
   const handleSubmit = (formData) => {
     try {
-      // Converter valores numéricos
       const ufData = {
         ...formData,
         sigla: formData.sigla.toUpperCase(),

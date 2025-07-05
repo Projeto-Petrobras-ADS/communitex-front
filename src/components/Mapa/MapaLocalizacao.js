@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { MapContainer, TileLayer, Circle, Popup } from "react-leaflet";
 import axios from "axios";
 import "leaflet/dist/leaflet.css";
@@ -28,7 +28,6 @@ const MapaLocalizacao = () => {
         }
     };
 
-    // Busca as coordenadas do bairro selecionado
     const buscarBairro = async (bairro) => {
         try {
             const response = await axios.get(

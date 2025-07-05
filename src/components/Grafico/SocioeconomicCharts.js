@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Bar, Pie, Line } from 'react-chartjs-2';
 import ExportButton from '../ExportButton/ExportButton';
 import {
@@ -106,23 +106,23 @@ const SocioeconomicCharts = () => {
         setLoading(true);
         const storageKey = `socioeconomic-${region}-${year}-${indicator}-${subgroup}`;
         const cacheExpiryTime = 24 * 60 * 60 * 1000;
-        
+
         const cachedData = localStorage.getItem(storageKey);
-        
+
         if (cachedData) {
           const parsedData = JSON.parse(cachedData);
           const isCacheValid = new Date().getTime() - parsedData.timestamp < cacheExpiryTime;
-          
+
           if (isCacheValid) {
             setSocioeconomicData(parsedData.data);
             setLoading(false);
             return;
           }
         }
-        
+
         await new Promise(resolve => setTimeout(resolve, 800));
         const mockData = generateMockData(region, year, indicator, subgroup);
-        
+
         if (!mockData.chartData?.labels) {
           throw new Error('Estrutura de dados inválida');
         }
@@ -131,9 +131,9 @@ const SocioeconomicCharts = () => {
           data: mockData,
           timestamp: new Date().getTime()
         };
-        
+
         localStorage.setItem(storageKey, JSON.stringify(dataToCache));
-        
+
         setSocioeconomicData(mockData);
         setError(null);
       } catch (err) {
@@ -148,13 +148,13 @@ const SocioeconomicCharts = () => {
   }, [region, year, indicator, subgroup]);
 
   const generateMockData = (selectedRegion, selectedYear, selectedIndicator, selectedSubgroup) => {
-    const regionFactor = selectedRegion === 'north' ? 0.8 : 
-                       selectedRegion === 'south' ? 1.2 : 
-                       selectedRegion === 'east' ? 0.9 : 
-                       selectedRegion === 'west' ? 1.1 : 1;
+    const regionFactor = selectedRegion === 'north' ? 0.8 :
+      selectedRegion === 'south' ? 1.2 :
+        selectedRegion === 'east' ? 0.9 :
+          selectedRegion === 'west' ? 1.1 : 1;
 
     const palette = colorPalettes[selectedIndicator][selectedSubgroup];
-    
+
     const baseData = {
       literacy: {
         age: {
@@ -286,7 +286,7 @@ const SocioeconomicCharts = () => {
         },
         tooltip: {
           callbacks: {
-            label: function(context) {
+            label: function (context) {
               return `${context.dataset?.label || context.label}: ${context.raw.toFixed(1)}%`;
             }
           }
@@ -296,15 +296,15 @@ const SocioeconomicCharts = () => {
 
     if (chartType === 'pie') {
       return (
-        <Pie 
-          data={chartData} 
+        <Pie
+          data={chartData}
           options={commonOptions}
         />
       );
     } else {
       return (
-        <Bar 
-          data={chartData} 
+        <Bar
+          data={chartData}
           options={{
             ...commonOptions,
             scales: {
@@ -326,7 +326,7 @@ const SocioeconomicCharts = () => {
   return (
     <div className="charts-container">
       <h1>Indicadores Socioeconômicos</h1>
-      
+
       <div className="filters">
         <div className="filter-group">
           <label htmlFor="region">Região:</label>
@@ -338,7 +338,7 @@ const SocioeconomicCharts = () => {
             <option value="west">Oeste</option>
           </select>
         </div>
-        
+
         <div className="filter-group">
           <label htmlFor="year">Ano Base:</label>
           <select id="year" value={year} onChange={handleYearChange}>
@@ -349,7 +349,7 @@ const SocioeconomicCharts = () => {
             <option value="2018">2018</option>
           </select>
         </div>
-        
+
         <div className="filter-group">
           <label htmlFor="indicator">Indicador:</label>
           <select id="indicator" value={indicator} onChange={handleIndicatorChange}>
@@ -358,7 +358,7 @@ const SocioeconomicCharts = () => {
             ))}
           </select>
         </div>
-        
+
         <div className="filter-group">
           <label htmlFor="subgroup">Subgrupo:</label>
           <select id="subgroup" value={subgroup} onChange={handleSubgroupChange}>
@@ -367,9 +367,9 @@ const SocioeconomicCharts = () => {
             ))}
           </select>
         </div>
-        
+
         <div className="filter-group">
-          <ExportButton 
+          <ExportButton
             data={socioeconomicData}
             indicator={indicator}
             region={region}
@@ -378,7 +378,7 @@ const SocioeconomicCharts = () => {
           />
         </div>
       </div>
-      
+
       <div className="chart-row">
         <div className="chart-card">
           <h2>{socioeconomicData.indicator} - {socioeconomicData.subgroup}</h2>

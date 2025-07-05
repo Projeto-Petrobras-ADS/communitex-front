@@ -13,7 +13,6 @@ const Form = ({ fields, initialData, onSubmit, onCancel, submitLabel = 'Salvar' 
       [name]: type === 'number' ? (value === '' ? '' : Number(value)) : value
     }));
 
-    // Limpa o erro quando o campo é alterado
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,

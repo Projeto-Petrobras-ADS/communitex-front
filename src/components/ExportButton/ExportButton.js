@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import * as XLSX from 'xlsx';
 import './ExportButton.css';
@@ -29,43 +29,43 @@ const ExportButton = ({ data, indicator, region, year, subgroup }) => {
         orientation: exportOptions.layout,
         unit: 'mm'
       });
-  
+
       // 1. Adicionar título e metadados
       doc.setFontSize(16);
       doc.text(`Relatório - ${data.indicator || 'Indicador'}`, 105, 15, { align: 'center' });
-  
+
       if (exportOptions.includeMetadata) {
         doc.setFontSize(10);
         doc.text(`Região: ${region === 'all' ? 'Todas' : region}`, 15, 25);
         doc.text(`Ano: ${year}`, 15, 30);
       }
-  
+
       let yPosition = 35;
-  
+
       // 2. Adicionar gráfico (se habilitado)
       if (exportOptions.includeChart) {
         const chartElement = document.querySelector('.chart-container canvas');
-        
+
         if (chartElement) {
           // Converter canvas para imagem
           const chartImage = chartElement.toDataURL('image/png');
-          
+
           // Dimensões do gráfico no PDF (largura máxima 180mm)
           const imgWidth = 180;
           const imgHeight = (chartElement.height * imgWidth) / chartElement.width;
-          
+
           // Adicionar imagem e atualizar posição Y
           doc.addImage(chartImage, 'PNG', 15, yPosition, imgWidth, imgHeight);
           yPosition += imgHeight + 10; // Espaço após o gráfico
         }
       }
-  
+
       // 3. Adicionar tabela (se habilitado)
       if (exportOptions.includeData && data?.rawData?.length) {
         doc.setFontSize(12);
         doc.text('Dados Detalhados', 15, yPosition);
         yPosition += 10;
-  
+
         autoTable(doc, {
           head: [['Categoria', 'Valor', 'Unidade']],
           body: data.rawData.map(item => [
@@ -79,14 +79,14 @@ const ExportButton = ({ data, indicator, region, year, subgroup }) => {
           headStyles: { fillColor: [78, 121, 167] }
         });
       }
-  
+
       // 4. Rodapé
       doc.setFontSize(8);
       doc.setTextColor(100);
       doc.text('Gerado automaticamente - Sistema de Relatórios', 105, 285, { align: 'center' });
-  
+
       doc.save(`relatorio_${indicator}_${year}.pdf`);
-  
+
     } catch (err) {
       console.error('Erro ao gerar PDF:', err);
       alert('Erro na geração do PDF: ' + err.message);
@@ -100,7 +100,7 @@ const ExportButton = ({ data, indicator, region, year, subgroup }) => {
       }
 
       const workbook = XLSX.utils.book_new();
-      
+
       // Planilha de dados
       const wsData = XLSX.utils.json_to_sheet(data.rawData.map(item => ({
         Categoria: item?.categoria || 'N/A',
@@ -108,7 +108,7 @@ const ExportButton = ({ data, indicator, region, year, subgroup }) => {
         Unidade: item?.unidade || '%'
       })));
       XLSX.utils.book_append_sheet(workbook, wsData, 'Dados');
-      
+
       // Planilha de metadados
       const metadata = [
         { Campo: 'Indicador', Valor: data?.indicator || 'N/A' },
@@ -119,7 +119,7 @@ const ExportButton = ({ data, indicator, region, year, subgroup }) => {
       ];
       const wsMeta = XLSX.utils.json_to_sheet(metadata);
       XLSX.utils.book_append_sheet(workbook, wsMeta, 'Metadados');
-      
+
       XLSX.writeFile(workbook, `dados_${indicator}_${year}.xlsx`);
     } catch (err) {
       console.error('Erro ao gerar Excel:', err);
@@ -131,7 +131,7 @@ const ExportButton = ({ data, indicator, region, year, subgroup }) => {
 
   return (
     <div className="export-button-container">
-      <button 
+      <button
         className="export-button"
         onClick={() => setShowExportModal(true)}
       >
@@ -152,7 +152,7 @@ const ExportButton = ({ data, indicator, region, year, subgroup }) => {
                 />
                 Incluir Gráfico
               </label>
-              
+
               <label>
                 <input
                   type="checkbox"
@@ -162,7 +162,7 @@ const ExportButton = ({ data, indicator, region, year, subgroup }) => {
                 />
                 Incluir Tabela de Dados
               </label>
-              
+
               <label>
                 <input
                   type="checkbox"
@@ -172,7 +172,7 @@ const ExportButton = ({ data, indicator, region, year, subgroup }) => {
                 />
                 Incluir Metadados
               </label>
-              
+
               <div className="layout-options">
                 <span>Layout do PDF:</span>
                 <label>
@@ -197,7 +197,7 @@ const ExportButton = ({ data, indicator, region, year, subgroup }) => {
                 </label>
               </div>
             </div>
-            
+
             <div className="export-buttons">
               <button className="export-pdf" onClick={exportToPDF}>
                 Exportar para PDF

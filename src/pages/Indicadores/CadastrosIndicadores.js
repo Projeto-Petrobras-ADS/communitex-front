@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Form from '../../components/Form/Form';
 import Cadastro from '../../components/Cadastro/Cadastro';
 import localStorageService from '../../services/localStorageService';
 import './CadastroIndicadores.css';
@@ -12,9 +11,7 @@ const CadastroIndicadores = () => {
   const [initialData, setInitialData] = useState(null);
 
   useEffect(() => {
-    // Carregar lista de comunidades
     setComunidades(localStorageService.getItems('comunidades'));
-    // Carregar dados iniciais se estiver editando
     if (id) {
       const indicador = localStorageService.getItemById('indicadores', id);
       if (indicador) {
@@ -86,7 +83,6 @@ const CadastroIndicadores = () => {
 
   const handleSubmit = (formData) => {
     try {
-      // Converter valores para número quando necessário
       const indicadorData = {
         ...formData,
         idh: formData.idh ? parseFloat(formData.idh) : null,

@@ -11,7 +11,7 @@ const ListarUFPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
-  // Carregar dados do localStorage
+
   useEffect(() => {
     const loadData = () => {
       const loadedUFs = localStorageService.getItems('ufs');
@@ -21,7 +21,7 @@ const ListarUFPage = () => {
     loadData();
   }, []);
 
-  // Configuração das colunas da tabela
+ 
   const columns = [
     {
       key: 'sigla',
@@ -77,7 +77,6 @@ const ListarUFPage = () => {
     setSearchTerm(term.toLowerCase());
   };
 
-  // Filtra as UFs baseado no termo de pesquisa
   const filteredUFs = ufs.filter(uf => {
     if (!searchTerm) return true;
 

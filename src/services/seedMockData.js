@@ -1,4 +1,3 @@
-// Semente de dados mock para localStorage
 const mockUFs = [
     { id: '1', sigla: 'SP', nome: 'São Paulo', regiao: 'Sudeste', populacao: 46289333, area: 248222.8, pib: 2630000000000 },
     { id: '2', sigla: 'RJ', nome: 'Rio de Janeiro', regiao: 'Sudeste', populacao: 17366189, area: 43780.2, pib: 758000000000 },

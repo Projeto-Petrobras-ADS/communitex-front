@@ -1,7 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Table from '../../components/Table/Table';
-import Button from '../../components/Button/Button';
 import Listagem from '../../components/Listagem/Listagem';
 import localStorageService from '../../services/localStorageService';
 import './ListarComunidadePage.css';
@@ -11,7 +9,6 @@ const ListarComunidadePage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
-  // Carregar dados do localStorage
   useEffect(() => {
     const loadData = () => {
       const loadedComunidades = localStorageService.getItems('comunidades');
@@ -21,7 +18,6 @@ const ListarComunidadePage = () => {
     loadData();
   }, []);
 
-  // Configuração das colunas da tabela
   const columns = [
     {
       key: 'nome',
@@ -80,14 +76,12 @@ const ListarComunidadePage = () => {
   };
 
   const handleLocation = (comunidade) => {
-    // Pega nome do bairro e município
     const bairro = comunidade.bairro;
     const municipio = comunidade.municipio;
-    // Redireciona para /maps com query params
     navigate(`/maps?bairro=${encodeURIComponent(bairro)}&municipio=${encodeURIComponent(municipio)}`);
   };
 
-  // Filtra as comunidades baseado no termo de pesquisa
+
   const filteredComunidades = comunidades.filter(comunidade => {
     if (!searchTerm) return true;
 

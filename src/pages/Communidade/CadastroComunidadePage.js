@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Cadastro from '../../components/Cadastro/Cadastro';
 import localStorageService from '../../services/localStorageService';
@@ -12,7 +12,6 @@ const CadastroComunidadePage = () => {
   const [bairros, setBairros] = useState([]);
 
   useEffect(() => {
-    // Carregar dados iniciais se estiver editando
     if (id) {
       const comunidade = localStorageService.getItemById('comunidades', id);
       if (comunidade) {
@@ -20,7 +19,6 @@ const CadastroComunidadePage = () => {
       }
     }
 
-    // Carregar municípios e bairros
     const loadedMunicipios = localStorageService.getItems('municipios');
     const loadedBairros = localStorageService.getItems('bairros');
     setMunicipios(loadedMunicipios);
@@ -81,14 +79,12 @@ const CadastroComunidadePage = () => {
 
   const handleSubmit = (formData) => {
     try {
-      // Converter valores numéricos
       const comunidadeData = {
         ...formData,
         populacao: formData.populacao ? parseInt(formData.populacao) : null,
         area: formData.area ? parseFloat(formData.area) : null
       };
 
-      // Adicionar dados do município e bairro
       const bairro = bairros.find(b => b.id === formData.bairroId);
       const municipio = municipios.find(m => m.id === formData.municipioId);
 

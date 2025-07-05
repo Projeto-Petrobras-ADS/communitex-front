@@ -1,4 +1,3 @@
-import React from 'react';
 import Table from '../Table/Table';
 import Button from '../Button/Button';
 import './Listagem.css';
