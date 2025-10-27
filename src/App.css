@@ -1,98 +1,42 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* Variáveis de cores */
-:root {
-  --petrobras-green: #00401A;
-  --petrobras-dark-green: #002E12;
-  --petrobras-yellow: #FFCC29;
-  --petrobras-light-yellow: #FFE082;
-  --white: #FFFFFF;
-  --light-gray: #F5F5F5;
-  --medium-gray: #E0E0E0;
-  --dark-gray: #333333;
-  --disabled-bg: #E0E0E0;
-  --disabled-text: #9E9E9E;
-  --text-gray: #666666;
-  --error-red: #D32F2F;
-  --success-green: #388E3C;
-}
-
-.app {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  font-family: var(--font-main);
-  background-color: var(--color-background);
-  color: var(--color-text);
-}
-
-.content {
-  flex: 1;
-  padding: var(--spacing-large);
-}
-
-.petrobras-button {
-  padding: var(--spacing-small) var(--spacing-medium);
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.3s;
-}
-
-.petrobras-button.primary {
-  background-color: var(--color-primary);
-  color: var(--color-text-light);
-}
-
-.petrobras-button.secondary {
-  background-color: var(--color-secondary);
-  color: var(--color-text);
-}
-
-.petrobras-button:hover {
-  opacity: 0.9;
-}
-
-.petrobras-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: var(--spacing-large);
-}
-
-.petrobras-table th,
-.petrobras-table td {
-  padding: var(--spacing-medium);
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-}
-
-.petrobras-table th {
-  background-color: var(--color-primary);
-  color: var(--color-text-light);
-}
-
-.petrobras-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-medium);
-  max-width: 600px;
+#root {
+  max-width: 1280px;
   margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-small);
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--spacing-medium);
-  margin-top: var(--spacing-large);
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
 }
