@@ -1,8 +1,3 @@
-/**
- * Barrel export para constantes
- * @description Exporta todas as constantes da aplicação
- */
-
 // Issue Types
 export { 
   ISSUE_TYPES, 
