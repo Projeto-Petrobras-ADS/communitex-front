@@ -266,7 +266,7 @@ const IssueCard = ({
                     key={comment.id}
                     sx={{
                       p: 1.5,
-                      bgcolor: 'grey.50',
+                      bgcolor: 'background.default',
                       borderRadius: 2,
                     }}
                   >

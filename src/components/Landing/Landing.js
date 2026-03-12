@@ -714,7 +714,7 @@ const Landing = () => {
                   />
                   <Stack direction="row" spacing={0.5} sx={{ mb: 3 }}>
                     {[...Array(testimonial.rating)].map((_, i) => (
-                      <StarIcon key={i} sx={{ fontSize: 18, color: '#FFB400' }} />
+                    <StarIcon key={i} sx={{ fontSize: 18, color: 'secondary.main' }} />
                     ))}
                   </Stack>
                   <Typography 
@@ -907,11 +907,11 @@ const Landing = () => {
                 fontWeight: 700,
                 fontSize: '1.1rem',
                 textTransform: 'none',
-                boxShadow: '0 8px 30px rgba(0,0,0,0.2)',
+                boxShadow: `0 8px 30px ${alpha(theme.palette.primary.dark, 0.35)}`,
                 '&:hover': { 
-                  bgcolor: 'grey.100',
+                  bgcolor: alpha('#fff', 0.92),
                   transform: 'translateY(-2px)',
-                  boxShadow: '0 12px 40px rgba(0,0,0,0.25)',
+                  boxShadow: `0 12px 40px ${alpha(theme.palette.primary.dark, 0.45)}`,
                 },
                 transition: 'all 0.2s ease',
               }}
@@ -946,7 +946,7 @@ const Landing = () => {
       </Box>
 
       {/* Footer - Modern Style */}
-      <Box sx={{ bgcolor: '#0a0f1a', color: 'white', pt: 10, pb: 4 }}>
+      <Box sx={{ bgcolor: theme.palette.primary.dark, color: 'white', pt: 10, pb: 4 }}>
         <Container maxWidth="lg">
           <Grid container spacing={6} sx={{ mb: 8 }}>
             <Grid item xs={12} md={4}>
@@ -1107,21 +1107,21 @@ const Landing = () => {
             alignItems="center"
             spacing={2}
           >
-            <Typography variant="body2" color="grey.600">
+            <Typography variant="body2" color={alpha('#fff', 0.5)}>
               © {new Date().getFullYear()} Communitex. Todos os direitos reservados.
             </Typography>
             <Stack direction="row" spacing={3}>
-              <Typography 
-                variant="body2" 
-                color="grey.500" 
-                sx={{ cursor: 'pointer', '&:hover': { color: 'grey.300' } }}
+              <Typography
+                variant="body2"
+                color={alpha('#fff', 0.45)}
+                sx={{ cursor: 'pointer', '&:hover': { color: alpha('#fff', 0.8) } }}
               >
                 Termos de Uso
               </Typography>
-              <Typography 
-                variant="body2" 
-                color="grey.500" 
-                sx={{ cursor: 'pointer', '&:hover': { color: 'grey.300' } }}
+              <Typography
+                variant="body2"
+                color={alpha('#fff', 0.45)}
+                sx={{ cursor: 'pointer', '&:hover': { color: alpha('#fff', 0.8) } }}
               >
                 Política de Privacidade
               </Typography>

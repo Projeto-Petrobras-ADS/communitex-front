@@ -1,6 +1,5 @@
 /**
- * PageHeader - Componente de header reutilizável com gradiente
- * @description Header com gradiente verde padrão da aplicação
+ * PageHeader - Componente de header reutilizável com gradiente sustentável
  */
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -12,6 +11,7 @@ import {
   Avatar,
   Stack,
   useTheme,
+  alpha,
 } from '@mui/material';
 import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 
@@ -29,20 +29,30 @@ const PageHeader = ({
 
   return (
     <Paper
-      elevation={2}
+      elevation={0}
       sx={{
         background: `linear-gradient(135deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.main} 100%)`,
         color: 'white',
         py: { xs: 3, md: 4 },
-        px: 3,
+        px: { xs: 2, md: 3 },
         borderRadius: 3,
-        mx: 3,
-        mt: 3,
         mb: 3,
+        position: 'relative',
+        overflow: 'hidden',
+        '&::after': {
+          content: '""',
+          position: 'absolute',
+          top: -40,
+          right: -40,
+          width: 200,
+          height: 200,
+          borderRadius: '50%',
+          bgcolor: alpha('#fff', 0.05),
+          pointerEvents: 'none',
+        },
       }}
     >
       <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
-        {/* Botão Voltar */}
         {backLink && (
           <Button
             component={Link}
@@ -51,14 +61,14 @@ const PageHeader = ({
             sx={{
               color: 'white',
               mb: 2,
-              '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' },
+              fontWeight: 600,
+              '&:hover': { bgcolor: alpha('#fff', 0.12) },
             }}
           >
             {backLabel}
           </Button>
         )}
 
-        {/* Conteúdo principal */}
         <Box
           sx={{
             display: 'flex',
@@ -68,17 +78,10 @@ const PageHeader = ({
             gap: 2,
           }}
         >
-          {/* Título e ícone */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Stack direction="row" alignItems="center" spacing={2}>
             {Icon && (
-              <Avatar
-                sx={{
-                  bgcolor: 'rgba(255,255,255,0.2)',
-                  width: 64,
-                  height: 64,
-                }}
-              >
-                {typeof Icon === 'function' ? <Icon sx={{ fontSize: 36 }} /> : Icon}
+              <Avatar sx={{ bgcolor: alpha('#fff', 0.18), width: 60, height: 60 }}>
+                {typeof Icon === 'function' ? <Icon sx={{ fontSize: 32 }} /> : Icon}
               </Avatar>
             )}
             <Box>
@@ -86,19 +89,17 @@ const PageHeader = ({
                 {title}
               </Typography>
               {subtitle && (
-                <Typography variant="body1" sx={{ opacity: 0.9 }}>
+                <Typography variant="body1" sx={{ opacity: 0.85, mt: 0.25 }}>
                   {subtitle}
                 </Typography>
               )}
             </Box>
-          </Box>
+          </Stack>
 
-          {/* Actions ou Chip */}
           {actions && <Stack direction="row" spacing={2}>{actions}</Stack>}
           {chip}
         </Box>
 
-        {/* Children (conteúdo adicional) */}
         {children}
       </Box>
     </Paper>

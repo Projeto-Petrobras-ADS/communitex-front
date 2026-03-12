@@ -83,7 +83,7 @@ const PropostaAdocaoForm = () => {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'grey.50' }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       {/* Header */}
       <Paper
         elevation={2}
@@ -251,9 +251,9 @@ const PropostaAdocaoForm = () => {
                   borderRadius: 2,
                   fontWeight: 700,
                   fontSize: '1rem',
-                  boxShadow: '0 8px 20px rgba(46, 158, 87, 0.3)',
+                  boxShadow: '0 8px 20px rgba(45, 106, 79, 0.35)',
                   '&:hover': {
-                    boxShadow: '0 12px 30px rgba(46, 158, 87, 0.4)',
+                    boxShadow: '0 12px 30px rgba(45, 106, 79, 0.45)',
                     transform: 'translateY(-2px)',
                   },
                   transition: 'all 0.3s ease',

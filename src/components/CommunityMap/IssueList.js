@@ -63,6 +63,8 @@ const IssueListCard = ({ issue, onClick }) => {
         display: 'flex',
         flexDirection: 'column',
         transition: 'all 0.3s ease',
+        borderLeft: '4px solid',
+        borderLeftColor: typeConfig.color || 'primary.light',
         '&:hover': {
           transform: 'translateY(-4px)',
           boxShadow: 6,
