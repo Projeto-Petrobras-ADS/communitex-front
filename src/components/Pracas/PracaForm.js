@@ -427,7 +427,7 @@ const PracaForm = () => {
                     startIcon={isSubmitting ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
                     sx={{ 
                       px: 4,
-                      boxShadow: '0 4px 12px rgba(46, 158, 87, 0.3)',
+                      boxShadow: '0 4px 12px rgba(45, 106, 79, 0.35)',
                     }}
                   >
                     {isSubmitting ? 'Salvando...' : 'Salvar Praça'}

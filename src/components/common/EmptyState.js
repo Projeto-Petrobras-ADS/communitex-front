@@ -1,13 +1,12 @@
 /**
  * EmptyState - Componente para estados vazios
- * @description Exibe mensagem e ação quando não há dados
  */
 import React from 'react';
 import { Box, Paper, Typography, Button, Stack, Avatar, useTheme, alpha } from '@mui/material';
-import { SentimentDissatisfied as EmptyIcon } from '@mui/icons-material';
+import { Nature as NatureIcon } from '@mui/icons-material';
 
 const EmptyState = ({
-  icon: Icon = EmptyIcon,
+  icon: Icon = NatureIcon,
   title = 'Nenhum item encontrado',
   description,
   actionLabel,
@@ -24,9 +23,9 @@ const EmptyState = ({
         p: 6,
         textAlign: 'center',
         borderRadius: 3,
-        border: '1px solid',
-        borderColor: 'divider',
-        bgcolor: alpha(theme.palette.primary.main, 0.02),
+        border: '2px dashed',
+        borderColor: alpha(theme.palette.primary.main, 0.25),
+        bgcolor: alpha(theme.palette.primary.main, 0.03),
       }}
     >
       <Avatar
@@ -42,30 +41,24 @@ const EmptyState = ({
         <Icon sx={{ fontSize: 40 }} />
       </Avatar>
 
-      <Typography variant="h5" fontWeight={700} gutterBottom>
+      <Typography variant="h5" fontWeight={700} color="text.primary" gutterBottom>
         {title}
       </Typography>
 
       {description && (
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 3, maxWidth: 400, mx: 'auto' }}>
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 3, maxWidth: 420, mx: 'auto' }}>
           {description}
         </Typography>
       )}
 
       <Stack direction="row" spacing={2} justifyContent="center">
         {actionComponent}
-        
         {actionLabel && onAction && (
           <Button
             variant="contained"
             startIcon={actionIcon}
             onClick={onAction}
-            sx={{
-              px: 4,
-              py: 1.5,
-              borderRadius: 2,
-              fontWeight: 700,
-            }}
+            sx={{ px: 4, py: 1.5, borderRadius: 2, fontWeight: 700 }}
           >
             {actionLabel}
           </Button>

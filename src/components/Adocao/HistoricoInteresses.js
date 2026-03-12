@@ -66,7 +66,7 @@ const HistoricoInteresses = ({ interesses, loading = false }) => {
               <Typography variant="body2" color="text.secondary" gutterBottom fontWeight={500}>
                 Proposta de Adoção:
               </Typography>
-              <Typography variant="body2" sx={{ bgcolor: 'grey.50', p: 1.5, borderRadius: 1 }}>
+              <Typography variant="body2" sx={{ bgcolor: 'background.default', p: 1.5, borderRadius: 1 }}>
                 {interesse.proposta}
               </Typography>
             </CardContent>

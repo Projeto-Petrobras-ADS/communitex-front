@@ -101,7 +101,7 @@ const PracaDetail = () => {
 
   if (loading) {
     return (
-      <Box sx={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'grey.50' }}>
+      <Box sx={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'background.default' }}>
         <Box sx={{ textAlign: 'center' }}>
           <CircularProgress color="primary" size={48} />
           <Typography sx={{ mt: 2 }} color="text.secondary">Carregando detalhes da praça...</Typography>
@@ -112,7 +112,7 @@ const PracaDetail = () => {
 
   if (error || !praca) {
     return (
-      <Box sx={{ minHeight: '80vh', bgcolor: 'grey.50', p: 3 }}>
+      <Box sx={{ minHeight: '80vh', bgcolor: 'background.default', p: 3 }}>
         <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
           <Button
             component={Link}
@@ -134,7 +134,7 @@ const PracaDetail = () => {
   const statusConfig = getStatusConfig(praca.status);
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'grey.50' }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       {/* Header */}
       <Paper
         elevation={2}
@@ -396,9 +396,9 @@ const PracaDetail = () => {
                         py: 1.5,
                         borderRadius: 2,
                         fontWeight: 700,
-                        boxShadow: '0 8px 20px rgba(46, 158, 87, 0.3)',
+                        boxShadow: '0 8px 20px rgba(45, 106, 79, 0.35)',
                         '&:hover': {
-                          boxShadow: '0 12px 30px rgba(46, 158, 87, 0.4)',
+                          boxShadow: '0 12px 30px rgba(45, 106, 79, 0.45)',
                           transform: 'translateY(-2px)',
                         },
                         transition: 'all 0.3s ease',

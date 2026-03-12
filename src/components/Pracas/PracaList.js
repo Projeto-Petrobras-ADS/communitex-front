@@ -69,6 +69,12 @@ const PracaCard = ({ praca, isEmpresa, onClick }) => {
         display: 'flex',
         flexDirection: 'column',
         transition: 'all 0.3s ease',
+        borderLeft: '4px solid',
+        borderLeftColor: praca.status === 'DISPONIVEL'
+          ? 'success.main'
+          : praca.status === 'EM_PROCESSO'
+          ? 'warning.main'
+          : 'text.disabled',
         '&:hover': {
           transform: 'translateY(-4px)',
           boxShadow: 6,
