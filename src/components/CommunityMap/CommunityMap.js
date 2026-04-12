@@ -31,7 +31,6 @@ import {
   MyLocation as MyLocationIcon,
   Refresh as RefreshIcon,
   List as ListIcon,
-  Close as CloseIcon,
   TouchApp as TouchAppIcon,
   Report as ReportIcon,
 } from '@mui/icons-material';
@@ -279,18 +278,9 @@ const CommunityMap = () => {
         eventHandlers={{
           click: () => handleMarkerClick(issue)
         }}
-      >
-        <Popup>
-          <IssueCard 
-            issue={issue} 
-            isCompact 
-            onSupport={handleSupport}
-            onViewDetails={handleMarkerClick}
-          />
-        </Popup>
-      </Marker>
+      />
     ));
-  }, [issues, handleMarkerClick, handleSupport]);
+  }, [issues, handleMarkerClick]);
 
   // Loading state
   if (locationLoading) {
@@ -564,21 +554,6 @@ const CommunityMap = () => {
               position: 'relative',
             }}
           >
-            <IconButton
-              onClick={handleCloseIssueCard}
-              sx={{
-                position: 'absolute',
-                top: 8,
-                right: 8,
-                zIndex: 1,
-                bgcolor: alpha(theme.palette.background.paper, 0.8),
-                '&:hover': {
-                  bgcolor: alpha(theme.palette.error.light, 0.2),
-                },
-              }}
-            >
-              <CloseIcon />
-            </IconButton>
             <IssueCard
               issue={selectedIssueCard}
               onClose={handleCloseIssueCard}

@@ -1,9 +1,12 @@
 // /src/services/api.js
 import axios from 'axios';
 
+const apiBaseUrl =
+  process.env.REACT_APP_API_BASE_URL?.replace(/\/$/, '') || 'http://localhost:8080';
+
 // Criamos uma instância do axios com a URL base do seu backend
 const api = axios.create({
-  baseURL: 'http://localhost:8080', // Conforme definido no seu swagger.json
+  baseURL: apiBaseUrl,
 });
 
 /**
