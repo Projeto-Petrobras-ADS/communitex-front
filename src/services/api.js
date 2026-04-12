@@ -1,8 +1,24 @@
 // /src/services/api.js
 import axios from 'axios';
 
-const apiBaseUrl =
-  process.env.REACT_APP_API_BASE_URL?.replace(/\/$/, '') || 'http://localhost:8080';
+const normalizeApiBaseUrl = (rawUrl) => {
+  const fallbackUrl = 'http://localhost:8080';
+
+  if (!rawUrl) {
+    return fallbackUrl;
+  }
+
+  const sanitizedUrl = rawUrl.trim().replace(/\/$/, '');
+
+  if (!sanitizedUrl) {
+    return fallbackUrl;
+  }
+
+  const hasProtocol = /^https?:\/\//i.test(sanitizedUrl);
+  return hasProtocol ? sanitizedUrl : `http://${sanitizedUrl}`;
+};
+
+const apiBaseUrl = normalizeApiBaseUrl(process.env.REACT_APP_API_BASE_URL);
 
 // Criamos uma instância do axios com a URL base do seu backend
 const api = axios.create({
