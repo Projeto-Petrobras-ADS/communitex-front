@@ -35,6 +35,16 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
+    const method = (config.method || 'get').toUpperCase();
+
+    try {
+      const fullUrl = new URL(config.url || '', config.baseURL || window.location.origin).toString();
+      console.log(`[API] ${method} ${fullUrl}`);
+    } catch {
+      console.log(`[API] ${method} ${config.baseURL || ''}${config.url || ''}`);
+    }
+
     return config;
   },
   (error) => {
