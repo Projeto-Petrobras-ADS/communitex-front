@@ -2,20 +2,21 @@
 import axios from 'axios';
 
 const normalizeApiBaseUrl = (rawUrl) => {
-  const fallbackUrl = 'http://localhost:8080';
+ // const fallbackUrl = 'http://localhost:8080';
 
-  if (!rawUrl) {
-    return fallbackUrl;
-  }
+ // if (!rawUrl) {
+   // return fallbackUrl;
+  //}
 
-  const sanitizedUrl = rawUrl.trim().replace(/\/$/, '');
+//  const sanitizedUrl = rawUrl.trim().replace(/\/$/, '');
 
-  if (!sanitizedUrl) {
-    return fallbackUrl;
-  }
+ // if (!sanitizedUrl) {
+   // return fallbackUrl;
+  //}
 
-  const hasProtocol = /^https?:\/\//i.test(sanitizedUrl);
-  return hasProtocol ? sanitizedUrl : `http://${sanitizedUrl}`;
+  //const hasProtocol = /^https?:\/\//i.test(sanitizedUrl);
+  //return hasProtocol ? sanitizedUrl : `http://${sanitizedUrl}`;
+  return rawUrl
 };
 
 const apiBaseUrl = normalizeApiBaseUrl(process.env.REACT_APP_API_BASE_URL);
