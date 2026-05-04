@@ -1,9 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { PROTECTED_ROUTES, ADMIN_ROUTES, PUBLIC_ROUTES } from '../../routes/paths';
+import { PROTECTED_ROUTES, ADMIN_ROUTES } from '../../routes/paths';
 import {
-  AppBar,
   Box,
   Drawer,
   IconButton,
@@ -12,7 +11,6 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Toolbar,
   Typography,
   Divider,
   Avatar,
@@ -23,7 +21,6 @@ import {
   Stack,
 } from '@mui/material';
 import {
-  Menu as MenuIcon,
   Park as ParkIcon,
   Assignment as AssignmentIcon,
   AdminPanelSettings as AdminIcon,
@@ -75,21 +72,6 @@ const AppLayout = ({ children }) => {
     navigate(path);
     if (isMobile) setMobileOpen(false);
   };
-
-  const pageTitle = useMemo(() => {
-    const path = location.pathname;
-    if (path === PROTECTED_ROUTES.PRACAS) return 'Praças';
-    if (path === PROTECTED_ROUTES.DENUNCIAS) return 'Denúncias Comunitárias';
-    if (path === PROTECTED_ROUTES.DENUNCIAS_LISTA) return 'Lista de Denúncias';
-    if (path === PROTECTED_ROUTES.MINHAS_PROPOSTAS) return 'Minhas Propostas';
-    if (path === ADMIN_ROUTES.PROPOSTAS) return 'Gerenciar Propostas';
-    if (path === ADMIN_ROUTES.NOVA_PRACA) return 'Nova Praça';
-    if (path.startsWith('/pracas/') && path.includes('/manifestar-interesse')) return 'Manifestar Interesse';
-    if (path.startsWith('/pracas/') && path.includes('/propor-adocao')) return 'Propor Adoção';
-    if (path.startsWith('/pracas/')) return 'Detalhes da Praça';
-    if (path.startsWith('/admin')) return 'Administração';
-    return 'Communitex';
-  }, [location.pathname]);
 
   const drawerContent = (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', bgcolor: 'background.paper' }}>
@@ -250,40 +232,6 @@ const AppLayout = ({ children }) => {
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh' }}>
-      {/* AppBar */}
-      <AppBar
-        position="fixed"
-        elevation={0}
-        sx={{
-          width: { md: `calc(100% - ${drawerWidth}px)` },
-          ml: { md: `${drawerWidth}px` },
-          background: `linear-gradient(90deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.main} 100%)`,
-          borderBottom: `1px solid ${alpha(theme.palette.primary.light, 0.2)}`,
-          transition: theme.transitions.create(['width', 'margin'], {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-          }),
-        }}
-      >
-        <Toolbar sx={{ minHeight: 68 }}>
-          <IconButton
-            color="inherit"
-            aria-label="abrir menu"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { md: 'none' } }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, fontWeight: 700 }}>
-            {pageTitle}
-          </Typography>
-          <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' }, opacity: 0.85 }}>
-            Olá, {user?.username || user?.sub || 'Usuário'}
-          </Typography>
-        </Toolbar>
-      </AppBar>
-
       {/* Drawer Mobile */}
       <Drawer
         variant="temporary"
@@ -330,7 +278,6 @@ const AppLayout = ({ children }) => {
           ml: { xs: 0, md: `${drawerWidth}px` },
           bgcolor: isMapPage ? 'transparent' : 'background.default',
           minHeight: '100vh',
-          mt: '68px',
           transition: theme.transitions.create(['width', 'margin'], {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
