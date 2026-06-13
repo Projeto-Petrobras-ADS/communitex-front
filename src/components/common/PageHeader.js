@@ -26,6 +26,7 @@ const PageHeader = ({
   children,
 }) => {
   const theme = useTheme();
+  const renderedIcon = React.isValidElement(Icon) ? Icon : Icon ? React.createElement(Icon, { sx: { fontSize: 32 } }) : null;
 
   return (
     <Paper
@@ -81,7 +82,7 @@ const PageHeader = ({
           <Stack direction="row" alignItems="center" spacing={2}>
             {Icon && (
               <Avatar sx={{ bgcolor: alpha('#fff', 0.18), width: 60, height: 60 }}>
-                {typeof Icon === 'function' ? <Icon sx={{ fontSize: 32 }} /> : Icon}
+                {renderedIcon}
               </Avatar>
             )}
             <Box>

@@ -17,10 +17,8 @@ import {
   IconButton,
   TextField,
   Stack,
-  Avatar,
   Alert,
   CircularProgress,
-  useTheme,
   alpha,
   Divider,
 } from '@mui/material';
@@ -45,7 +43,6 @@ const IssueCard = ({
   onViewDetails,
   isCompact = false 
 }) => {
-  const theme = useTheme();
   const [isSupporting, setIsSupporting] = useState(false);
   const [supportError, setSupportError] = useState(null);
   const [showCommentInput, setShowCommentInput] = useState(false);

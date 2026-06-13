@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Cadastro from '../../components/Cadastro/Cadastro';
 import localStorageService from '../../services/localStorageService';
+import { useNotification } from '../../context/NotificationContext';
 import './CadastroComunidadePage.css';
 
 const CadastroComunidadePage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const { notifyError, notifySuccess } = useNotification();
   const [initialData, setInitialData] = useState(null);
   const [municipios, setMunicipios] = useState([]);
   const [bairros, setBairros] = useState([]);
@@ -93,10 +95,10 @@ const CadastroComunidadePage = () => {
       comunidadeData.uf = municipio?.uf;
 
       localStorageService.saveItem('comunidades', comunidadeData);
-      alert(id ? 'Comunidade atualizada com sucesso!' : 'Comunidade cadastrada com sucesso!');
+      notifySuccess(id ? 'Comunidade atualizada com sucesso.' : 'Comunidade cadastrada com sucesso.');
       navigate('/comunidades');
     } catch (error) {
-      alert('Erro ao salvar comunidade: ' + error.message);
+      notifyError(`Não foi possível salvar a comunidade. ${error.message}`);
     }
   };
 

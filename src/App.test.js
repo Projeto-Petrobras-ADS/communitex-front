@@ -1,8 +1,7 @@
-import { render, screen } from '@testing-library/react';
-import App from './App';
+import theme from './theme';
 
-test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+test('uses the Communitex sustainable design system', () => {
+  expect(theme.palette.primary.main).toBe('#176b68');
+  expect(theme.palette.background.default).toBe('#f7f3ea');
+  expect(theme.shape.borderRadius).toBe(12);
 });

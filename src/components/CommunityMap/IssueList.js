@@ -8,6 +8,7 @@ import { ISSUE_TYPES, ISSUE_STATUS, getIssueTypeConfig, getIssueStatusConfig } f
 
 // Utilitários
 import { formatDate } from '../../utils';
+import { EmptyState, LoadingState, PageHeader } from '../common';
 
 import {
   Box,
@@ -25,7 +26,6 @@ import {
   CardContent,
   CardActionArea,
   Grid,
-  CircularProgress,
   Alert,
   Fab,
   useTheme,
@@ -52,7 +52,6 @@ import {
  * Componente de Card individual
  */
 const IssueListCard = ({ issue, onClick }) => {
-  const theme = useTheme();
   const typeConfig = getIssueTypeConfig(issue.tipo);
   const statusConfig = getIssueStatusConfig(issue.status);
 
@@ -257,21 +256,7 @@ const IssueList = () => {
   const hasActiveFilters = searchTerm || filterType || filterStatus || sortBy !== 'recent';
 
   if (isLoading) {
-    return (
-      <Box
-        sx={{
-          minHeight: '60vh',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 2,
-        }}
-      >
-        <CircularProgress size={50} color="primary" />
-        <Typography color="text.secondary">Carregando denúncias...</Typography>
-      </Box>
-    );
+    return <LoadingState message="Carregando denúncias da comunidade..." />;
   }
 
   if (error) {
@@ -294,29 +279,11 @@ const IssueList = () => {
   return (
     <Box sx={{ minHeight: '100%' }}>
       {/* Header */}
-      <Paper
-        elevation={0}
-        sx={{
-          p: 3,
-          mb: 3,
-          background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
-          color: 'white',
-          borderRadius: 3,
-        }}
-      >
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
-          <Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-              <ReportIcon />
-              <Typography variant="h5" fontWeight={700}>
-                Denúncias Comunitárias
-              </Typography>
-            </Box>
-            <Typography variant="body2" sx={{ opacity: 0.9 }}>
-              {issues.length} denúncia{issues.length !== 1 ? 's' : ''} registrada{issues.length !== 1 ? 's' : ''}
-            </Typography>
-          </Box>
-          <Button
+      <PageHeader
+        title="Denúncias comunitárias"
+        subtitle={`${issues.length} ocorrência${issues.length === 1 ? '' : 's'} registrada${issues.length === 1 ? '' : 's'} pela comunidade.`}
+        icon={ReportIcon}
+        actions={<Button
             variant="contained"
             color="inherit"
             startIcon={<MapIcon />}
@@ -329,10 +296,9 @@ const IssueList = () => {
               },
             }}
           >
-            Ver Mapa
-          </Button>
-        </Box>
-      </Paper>
+            Ver mapa
+          </Button>}
+      />
 
       {/* Filtros */}
       <Paper elevation={1} sx={{ p: 2, mb: 3, borderRadius: 2 }}>
@@ -433,38 +399,15 @@ const IssueList = () => {
 
       {/* Lista de Issues */}
       {filteredIssues.length === 0 ? (
-        <Paper
-          elevation={1}
-          sx={{
-            p: 6,
-            textAlign: 'center',
-            borderRadius: 2,
-          }}
-        >
-          <Box sx={{ fontSize: '4rem', mb: 2 }}>📭</Box>
-          <Typography variant="h6" gutterBottom>
-            Nenhuma denúncia encontrada
-          </Typography>
-          <Typography color="text.secondary" sx={{ mb: 3 }}>
-            {hasActiveFilters 
-              ? 'Tente ajustar os filtros para ver mais resultados.'
-              : 'Seja o primeiro a registrar uma denúncia!'}
-          </Typography>
-          <Stack direction="row" spacing={2} justifyContent="center">
-            {hasActiveFilters && (
-              <Button variant="outlined" onClick={clearFilters}>
-                Limpar Filtros
-              </Button>
-            )}
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={() => navigate('/denuncias')}
-            >
-              Nova Denúncia
-            </Button>
-          </Stack>
-        </Paper>
+        <EmptyState
+          icon={ReportIcon}
+          title="Nenhuma denúncia encontrada"
+          description={hasActiveFilters ? 'Ajuste os filtros para ampliar os resultados.' : 'Ainda não há ocorrências registradas nesta área.'}
+          actionComponent={<Stack direction="row" spacing={2}>
+            {hasActiveFilters && <Button variant="outlined" onClick={clearFilters}>Limpar filtros</Button>}
+            <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/denuncias')}>Nova denúncia</Button>
+          </Stack>}
+        />
       ) : (
         <Grid container spacing={3}>
           {filteredIssues.map((issue) => (

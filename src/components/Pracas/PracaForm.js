@@ -1,15 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
-import api from '../../services/api';
+import PracaService from '../../services/PracaService';
 
 // Constantes centralizadas
 import { PRACA_STATUS_OPTIONS } from '../../constants';
 
 import {
   Box,
-  Card,
   CardContent,
   TextField,
   Button,
@@ -20,8 +19,6 @@ import {
   Stack,
   MenuItem,
   useTheme,
-  alpha,
-  Snackbar,
   InputAdornment,
   Grid,
 } from '@mui/material';
@@ -32,14 +29,14 @@ import {
   LocationCity as CityIcon,
   Map as MapIcon,
   SquareFoot as SquareFootIcon,
-  Description as DescriptionIcon,
   Image as ImageIcon,
   ArrowBack as ArrowBackIcon,
-  ArrowForward as ArrowForwardIcon,
-  CheckCircle as CheckCircleIcon,
   Settings as SettingsIcon,
   Save as SaveIcon,
+  DeleteOutline as DeleteIcon,
+  CloudUpload as CloudUploadIcon,
 } from '@mui/icons-material';
+import { useNotification } from '../../context/NotificationContext';
 
 const PracaSchema = Yup.object().shape({
   nome: Yup.string()
@@ -64,10 +61,6 @@ const PracaSchema = Yup.object().shape({
     .max(1000, 'Descrição não pode exceder 1000 caracteres')
     .nullable(),
 
-  fotoUrl: Yup.string()
-    .url('Deve ser uma URL válida (ex: http://.../imagem.png)')
-    .nullable(),
-
   metragemM2: Yup.number()
     .typeError('Metragem deve ser um número (ex: 2500.5)')
     .positive('Metragem deve ser um valor positivo')
@@ -81,8 +74,42 @@ const PracaSchema = Yup.object().shape({
 const PracaForm = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const { notifySuccess } = useNotification();
   const [serverError, setServerError] = useState('');
-  const [showSuccess, setShowSuccess] = useState(false);
+  const [foto, setFoto] = useState(null);
+  const [fotoPreview, setFotoPreview] = useState('');
+  const [fotoError, setFotoError] = useState('');
+
+  useEffect(() => () => {
+    if (fotoPreview) URL.revokeObjectURL(fotoPreview);
+  }, [fotoPreview]);
+
+  const handleFotoChange = (event) => {
+    const arquivo = event.target.files?.[0];
+    event.target.value = '';
+    if (!arquivo) return;
+
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(arquivo.type)) {
+      setFotoError('Envie uma imagem JPEG, PNG ou WebP.');
+      return;
+    }
+    if (arquivo.size > 5 * 1024 * 1024) {
+      setFotoError('A imagem deve ter no máximo 5 MB.');
+      return;
+    }
+
+    if (fotoPreview) URL.revokeObjectURL(fotoPreview);
+    setFoto(arquivo);
+    setFotoPreview(URL.createObjectURL(arquivo));
+    setFotoError('');
+  };
+
+  const removeFoto = () => {
+    if (fotoPreview) URL.revokeObjectURL(fotoPreview);
+    setFoto(null);
+    setFotoPreview('');
+    setFotoError('');
+  };
 
   const handleSubmit = async (values, { setSubmitting }) => {
     setServerError('');
@@ -95,16 +122,19 @@ const PracaForm = () => {
       latitude: values.latitude ? parseFloat(values.latitude) : null,
       longitude: values.longitude ? parseFloat(values.longitude) : null,
       descricao: values.descricao || null,
-      fotoUrl: values.fotoUrl || null,
+      fotoUrl: null,
       metragemM2: values.metragemM2 ? parseFloat(values.metragemM2) : null,
       status: values.status,
     };
 
     try {
-      await api.post('/api/pracas', pracaRequestDTO);
+      const pracaCriada = await PracaService.cadastrarPraca(pracaRequestDTO);
+      if (foto) {
+        await PracaService.enviarFoto(pracaCriada.id, foto);
+      }
 
       setSubmitting(false);
-      setShowSuccess(true);
+      notifySuccess('Praça cadastrada com sucesso.');
 
       setTimeout(() => {
         navigate('/pracas');
@@ -154,16 +184,6 @@ const PracaForm = () => {
         </Typography>
       </Paper>
 
-      <Snackbar
-        open={showSuccess}
-        autoHideDuration={3000}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        <Alert severity="success" icon={<CheckCircleIcon />} sx={{ borderRadius: 2 }}>
-          <strong>Praça cadastrada com sucesso!</strong> Redirecionando para a lista...
-        </Alert>
-      </Snackbar>
-
       <Paper elevation={1} sx={{ borderRadius: 2, overflow: 'hidden' }}>
         <CardContent sx={{ p: { xs: 3, md: 4 } }}>
           <Formik
@@ -175,7 +195,6 @@ const PracaForm = () => {
               latitude: '',
               longitude: '',
               descricao: '',
-              fotoUrl: '',
               metragemM2: '',
               status: 'DISPONIVEL', 
             }}
@@ -237,24 +256,47 @@ const PracaForm = () => {
                     </TextField>
                   </Grid>
                   <Grid size={{ xs: 12 }}>
-                    <TextField
-                      fullWidth
-                      label="URL da Foto Principal (Opcional)"
-                      name="fotoUrl"
-                      value={values.fotoUrl}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      error={touched.fotoUrl && Boolean(errors.fotoUrl)}
-                      helperText={touched.fotoUrl && errors.fotoUrl}
-                      placeholder="http://exemplo.com/foto.jpg"
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <ImageIcon color="action" />
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
+                    <Paper
+                      variant="outlined"
+                      sx={{ p: 2, borderStyle: 'dashed', borderColor: fotoError ? 'error.main' : 'divider', bgcolor: 'background.default' }}
+                    >
+                      {fotoPreview ? (
+                        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
+                          <Box
+                            component="img"
+                            src={fotoPreview}
+                            alt="Pré-visualização da praça"
+                            sx={{ width: { xs: '100%', sm: 220 }, height: 140, objectFit: 'cover', borderRadius: 2 }}
+                          />
+                          <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+                            <Typography fontWeight={700} noWrap>{foto.name}</Typography>
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                              {(foto.size / 1024 / 1024).toFixed(2)} MB
+                            </Typography>
+                            <Stack direction="row" spacing={1}>
+                              <Button component="label" variant="outlined" startIcon={<ImageIcon />}>
+                                Trocar foto
+                                <input hidden type="file" accept="image/jpeg,image/png,image/webp" onChange={handleFotoChange} />
+                              </Button>
+                              <Button color="error" onClick={removeFoto} startIcon={<DeleteIcon />}>Remover</Button>
+                            </Stack>
+                          </Box>
+                        </Stack>
+                      ) : (
+                        <Stack alignItems="center" spacing={1} sx={{ py: 3, textAlign: 'center' }}>
+                          <CloudUploadIcon color="primary" sx={{ fontSize: 42 }} />
+                          <Typography fontWeight={700}>Adicione uma foto da praça</Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            JPEG, PNG ou WebP, com no máximo 5 MB.
+                          </Typography>
+                          <Button component="label" variant="outlined" startIcon={<ImageIcon />}>
+                            Escolher do dispositivo
+                            <input hidden type="file" accept="image/jpeg,image/png,image/webp" onChange={handleFotoChange} />
+                          </Button>
+                        </Stack>
+                      )}
+                      {fotoError && <Typography color="error" variant="caption">{fotoError}</Typography>}
+                    </Paper>
                   </Grid>
                 </Grid>
 

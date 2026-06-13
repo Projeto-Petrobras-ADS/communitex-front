@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import api from '../../services/api';
-import PracaService from '../../services/PracaService';
-import { Link, useNavigate } from 'react-router-dom'; 
+import React, { useCallback, useState, useEffect } from 'react';
+import api, { resolveApiUrl } from '../../services/api';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 // Constantes centralizadas
@@ -11,8 +10,8 @@ import {
   Box,
   Card,
   CardContent,
-  CardActions,
   CardActionArea,
+  CardMedia,
   Typography,
   Button,
   Chip,
@@ -23,7 +22,6 @@ import {
   Alert,
   Paper,
   Stack,
-  Avatar,
   IconButton,
   useTheme,
   alpha,
@@ -41,7 +39,6 @@ import {
   Search as SearchIcon,
   Clear as ClearIcon,
   Add as AddIcon,
-  Visibility as ViewIcon,
   Handshake as HandshakeIcon,
   Assignment as AssignmentIcon,
   CheckCircle as CheckCircleIcon,
@@ -68,33 +65,36 @@ const PracaCard = ({ praca, isEmpresa, onClick }) => {
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        transition: 'all 0.3s ease',
-        borderLeft: '4px solid',
-        borderLeftColor: praca.status === 'DISPONIVEL'
-          ? 'success.main'
-          : praca.status === 'EM_PROCESSO'
-          ? 'warning.main'
-          : 'text.disabled',
+        overflow: 'hidden',
+        transition: 'transform 0.25s ease, box-shadow 0.25s ease',
         '&:hover': {
           transform: 'translateY(-4px)',
-          boxShadow: 6,
+          boxShadow: '0 18px 42px rgba(23,38,30,0.14)',
         },
       }}
     >
       <CardActionArea onClick={() => onClick(praca)} sx={{ flexGrow: 1 }}>
+        {praca.fotoUrl ? (
+          <CardMedia component="img" height="168" image={resolveApiUrl(praca.fotoUrl)} alt={praca.nome} sx={{ objectFit: 'cover' }} />
+        ) : (
+          <Box
+            sx={{
+              height: 168,
+              display: 'grid',
+              placeItems: 'center',
+              background: `linear-gradient(145deg, ${alpha(theme.palette.primary.main, 0.08)}, ${alpha(theme.palette.primary.light, 0.28)})`,
+              color: 'primary.main',
+            }}
+          >
+            <ParkIcon sx={{ fontSize: 58 }} />
+          </Box>
+        )}
         <CardContent sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
           {/* Header com ícone e status */}
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-            <Avatar
-              sx={{
-                bgcolor: alpha(theme.palette.primary.main, 0.15),
-                color: 'primary.main',
-                width: 44,
-                height: 44,
-              }}
-            >
-              <ParkIcon />
-            </Avatar>
+            <Typography variant="overline" color="primary.main" fontWeight={800}>
+              Espaço público
+            </Typography>
             <Chip
               icon={statusIcon}
               label={statusConfig.label}
@@ -141,13 +141,14 @@ const PracaCard = ({ praca, isEmpresa, onClick }) => {
           </Stack>
 
           {/* Action */}
-          <Chip
-            icon={<ViewIcon />}
-            label="Ver Detalhes"
-            size="small"
-            color="primary"
-            clickable
-          />
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1, gap: 1 }}>
+            <Typography variant="body2" color="primary.main" fontWeight={700}>
+              Ver detalhes
+            </Typography>
+            {isEmpresa && praca.status === 'DISPONIVEL' && (
+              <Chip icon={<HandshakeIcon />} label="Adotável" size="small" color="success" variant="outlined" />
+            )}
+          </Box>
         </CardContent>
       </CardActionArea>
     </Card>
@@ -157,13 +158,13 @@ const PracaCard = ({ praca, isEmpresa, onClick }) => {
 const PracaList = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
   const [pracas, setPracas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchNome, setSearchNome] = useState('');
   const [searchCidade, setSearchCidade] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   const { user } = useAuth(); 
 
@@ -171,9 +172,9 @@ const PracaList = () => {
   const isEmpresa = user && user.roles && user.roles.includes('ROLE_EMPRESA');
   const isUser = user && user.roles && user.roles.includes('ROLE_USER');
   
-  const fetchPracas = async (nome = '', cidade = '') => {
+  const fetchPracas = useCallback(async (nome = '', cidade = '', showLoading = false) => {
     try {
-      if (isInitialLoad) {
+      if (showLoading) {
         setLoading(true);
       }
       const params = new URLSearchParams();
@@ -183,22 +184,21 @@ const PracaList = () => {
       const queryString = params.toString();
       const endpoint = queryString ? `/api/pracas?${queryString}` : '/api/pracas';
       const response = await api.get(endpoint);
-      setPracas(response.data);
+      setPracas(response.data?.content || response.data);
       setError(null);
     } catch (err) {
       console.error("Erro ao buscar praças:", err);
       setError('Não foi possível carregar as praças.');
     } finally {
-      if (isInitialLoad) {
+      if (showLoading) {
         setLoading(false);
-        setIsInitialLoad(false);
       }
     }
-  };
+  }, []);
 
   useEffect(() => {
-    fetchPracas();
-  }, []);
+    fetchPracas('', '', true);
+  }, [fetchPracas]);
 
   useEffect(() => {
     const searchTimer = setTimeout(() => {
@@ -213,7 +213,7 @@ const PracaList = () => {
     }, 500);
 
     return () => clearTimeout(searchTimer);
-  }, [searchNome, searchCidade]);
+  }, [searchNome, searchCidade, fetchPracas]);
 
   const handleClearFilters = () => {
     setSearchNome('');
@@ -269,15 +269,17 @@ const PracaList = () => {
 
   return (
     <Box sx={{ minHeight: '100%' }}>
+      {location.state?.accessMessage && <Alert severity="info" sx={{ mb: 2 }}>{location.state.accessMessage}</Alert>}
       {/* Header */}
       <Paper
         elevation={0}
         sx={{
-          p: 3,
+          p: { xs: 2.5, md: 3.5 },
           mb: 3,
           background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
           color: 'white',
-          borderRadius: 3,
+          borderRadius: 4,
+          boxShadow: `0 18px 45px ${alpha(theme.palette.primary.dark, 0.18)}`,
         }}
       >
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
@@ -333,7 +335,7 @@ const PracaList = () => {
       </Paper>
 
       {/* Filtros */}
-      <Paper elevation={1} sx={{ p: 2, mb: 3, borderRadius: 2 }}>
+      <Paper elevation={0} sx={{ p: 2.5, mb: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
         <Grid container spacing={2} alignItems="center">
           <Grid size={{ xs: 12, md: 4 }}>
             <TextField

@@ -6,7 +6,10 @@ const IssueService = {
    * Lista todas as denúncias
    */
   findAll: () => {
-    return api.get('/api/issues');
+    return api.get('/api/issues').then((response) => ({
+      ...response,
+      data: response.data?.content || response.data,
+    }));
   },
 
   /**

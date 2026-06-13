@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Cadastro from '../../components/Cadastro/Cadastro';
 import localStorageService from '../../services/localStorageService';
+import { useNotification } from '../../context/NotificationContext';
 import './CadastroBairroPage.css';
 
 const CadastroBairroPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const { notifyError, notifySuccess } = useNotification();
   const [initialData, setInitialData] = useState(null);
   const [municipios, setMunicipios] = useState([]);
 
@@ -85,10 +87,10 @@ const CadastroBairroPage = () => {
       }
 
       localStorageService.saveItem('bairros', bairroData);
-      alert(id ? 'Bairro atualizado com sucesso!' : 'Bairro cadastrado com sucesso!');
+      notifySuccess(id ? 'Bairro atualizado com sucesso.' : 'Bairro cadastrado com sucesso.');
       navigate('/bairros');
     } catch (error) {
-      alert('Erro ao salvar bairro: ' + error.message);
+      notifyError(`Não foi possível salvar o bairro. ${error.message}`);
     }
   };
 

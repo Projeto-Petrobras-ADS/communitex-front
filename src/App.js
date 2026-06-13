@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useParams } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
@@ -11,6 +11,7 @@ import { PUBLIC_ROUTES, PROTECTED_ROUTES, ADMIN_ROUTES, USER_ROUTES } from './ro
 
 // Context
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { NotificationProvider } from './context/NotificationContext';
 
 // Layout
 import AppLayout from './components/Layout/AppLayout';
@@ -27,7 +28,6 @@ import PracaDetail from './components/Pracas/PracaDetail';
 import PracaForm from './components/Pracas/PracaForm';
 
 // Pages - Adoção
-import PropostaAdocaoForm from './components/Adocao/PropostaAdocaoForm';
 import MinhasPropostas from './components/Adocao/MinhasPropostas';
 import ManifestacaoInteresse from './components/Adocao/ManifestacaoInteresse';
 
@@ -40,6 +40,7 @@ import { CommunityMap, IssueList } from './components/CommunityMap';
 // Route Guards
 import AdminRoute from './components/Auth/AdminRoute';
 import UserRoute from './components/Auth/UserRoute';
+import EmpresaRoute from './components/Auth/EmpresaRoute';
 
 /**
  * Componente de Rota Protegida
@@ -59,6 +60,11 @@ const ProtectedLayout = ({ children }) => (
   </ProtectedRoute>
 );
 
+const LegacyProposalRedirect = () => {
+  const { id } = useParams();
+  return <Navigate to={`/pracas/${id}/manifestar-interesse`} replace />;
+};
+
 /**
  * Componente principal da aplicação
  */
@@ -66,8 +72,9 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <AuthProvider>
-        <BrowserRouter>
+      <NotificationProvider>
+        <AuthProvider>
+          <BrowserRouter>
           <Routes>
             {/* === ROTAS PÚBLICAS === */}
             <Route path={PUBLIC_ROUTES.HOME} element={<Landing />} />
@@ -78,9 +85,9 @@ function App() {
             {/* === ROTAS PROTEGIDAS === */}
             <Route path={PROTECTED_ROUTES.PRACAS} element={<ProtectedLayout><PracaList /></ProtectedLayout>} />
             <Route path={PROTECTED_ROUTES.PRACA_DETAIL} element={<ProtectedLayout><PracaDetail /></ProtectedLayout>} />
-            <Route path={PROTECTED_ROUTES.PRACA_MANIFESTAR} element={<ProtectedLayout><ManifestacaoInteresse /></ProtectedLayout>} />
-            <Route path={PROTECTED_ROUTES.PRACA_PROPOR} element={<ProtectedLayout><PropostaAdocaoForm /></ProtectedLayout>} />
-            <Route path={PROTECTED_ROUTES.MINHAS_PROPOSTAS} element={<ProtectedLayout><MinhasPropostas /></ProtectedLayout>} />
+            <Route path={PROTECTED_ROUTES.PRACA_MANIFESTAR} element={<EmpresaRoute><AppLayout><ManifestacaoInteresse /></AppLayout></EmpresaRoute>} />
+            <Route path={PROTECTED_ROUTES.PRACA_PROPOR} element={<EmpresaRoute><LegacyProposalRedirect /></EmpresaRoute>} />
+            <Route path={PROTECTED_ROUTES.MINHAS_PROPOSTAS} element={<EmpresaRoute><AppLayout><MinhasPropostas /></AppLayout></EmpresaRoute>} />
             <Route path={PROTECTED_ROUTES.DASHBOARD} element={<Navigate to={PROTECTED_ROUTES.PRACAS} replace />} />
 
             {/* === ROTAS DE ADMIN === */}
@@ -94,8 +101,9 @@ function App() {
             <Route path={PROTECTED_ROUTES.DENUNCIAS} element={<ProtectedLayout><CommunityMap /></ProtectedLayout>} />
             <Route path={PROTECTED_ROUTES.DENUNCIAS_LISTA} element={<ProtectedLayout><IssueList /></ProtectedLayout>} />
           </Routes>
-        </BrowserRouter>
-      </AuthProvider>
+          </BrowserRouter>
+        </AuthProvider>
+      </NotificationProvider>
     </ThemeProvider>
   );
 }

@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Cadastro from '../../components/Cadastro/Cadastro';
 import localStorageService from '../../services/localStorageService';
+import { useNotification } from '../../context/NotificationContext';
 import './CadastroUFPage.css';
 
 const CadastroUFPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const { notifyError, notifySuccess } = useNotification();
   const [initialData, setInitialData] = useState(null);
 
   useEffect(() => {
@@ -91,10 +93,10 @@ const CadastroUFPage = () => {
       };
 
       localStorageService.saveItem('ufs', ufData);
-      alert(id ? 'UF atualizada com sucesso!' : 'UF cadastrada com sucesso!');
+      notifySuccess(id ? 'UF atualizada com sucesso.' : 'UF cadastrada com sucesso.');
       navigate('/uf');
     } catch (error) {
-      alert('Erro ao salvar UF: ' + error.message);
+      notifyError(`Não foi possível salvar a UF. ${error.message}`);
     }
   };
 

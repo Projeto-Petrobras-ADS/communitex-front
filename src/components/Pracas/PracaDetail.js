@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import PracaService from '../../services/PracaService';
+import AdocaoService from '../../services/AdocaoService';
+import { resolveApiUrl } from '../../services/api';
 import HistoricoInteresses from '../Adocao/HistoricoInteresses';
 import {
   Box,
@@ -51,7 +53,8 @@ const PracaDetail = () => {
   const [praca, setPraca] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [sucesso, setSucesso] = useState(!!location.state?.successMessage);
+  const [sucesso] = useState(!!location.state?.successMessage);
+  const [propostaExistente, setPropostaExistente] = useState(null);
 
   const isEmpresa = user && user.roles && user.roles.includes('ROLE_EMPRESA');
 
@@ -79,6 +82,13 @@ const PracaDetail = () => {
 
     fetchPraca();
   }, [id]);
+
+  useEffect(() => {
+    if (!isEmpresa) return;
+    AdocaoService.listarMinhasPropostas()
+      .then((propostas) => setPropostaExistente(propostas.find((proposta) => String(proposta.pracaId) === String(id)) || null))
+      .catch(() => setPropostaExistente(null));
+  }, [id, isEmpresa]);
 
   const handleAbrirManifestacao = () => {
     navigate(`/pracas/${id}/manifestar-interesse`, {
@@ -212,7 +222,7 @@ const PracaDetail = () => {
                 <CardMedia
                   component="img"
                   height="400"
-                  image={praca.fotoUrl}
+                  image={resolveApiUrl(praca.fotoUrl)}
                   alt={praca.nome}
                   sx={{ objectFit: 'cover' }}
                 />
@@ -387,7 +397,7 @@ const PracaDetail = () => {
                       Sua empresa pode ser a próxima a cuidar deste espaço, melhorando o bairro e ganhando visibilidade.
                     </Typography>
                     <Button
-                      onClick={handleAbrirManifestacao}
+                      onClick={propostaExistente ? () => navigate('/minhas-propostas') : handleAbrirManifestacao}
                       variant="contained"
                       fullWidth
                       size="large"
@@ -404,7 +414,7 @@ const PracaDetail = () => {
                         transition: 'all 0.3s ease',
                       }}
                     >
-                      Manifestar Interesse
+                      {propostaExistente ? 'Acompanhar proposta' : 'Manifestar Interesse'}
                     </Button>
                   </>
                 ) : emProcesso ? (

@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { PROTECTED_ROUTES, ADMIN_ROUTES, PUBLIC_ROUTES } from '../../routes/paths';
+import { PROTECTED_ROUTES, ADMIN_ROUTES } from '../../routes/paths';
 import {
   AppBar,
   Box,
@@ -29,10 +29,10 @@ import {
   AdminPanelSettings as AdminIcon,
   Logout as LogoutIcon,
   ReportProblem as ReportIcon,
-  Person as PersonIcon,
   ChevronLeft as ChevronLeftIcon,
   ChevronRight as ChevronRightIcon,
   EnergySavingsLeaf as LeafIcon,
+  AddLocationAlt as AddLocationIcon,
 } from '@mui/icons-material';
 
 const drawerWidthExpanded = 264;
@@ -60,6 +60,7 @@ const AppLayout = ({ children }) => {
 
   const isAdmin = user?.roles?.includes('ROLE_ADMIN');
   const isEmpresa = user?.roles?.includes('ROLE_EMPRESA');
+  const isUser = user?.roles?.includes('ROLE_USER');
 
   const roleLabel = isAdmin ? 'Administrador' : isEmpresa ? 'Empresa' : 'Usuário';
   const roleColor = isAdmin ? 'secondary' : 'primary';
@@ -68,6 +69,7 @@ const AppLayout = ({ children }) => {
     { text: 'Ver Praças', icon: <ParkIcon />, path: PROTECTED_ROUTES.PRACAS, show: true },
     { text: 'Denúncias Comunitárias', icon: <ReportIcon />, path: PROTECTED_ROUTES.DENUNCIAS, show: true },
     { text: 'Minhas Propostas', icon: <AssignmentIcon />, path: PROTECTED_ROUTES.MINHAS_PROPOSTAS, show: isEmpresa },
+    { text: 'Cadastrar Praça', icon: <AddLocationIcon />, path: isAdmin ? ADMIN_ROUTES.NOVA_PRACA : '/user/pracas/nova', show: isAdmin || isUser },
     { text: 'Gerenciar Propostas', icon: <AdminIcon />, path: ADMIN_ROUTES.PROPOSTAS, show: isAdmin },
   ];
 
@@ -325,7 +327,7 @@ const AppLayout = ({ children }) => {
         component="main"
         sx={{
           flexGrow: 1,
-          p: isMapPage ? 0 : 3,
+          p: isMapPage ? 0 : { xs: 2, sm: 3, lg: 4 },
           width: { xs: '100%', md: `calc(100% - ${drawerWidth}px)` },
           ml: { xs: 0, md: `${drawerWidth}px` },
           bgcolor: isMapPage ? 'transparent' : 'background.default',

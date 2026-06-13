@@ -1,6 +1,11 @@
 // /src/hooks/useUserLocation.js
 import { useState, useEffect, useCallback } from 'react';
 
+const DEFAULT_POSITION = {
+  lat: -26.3045,
+  lng: -48.8487
+};
+
 /**
  * Hook customizado para obter a localização do usuário via Geolocation API
  * @param {Object} options - Opções de configuração
@@ -17,11 +22,6 @@ const useUserLocation = (options = {}) => {
   } = options;
 
   // Posição padrão: Centro de Joinville-SC
-  const defaultPosition = {
-    lat: -26.3045,
-    lng: -48.8487
-  };
-
   const [position, setPosition] = useState(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -30,7 +30,7 @@ const useUserLocation = (options = {}) => {
     if (!navigator.geolocation) {
       setError('Geolocalização não é suportada pelo seu navegador');
       setIsLoading(false);
-      setPosition(defaultPosition);
+      setPosition(DEFAULT_POSITION);
       return;
     }
 
@@ -61,7 +61,7 @@ const useUserLocation = (options = {}) => {
             errorMessage = 'Erro desconhecido ao obter localização.';
         }
         setError(errorMessage);
-        setPosition(defaultPosition);
+        setPosition(DEFAULT_POSITION);
         setIsLoading(false);
       },
       {
