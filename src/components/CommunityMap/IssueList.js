@@ -28,8 +28,6 @@ import {
   Grid,
   Alert,
   Fab,
-  useTheme,
-  alpha,
   Avatar,
   Stack,
   IconButton,
@@ -163,7 +161,6 @@ const IssueListCard = ({ issue, onClick }) => {
  * Componente principal de listagem de denúncias
  */
 const IssueList = () => {
-  const theme = useTheme();
   const navigate = useNavigate();
   const [issues, setIssues] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -284,17 +281,9 @@ const IssueList = () => {
         subtitle={`${issues.length} ocorrência${issues.length === 1 ? '' : 's'} registrada${issues.length === 1 ? '' : 's'} pela comunidade.`}
         icon={ReportIcon}
         actions={<Button
-            variant="contained"
-            color="inherit"
+            variant="outlined"
             startIcon={<MapIcon />}
             onClick={() => navigate('/denuncias')}
-            sx={{
-              bgcolor: 'white',
-              color: theme.palette.primary.main,
-              '&:hover': {
-                bgcolor: alpha('#fff', 0.9),
-              },
-            }}
           >
             Ver mapa
           </Button>}

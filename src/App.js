@@ -30,6 +30,7 @@ import PracaForm from './components/Pracas/PracaForm';
 // Pages - Adoção
 import MinhasPropostas from './components/Adocao/MinhasPropostas';
 import ManifestacaoInteresse from './components/Adocao/ManifestacaoInteresse';
+import RoleDashboard from './components/Dashboard/RoleDashboard';
 
 // Pages - Admin
 import GerenciamentoPropostas from './components/Admin/GerenciamentoPropostas';
@@ -88,7 +89,7 @@ function App() {
             <Route path={PROTECTED_ROUTES.PRACA_MANIFESTAR} element={<EmpresaRoute><AppLayout><ManifestacaoInteresse /></AppLayout></EmpresaRoute>} />
             <Route path={PROTECTED_ROUTES.PRACA_PROPOR} element={<EmpresaRoute><LegacyProposalRedirect /></EmpresaRoute>} />
             <Route path={PROTECTED_ROUTES.MINHAS_PROPOSTAS} element={<EmpresaRoute><AppLayout><MinhasPropostas /></AppLayout></EmpresaRoute>} />
-            <Route path={PROTECTED_ROUTES.DASHBOARD} element={<Navigate to={PROTECTED_ROUTES.PRACAS} replace />} />
+            <Route path={PROTECTED_ROUTES.DASHBOARD} element={<ProtectedLayout><RoleDashboard /></ProtectedLayout>} />
 
             {/* === ROTAS DE ADMIN === */}
             <Route path={ADMIN_ROUTES.NOVA_PRACA} element={<AdminRoute><AppLayout><PracaForm /></AppLayout></AdminRoute>} />

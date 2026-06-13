@@ -1,19 +1,7 @@
-/**
- * PageHeader - Componente de header reutilizável com gradiente sustentável
- */
 import React from 'react';
 import { Link } from 'react-router-dom';
-import {
-  Box,
-  Paper,
-  Typography,
-  Button,
-  Avatar,
-  Stack,
-  useTheme,
-  alpha,
-} from '@mui/material';
 import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
+import { Avatar, Box, Breadcrumbs, Button, Stack, Typography } from '@mui/material';
 
 const PageHeader = ({
   title,
@@ -23,87 +11,55 @@ const PageHeader = ({
   backLabel = 'Voltar',
   actions,
   chip,
+  breadcrumbs = [],
   children,
 }) => {
-  const theme = useTheme();
-  const renderedIcon = React.isValidElement(Icon) ? Icon : Icon ? React.createElement(Icon, { sx: { fontSize: 32 } }) : null;
+  const renderedIcon = React.isValidElement(Icon)
+    ? Icon
+    : Icon
+      ? React.createElement(Icon, { fontSize: 'small' })
+      : null;
 
   return (
-    <Paper
-      elevation={0}
-      sx={{
-        background: `linear-gradient(135deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.main} 100%)`,
-        color: 'white',
-        py: { xs: 3, md: 4 },
-        px: { xs: 2, md: 3 },
-        borderRadius: 3,
-        mb: 3,
-        position: 'relative',
-        overflow: 'hidden',
-        '&::after': {
-          content: '""',
-          position: 'absolute',
-          top: -40,
-          right: -40,
-          width: 200,
-          height: 200,
-          borderRadius: '50%',
-          bgcolor: alpha('#fff', 0.05),
-          pointerEvents: 'none',
-        },
-      }}
-    >
-      <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
-        {backLink && (
-          <Button
-            component={Link}
-            to={backLink}
-            startIcon={<ArrowBackIcon />}
-            sx={{
-              color: 'white',
-              mb: 2,
-              fontWeight: 600,
-              '&:hover': { bgcolor: alpha('#fff', 0.12) },
-            }}
-          >
-            {backLabel}
-          </Button>
-        )}
+    <Box sx={{ mb: 3 }}>
+      {(backLink || breadcrumbs.length > 0) && (
+        <Breadcrumbs sx={{ mb: 1.5, color: 'text.secondary' }}>
+          <Typography component={Link} to="/pracas" color="inherit" sx={{ textDecoration: 'none' }}>
+            Início
+          </Typography>
+          {breadcrumbs.map((item) => (
+            item.to
+              ? <Typography key={item.label} component={Link} to={item.to} color="inherit" sx={{ textDecoration: 'none' }}>{item.label}</Typography>
+              : <Typography key={item.label} color="text.primary">{item.label}</Typography>
+          ))}
+        </Breadcrumbs>
+      )}
 
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: { xs: 'column', md: 'row' },
-            justifyContent: 'space-between',
-            alignItems: { md: 'center' },
-            gap: 2,
-          }}
-        >
-          <Stack direction="row" alignItems="center" spacing={2}>
-            {Icon && (
-              <Avatar sx={{ bgcolor: alpha('#fff', 0.18), width: 60, height: 60 }}>
-                {renderedIcon}
-              </Avatar>
-            )}
-            <Box>
-              <Typography variant="h4" fontWeight={800}>
-                {title}
-              </Typography>
-              {subtitle && (
-                <Typography variant="body1" sx={{ opacity: 0.85, mt: 0.25 }}>
-                  {subtitle}
-                </Typography>
-              )}
-            </Box>
-          </Stack>
+      {backLink && (
+        <Button component={Link} to={backLink} startIcon={<ArrowBackIcon />} size="small" sx={{ mb: 1 }}>
+          {backLabel}
+        </Button>
+      )}
 
-          {actions && <Stack direction="row" spacing={2}>{actions}</Stack>}
-          {chip}
-        </Box>
-
-        {children}
-      </Box>
-    </Paper>
+      <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ sm: 'center' }} spacing={2}>
+        <Stack direction="row" alignItems="center" spacing={1.5}>
+          {renderedIcon && (
+            <Avatar variant="rounded" sx={{ bgcolor: 'primary.lighter', color: 'primary.main', width: 42, height: 42 }}>
+              {renderedIcon}
+            </Avatar>
+          )}
+          <Box>
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <Typography variant="h4">{title}</Typography>
+              {chip}
+            </Stack>
+            {subtitle && <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25 }}>{subtitle}</Typography>}
+          </Box>
+        </Stack>
+        {actions && <Stack direction="row" spacing={1} flexWrap="wrap">{actions}</Stack>}
+      </Stack>
+      {children}
+    </Box>
   );
 };
 

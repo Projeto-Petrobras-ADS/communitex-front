@@ -28,7 +28,7 @@ import {
 } from '@mui/icons-material';
 import AdocaoService from '../../services/AdocaoService';
 import { getPropostaStatusConfig } from '../../constants/statusConfig';
-import { EmptyState, LoadingState, PageHeader, StatusChip } from '../common';
+import { CrudToolbar, EmptyState, LoadingState, PageHeader, StatusChip } from '../common';
 
 const ProposalSummary = ({ proposta }) => {
   const statusConfig = getPropostaStatusConfig(proposta.status);
@@ -117,7 +117,8 @@ const MinhasPropostas = () => {
       )}
 
       {!error && propostas.length > 0 && (
-        <FormControl size="small" sx={{ minWidth: 220, mb: 3 }}>
+        <CrudToolbar resultCount={filteredPropostas.length} hasActiveFilters={Boolean(statusFilter)} onClear={() => setStatusFilter('')}>
+        <FormControl size="small" sx={{ minWidth: 220 }}>
           <InputLabel>Status</InputLabel>
           <Select value={statusFilter} label="Status" onChange={(event) => setStatusFilter(event.target.value)}>
             <MenuItem value="">Todos os status</MenuItem>
@@ -126,6 +127,7 @@ const MinhasPropostas = () => {
             ))}
           </Select>
         </FormControl>
+        </CrudToolbar>
       )}
 
       {!error && (propostas.length === 0 ? (

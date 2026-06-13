@@ -6,17 +6,17 @@ import { createTheme, alpha } from '@mui/material/styles';
 
 // --- Paleta Comunitária e Urbana ---
 const PRIMARY = {
-  lighter: '#dcefed',
-  light:   '#56a5a0',
-  main:    '#176b68',
-  dark:    '#0d4947',
+  lighter: '#e7f0ff',
+  light:   '#8ab4f8',
+  main:    '#2563a9',
+  dark:    '#173f73',
   contrastText: '#ffffff',
 };
 
 const SECONDARY = {
-  light: '#efaa91',
-  main:  '#d97757',
-  dark:  '#a94f35',
+  light: '#8fd5c2',
+  main:  '#27856f',
+  dark:  '#17604f',
   contrastText: '#ffffff',
 };
 
@@ -45,21 +45,21 @@ const theme = createTheme({
       light: '#d5e9f0',
     },
     background: {
-      default: '#f7f3ea',
-      paper: '#fffdf8',
+      default: '#f4f6f8',
+      paper: '#ffffff',
     },
     text: {
-      primary: '#263633',
-      secondary: '#60716d',
+      primary: '#1d2939',
+      secondary: '#667085',
     },
-    divider: '#e4ded2',
+    divider: '#e4e7ec',
   },
   typography: {
     fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
     h1: { fontWeight: 800, letterSpacing: '-1.5px' },
     h2: { fontWeight: 800, letterSpacing: '-1px' },
     h3: { fontWeight: 700 },
-    h4: { fontWeight: 700 },
+    h4: { fontWeight: 700, fontSize: '1.75rem', letterSpacing: '-0.4px' },
     h5: { fontWeight: 600 },
     h6: { fontWeight: 600 },
     subtitle1: { fontWeight: 500 },
@@ -67,7 +67,7 @@ const theme = createTheme({
     button: { fontWeight: 600, textTransform: 'none' },
   },
   shape: {
-    borderRadius: 12,
+    borderRadius: 8,
   },
   shadows: [
     'none',
@@ -118,15 +118,10 @@ const theme = createTheme({
         root: {
           textTransform: 'none',
           fontWeight: 600,
-          borderRadius: 10,
-          minHeight: 44,
+          borderRadius: 7,
+          minHeight: 38,
         },
-        containedPrimary: {
-          boxShadow: `0 4px 14px ${alpha(PRIMARY.main, 0.35)}`,
-          '&:hover': {
-            boxShadow: `0 6px 20px ${alpha(PRIMARY.main, 0.45)}`,
-          },
-        },
+        containedPrimary: { boxShadow: 'none' },
         containedSecondary: {
           color: '#1a2e1e',
           boxShadow: `0 4px 14px ${alpha(SECONDARY.main, 0.35)}`,
@@ -137,17 +132,19 @@ const theme = createTheme({
       },
     },
     MuiCard: {
+      defaultProps: { elevation: 0 },
       styleOverrides: {
         root: {
-          boxShadow: '0 8px 30px rgba(38,54,51,0.07)',
-          border: '1px solid #e8e1d6',
-          borderRadius: 16,
+          boxShadow: '0 1px 2px rgba(16,24,40,0.04)',
+          border: '1px solid #e4e7ec',
+          borderRadius: 8,
         },
       },
     },
     MuiPaper: {
+      defaultProps: { elevation: 0 },
       styleOverrides: {
-        rounded: { borderRadius: 16 },
+        rounded: { borderRadius: 8 },
       },
     },
     MuiChip: {
@@ -171,7 +168,7 @@ const theme = createTheme({
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
-          borderRadius: 10,
+          borderRadius: 7,
           '&:hover .MuiOutlinedInput-notchedOutline': {
             borderColor: PRIMARY.light,
           },
@@ -185,9 +182,12 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           '& .MuiTableCell-head': {
-            backgroundColor: alpha(PRIMARY.main, 0.07),
-            color: PRIMARY.dark,
+            backgroundColor: '#f9fafb',
+            color: '#475467',
             fontWeight: 700,
+            fontSize: '0.75rem',
+            textTransform: 'uppercase',
+            letterSpacing: '0.04em',
           },
         },
       },
@@ -213,7 +213,7 @@ const theme = createTheme({
     },
     MuiListItemButton: {
       styleOverrides: {
-        root: { borderRadius: 10, minHeight: 44 },
+        root: { borderRadius: 7, minHeight: 40 },
       },
     },
     MuiFocusVisible: {
