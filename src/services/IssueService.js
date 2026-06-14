@@ -63,6 +63,15 @@ const IssueService = {
     return api.patch(`/api/issues/${id}/status`, { status });
   },
 
+  findAtendimento: (id) => api.get(`/api/issues/${id}/atendimento`),
+  assumirAtendimento: (id, descricaoPlanejada) => api.post(`/api/issues/${id}/atendimento`, { descricaoPlanejada }),
+  iniciarAtendimento: (id) => api.patch(`/api/issues/${id}/atendimento/iniciar`),
+  concluirAtendimento: (id, payload) => api.post(`/api/issues/${id}/atendimento/concluir`, payload),
+  confirmarAtendimento: (id) => api.post(`/api/issues/${id}/atendimento/confirmar`),
+  contestarAtendimento: (id, motivo) => api.post(`/api/issues/${id}/atendimento/contestar`, { motivo }),
+  listarReparosDisponiveis: () => api.get('/api/atendimentos/disponiveis'),
+  listarMeusAtendimentos: () => api.get('/api/atendimentos/meus'),
+
   /**
    * Adiciona uma interação (comentário, apoio ou curtida) à denúncia
    * @param {number} issueId - ID da denúncia

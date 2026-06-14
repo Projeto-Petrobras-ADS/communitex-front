@@ -37,6 +37,7 @@ import GerenciamentoPropostas from './components/Admin/GerenciamentoPropostas';
 
 // Pages - Community Map
 import { CommunityMap, IssueList } from './components/CommunityMap';
+import ReparosEmpresa from './components/CommunityMap/ReparosEmpresa';
 
 // Route Guards
 import AdminRoute from './components/Auth/AdminRoute';
@@ -89,6 +90,7 @@ function App() {
             <Route path={PROTECTED_ROUTES.PRACA_MANIFESTAR} element={<EmpresaRoute><AppLayout><ManifestacaoInteresse /></AppLayout></EmpresaRoute>} />
             <Route path={PROTECTED_ROUTES.PRACA_PROPOR} element={<EmpresaRoute><LegacyProposalRedirect /></EmpresaRoute>} />
             <Route path={PROTECTED_ROUTES.MINHAS_PROPOSTAS} element={<EmpresaRoute><AppLayout><MinhasPropostas /></AppLayout></EmpresaRoute>} />
+            <Route path={PROTECTED_ROUTES.REPAROS} element={<EmpresaRoute><AppLayout><ReparosEmpresa /></AppLayout></EmpresaRoute>} />
             <Route path={PROTECTED_ROUTES.DASHBOARD} element={<ProtectedLayout><RoleDashboard /></ProtectedLayout>} />
 
             {/* === ROTAS DE ADMIN === */}

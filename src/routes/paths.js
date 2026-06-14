@@ -21,6 +21,7 @@ export const PROTECTED_ROUTES = {
   MINHAS_PROPOSTAS: '/minhas-propostas',
   DENUNCIAS: '/denuncias',
   DENUNCIAS_LISTA: '/denuncias/lista',
+  REPAROS: '/reparos',
 };
 
 // Rotas de Admin

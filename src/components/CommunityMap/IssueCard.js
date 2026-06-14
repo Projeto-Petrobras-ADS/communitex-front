@@ -6,6 +6,7 @@ import { getIssueTypeConfig, getIssueStatusConfig } from '../../constants';
 
 // Utilitários
 import { formatDateTime } from '../../utils';
+import AtendimentoActions from './AtendimentoActions';
 
 import {
   Box,
@@ -41,6 +42,7 @@ const IssueCard = ({
   onClose, 
   onSupport, 
   onViewDetails,
+  onRepairChanged,
   isCompact = false 
 }) => {
   const [isSupporting, setIsSupporting] = useState(false);
@@ -246,6 +248,8 @@ const IssueCard = ({
             {supportError}
           </Alert>
         )}
+
+        <AtendimentoActions issue={issue} onChanged={onRepairChanged} />
 
         {/* Seção de Comentários */}
         {issue.interacoes && issue.interacoes.length > 0 && (

@@ -66,6 +66,12 @@ const UsuarioDashboard = () => {
         ]}
       />
 
+      {dashboard.confirmacoesPendentes > 0 && (
+        <Alert severity="warning" action={<Button component={Link} to="/denuncias/lista">Ver denúncias</Button>}>
+          Você possui {dashboard.confirmacoesPendentes} reparo(s) aguardando sua confirmação.
+        </Alert>
+      )}
+
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
           <MetricCard label="Praças cadastradas" value={dashboard.pracasCadastradas} helper={`${dashboard.pracasAdotadas} adotada(s)`} icon={ParkOutlined} color="success" onClick={() => navigate('/pracas')} />
@@ -120,6 +126,8 @@ const UsuarioDashboard = () => {
                 [ThumbUpOutlined, 'Apoios realizados', dashboard.apoiosRealizados],
                 [CommentOutlined, 'Comentários realizados', dashboard.comentariosRealizados],
                 [MapOutlined, 'Denúncias em andamento', dashboard.denunciasEmAndamento],
+                [CheckCircleOutline, 'Reparos confirmados', dashboard.reparosConfirmados],
+                [ReportProblemOutlined, 'Reparos contestados', dashboard.reparosContestados],
               ].map(([Icon, label, value]) => (
                 <Stack key={label} direction="row" spacing={1.5} alignItems="center">
                   <Icon color="primary" />

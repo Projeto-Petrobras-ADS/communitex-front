@@ -8,6 +8,7 @@ import {
   AddLocationAltOutlined, AdminPanelSettings, Assignment, ChevronLeft, ChevronRight,
   DashboardOutlined, EnergySavingsLeaf, ExpandLess, ExpandMore, ListAltOutlined,
   Logout, MapOutlined, Menu, ParkOutlined, ReportProblemOutlined,
+  BuildOutlined,
 } from '@mui/icons-material';
 import { useAuth } from '../../context/AuthContext';
 import { ADMIN_ROUTES, PROTECTED_ROUTES } from '../../routes/paths';
@@ -58,6 +59,15 @@ const AppLayout = ({ children }) => {
       children: [
         { label: 'Visualizar denúncias', icon: ListAltOutlined, path: PROTECTED_ROUTES.DENUNCIAS_LISTA },
         { label: 'Mapa de denúncias', icon: MapOutlined, path: PROTECTED_ROUTES.DENUNCIAS },
+      ],
+    },
+    {
+      id: 'reparos',
+      label: 'Reparos',
+      icon: BuildOutlined,
+      show: isEmpresa,
+      children: [
+        { label: 'Gerenciar reparos', icon: BuildOutlined, path: PROTECTED_ROUTES.REPAROS },
       ],
     },
     {

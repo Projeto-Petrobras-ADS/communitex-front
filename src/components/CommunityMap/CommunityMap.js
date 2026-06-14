@@ -11,6 +11,7 @@ import IssueService from '../../services/IssueService';
 import IssueFormModal from './IssueFormModal';
 import IssueCard from './IssueCard';
 import { ISSUE_TYPES } from '../../constants/issueTypes';
+import { useAuth } from '../../context/AuthContext';
 
 import {
   Box,
@@ -142,6 +143,8 @@ const CommunityMap = () => {
   const theme = useTheme();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const canCreateIssue = user?.roles?.some((role) => role === 'ROLE_USER' || role === 'ROLE_ADMIN');
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [clickedPosition, setClickedPosition] = useState(null);
@@ -211,12 +214,14 @@ const CommunityMap = () => {
   }, [locationError]);
 
   const handleMapClick = useCallback((latlng) => {
+    if (!canCreateIssue) return;
+
     setClickedPosition({
       lat: latlng.lat,
       lng: latlng.lng
     });
     setIsModalOpen(true);
-  }, []);
+  }, [canCreateIssue]);
 
   const handleCloseModal = useCallback(() => {
     setIsModalOpen(false);
@@ -387,7 +392,7 @@ const CommunityMap = () => {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        <MapClickHandler onMapClick={handleMapClick} />
+        {canCreateIssue && <MapClickHandler onMapClick={handleMapClick} />}
         <MapCenterTracker onCenterChange={handleCenterChange} />
         <RecenterMap position={mapCenter} />
 
@@ -465,7 +470,7 @@ const CommunityMap = () => {
       </Paper>
 
       {/* Botão flutuante para nova denúncia */}
-      <Fab
+      {canCreateIssue && <Fab
         variant="extended"
         color="primary"
         onClick={() => {
@@ -487,7 +492,7 @@ const CommunityMap = () => {
       >
         <AddIcon />
         Denunciar
-      </Fab>
+      </Fab>}
 
       {/* Legenda/Info */}
       <Paper
@@ -510,7 +515,9 @@ const CommunityMap = () => {
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 0.5 }}>
           <TouchAppIcon fontSize="small" color="primary" />
           <Typography variant="body2" color="text.secondary">
-            Toque no mapa para denunciar
+            {canCreateIssue
+              ? 'Toque no mapa para denunciar'
+              : 'Selecione um marcador para acompanhar ou assumir o reparo'}
           </Typography>
         </Box>
         <Chip
@@ -523,13 +530,13 @@ const CommunityMap = () => {
       </Paper>
 
       {/* Modal de formulário */}
-      <IssueFormModal
+      {canCreateIssue && <IssueFormModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         onSuccess={handleIssueCreated}
         latitude={clickedPosition?.lat}
         longitude={clickedPosition?.lng}
-      />
+      />}
 
       {/* Card de detalhes da denúncia */}
       {selectedIssueCard && (
@@ -558,6 +565,11 @@ const CommunityMap = () => {
               issue={selectedIssueCard}
               onClose={handleCloseIssueCard}
               onSupport={handleSupport}
+              onRepairChanged={async () => {
+                refetchIssues();
+                const response = await IssueService.findByIdWithDetails(selectedIssueCard.id);
+                setSelectedIssueCard(response.data);
+              }}
             />
           </Paper>
         </Backdrop>

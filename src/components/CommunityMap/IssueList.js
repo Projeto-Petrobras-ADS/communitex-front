@@ -9,6 +9,7 @@ import { ISSUE_TYPES, ISSUE_STATUS, getIssueTypeConfig, getIssueStatusConfig } f
 // Utilitários
 import { formatDate } from '../../utils';
 import { EmptyState, LoadingState, PageHeader } from '../common';
+import { useAuth } from '../../context/AuthContext';
 
 import {
   Box,
@@ -162,6 +163,8 @@ const IssueListCard = ({ issue, onClick }) => {
  */
 const IssueList = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const canCreateIssue = user?.roles?.some((role) => role === 'ROLE_USER' || role === 'ROLE_ADMIN');
   const [issues, setIssues] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -392,10 +395,10 @@ const IssueList = () => {
           icon={ReportIcon}
           title="Nenhuma denúncia encontrada"
           description={hasActiveFilters ? 'Ajuste os filtros para ampliar os resultados.' : 'Ainda não há ocorrências registradas nesta área.'}
-          actionComponent={<Stack direction="row" spacing={2}>
+          actionComponent={(hasActiveFilters || canCreateIssue) ? <Stack direction="row" spacing={2}>
             {hasActiveFilters && <Button variant="outlined" onClick={clearFilters}>Limpar filtros</Button>}
-            <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/denuncias')}>Nova denúncia</Button>
-          </Stack>}
+            {canCreateIssue && <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/denuncias')}>Nova denúncia</Button>}
+          </Stack> : undefined}
         />
       ) : (
         <Grid container spacing={3}>
@@ -411,7 +414,7 @@ const IssueList = () => {
       )}
 
       {/* FAB para nova denúncia */}
-      <Fab
+      {canCreateIssue && <Fab
         color="primary"
         onClick={() => navigate('/denuncias')}
         sx={{
@@ -423,7 +426,7 @@ const IssueList = () => {
         }}
       >
         <AddIcon />
-      </Fab>
+      </Fab>}
     </Box>
   );
 };

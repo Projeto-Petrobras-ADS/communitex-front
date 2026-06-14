@@ -6,9 +6,9 @@ import {
   TableCell, TableContainer, TableHead, TableRow, Typography,
 } from '@mui/material';
 import {
-  ApartmentOutlined, ArrowForward, AssignmentOutlined, CampaignOutlined,
+  ApartmentOutlined, ArrowForward, AssignmentOutlined,
   CheckCircleOutline, DashboardOutlined, HandshakeOutlined, ParkOutlined,
-  ReportProblemOutlined, SquareFootOutlined, TrendingUpOutlined,
+  ReportProblemOutlined, SquareFootOutlined, TrendingUpOutlined, BuildOutlined,
 } from '@mui/icons-material';
 import DashboardService from '../../services/DashboardService';
 import { resolveApiUrl } from '../../services/api';
@@ -56,7 +56,7 @@ const EmpresaDashboard = () => {
     );
   }
 
-  const hasAttention = dashboard.propostasEmAnalise > 0 || dashboard.adocoesProximasDoFim > 0;
+  const hasAttention = dashboard.propostasEmAnalise > 0 || dashboard.adocoesProximasDoFim > 0 || dashboard.reparosAguardandoConfirmacao > 0 || dashboard.reparosContestados > 0;
 
   return (
     <Stack spacing={3}>
@@ -65,7 +65,7 @@ const EmpresaDashboard = () => {
         subtitle="Acompanhe oportunidades, propostas e o impacto da sua empresa na comunidade."
         icon={DashboardOutlined}
         actions={[
-          <Button key="issues" component={Link} to="/denuncias" variant="outlined" startIcon={<CampaignOutlined />}>Registrar denúncia</Button>,
+          <Button key="repairs" component={Link} to="/reparos" variant="outlined" startIcon={<BuildOutlined />}>Gerenciar reparos</Button>,
           <Button key="parks" component={Link} to="/pracas" variant="contained" startIcon={<ParkOutlined />}>Encontrar praça</Button>,
         ]}
       />
@@ -89,6 +89,8 @@ const EmpresaDashboard = () => {
         <Alert severity="warning" icon={<TrendingUpOutlined />}>
           <strong>Atenção:</strong> {dashboard.propostasEmAnalise > 0 && `${dashboard.propostasEmAnalise} proposta(s) aguardando análise. `}
           {dashboard.adocoesProximasDoFim > 0 && `${dashboard.adocoesProximasDoFim} adoção(ões) termina(m) nos próximos 30 dias.`}
+          {dashboard.reparosAguardandoConfirmacao > 0 && ` ${dashboard.reparosAguardandoConfirmacao} reparo(s) aguardando confirmação.`}
+          {dashboard.reparosContestados > 0 && ` ${dashboard.reparosContestados} reparo(s) contestado(s).`}
         </Alert>
       )}
 
@@ -131,6 +133,8 @@ const EmpresaDashboard = () => {
                 [SquareFootOutlined, 'Área total adotada', `${formatNumber(dashboard.areaTotalAdotadaM2 || 0, 0)} m²`],
                 [CheckCircleOutline, 'Denúncias resolvidas', dashboard.denunciasResolvidas],
                 [ApartmentOutlined, 'Apoios recebidos', dashboard.totalApoiosRecebidos],
+                [BuildOutlined, 'Reparos em andamento', dashboard.reparosEmAndamento],
+                [CheckCircleOutline, 'Reparos confirmados', dashboard.reparosConfirmados],
               ].map(([Icon, label, value]) => (
                 <Stack key={label} direction="row" alignItems="center" spacing={1.5}>
                   <Icon color="primary" />
