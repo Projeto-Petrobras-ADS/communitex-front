@@ -38,6 +38,7 @@ import {
   ReportProblem as ReportIcon,
   VolunteerActivism as VolunteerIcon,
 } from '@mui/icons-material';
+import ImpactDashboard from './ImpactDashboard';
 
 const Landing = () => {
   const theme = useTheme();
@@ -184,6 +185,8 @@ const Landing = () => {
           </Grid>
         </Container>
       </Box>
+
+      <ImpactDashboard />
 
       <Box component="section" sx={{ py: { xs: 8, md: 12 }, bgcolor: 'background.paper' }}>
         <Container maxWidth="lg">

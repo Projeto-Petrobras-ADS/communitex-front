@@ -20,3 +20,11 @@ test('carrega o dashboard agregado do cidadão', async () => {
   await expect(DashboardService.obterDashboardUsuario()).resolves.toEqual(dashboard);
   expect(api.get).toHaveBeenCalledWith('/api/dashboard/usuario');
 });
+
+test('carrega o dashboard publico agregado', async () => {
+  const dashboard = { totalPracas: 10, pracasAdotadas: 4 };
+  api.get.mockResolvedValue({ data: dashboard });
+
+  await expect(DashboardService.obterDashboardPublico()).resolves.toEqual(dashboard);
+  expect(api.get).toHaveBeenCalledWith('/api/dashboard/publico');
+});
