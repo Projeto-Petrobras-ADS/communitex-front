@@ -104,6 +104,7 @@ const Landing = () => {
                 <Typography variant="caption" color="text.secondary">Comunidade que cuida</Typography>
               </Box>
             </Stack>
+            <Button component={Link} to="/guia" sx={{ display: { xs: 'none', md: 'inline-flex' } }}>Como funciona</Button>
             <Button component={Link} to="/login" sx={{ display: { xs: 'none', sm: 'inline-flex' } }}>Entrar</Button>
             <Button variant="contained" onClick={(event) => setAnchorEl(event.currentTarget)} endIcon={<ArrowDropDownIcon />}>
               Participar
@@ -226,7 +227,10 @@ const Landing = () => {
               <Typography color="text.secondary" sx={{ mt: 2, lineHeight: 1.8 }}>
                 A tecnologia aproxima quem percebe um problema, quem pode ajudar e quem coordena o cuidado com a cidade.
               </Typography>
-              <Button component={Link} to="/register/pessoa-fisica" variant="contained" color="secondary" sx={{ mt: 4 }} endIcon={<ArrowForwardIcon />}>Começar a participar</Button>
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mt: 4 }}>
+                <Button component={Link} to="/guia" variant="contained" color="secondary" endIcon={<ArrowForwardIcon />}>Ver guia completo</Button>
+                <Button component={Link} to="/register/pessoa-fisica" variant="outlined">Começar a participar</Button>
+              </Stack>
             </Grid>
             <Grid item xs={12} md={7}>
               <Stack spacing={2}>

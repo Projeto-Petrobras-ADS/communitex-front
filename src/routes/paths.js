@@ -6,6 +6,7 @@
 // Rotas Públicas
 export const PUBLIC_ROUTES = {
   HOME: '/',
+  GUIDE: '/guia',
   LOGIN: '/login',
   REGISTER: '/register',
   REGISTER_PESSOA_FISICA: '/register/pessoa-fisica',

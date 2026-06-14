@@ -21,6 +21,7 @@ import Login from './components/Login/Login';
 import Register from './components/Register/Register';
 import RegisterPessoaFisica from './components/Register/RegisterPessoaFisica';
 import { Landing } from './components/Landing/Landing';
+import PublicGuide from './components/Guide/PublicGuide';
 
 // Pages - Praças
 import PracaList from './components/Pracas/PracaList';
@@ -80,6 +81,7 @@ function App() {
           <Routes>
             {/* === ROTAS PÚBLICAS === */}
             <Route path={PUBLIC_ROUTES.HOME} element={<Landing />} />
+            <Route path={PUBLIC_ROUTES.GUIDE} element={<PublicGuide />} />
             <Route path={PUBLIC_ROUTES.LOGIN} element={<Login />} />
             <Route path={PUBLIC_ROUTES.REGISTER} element={<Register />} />
             <Route path={PUBLIC_ROUTES.REGISTER_PESSOA_FISICA} element={<RegisterPessoaFisica />} />
