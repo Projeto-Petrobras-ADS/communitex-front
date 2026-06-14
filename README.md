@@ -57,7 +57,7 @@ Communitex é uma solução inovadora que facilita a conexão entre empresas int
 - ✅ Listagem de praças com filtros por status
 - ✅ Visualização detalhada de praças
 - ✅ Cadastro de novas praças (Admin/User)
-- ✅ Mapa de localização das praças
+- ✅ Marcação por ponto ou desenho do polígono da praça no mapa
 - ✅ Sistema de status (Disponível, Em Processo, Adotada)
 
 ### Sistema de Adoção

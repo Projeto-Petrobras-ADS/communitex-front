@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import PracaService from '../../services/PracaService';
+import PracaMap from './PracaMap';
 
 // Constantes centralizadas
 import { PRACA_STATUS_OPTIONS } from '../../constants';
@@ -64,12 +65,14 @@ const PracaSchema = Yup.object().shape({
   metragemM2: Yup.number()
     .typeError('Metragem deve ser um número (ex: 2500.5)')
     .positive('Metragem deve ser um valor positivo')
-    .nullable(),
+    .required('A metragem é obrigatória'),
 
   status: Yup.string()
     .oneOf(PRACA_STATUS_OPTIONS.map(opt => opt.value), 'Status inválido')
     .required('O status é obrigatório'),
-});
+}).test('location', 'Marque um ponto ou desenhe a area da praca', (values) => (
+  Boolean(values?.poligono) || (values?.latitude !== '' && values?.latitude != null && values?.longitude !== '' && values?.longitude != null)
+));
 
 const PracaForm = () => {
   const theme = useTheme();
@@ -79,6 +82,7 @@ const PracaForm = () => {
   const [foto, setFoto] = useState(null);
   const [fotoPreview, setFotoPreview] = useState('');
   const [fotoError, setFotoError] = useState('');
+  const [mapMode, setMapMode] = useState('point');
 
   useEffect(() => () => {
     if (fotoPreview) URL.revokeObjectURL(fotoPreview);
@@ -119,8 +123,9 @@ const PracaForm = () => {
       logradouro: values.logradouro || null,
       bairro: values.bairro || null,
       cidade: values.cidade,
-      latitude: values.latitude ? parseFloat(values.latitude) : null,
-      longitude: values.longitude ? parseFloat(values.longitude) : null,
+      latitude: values.latitude !== '' && values.latitude != null ? parseFloat(values.latitude) : null,
+      longitude: values.longitude !== '' && values.longitude != null ? parseFloat(values.longitude) : null,
+      poligono: values.poligono || null,
       descricao: values.descricao || null,
       metragemM2: values.metragemM2 ? parseFloat(values.metragemM2) : null,
       status: values.status,
@@ -190,6 +195,7 @@ const PracaForm = () => {
               cidade: '',
               latitude: '',
               longitude: '',
+              poligono: null,
               descricao: '',
               metragemM2: '',
               status: 'DISPONIVEL', 
@@ -197,7 +203,7 @@ const PracaForm = () => {
             validationSchema={PracaSchema}
             onSubmit={handleSubmit}
           >
-            {({ isSubmitting, values, errors, touched, handleChange, handleBlur }) => (
+            {({ isSubmitting, values, errors, touched, handleChange, handleBlur, setFieldValue }) => (
               <Form>
                 {serverError && (
                   <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
@@ -337,6 +343,22 @@ const PracaForm = () => {
                       }}
                     />
                   </Grid>
+                  <Grid size={{ xs: 12 }}>
+                    <PracaMap
+                      editable
+                      mode={mapMode}
+                      onModeChange={setMapMode}
+                      latitude={values.latitude}
+                      longitude={values.longitude}
+                      polygon={values.poligono}
+                      onChange={({ polygon, latitude, longitude, metragemM2 }) => {
+                        setFieldValue('poligono', polygon);
+                        setFieldValue('latitude', latitude ?? '');
+                        setFieldValue('longitude', longitude ?? '');
+                        if (mapMode === 'polygon' || polygon) setFieldValue('metragemM2', metragemM2 ? Number(metragemM2.toFixed(2)) : '');
+                      }}
+                    />
+                  </Grid>
                   <Grid size={{ xs: 12, sm: 6 }}>
                     <TextField
                       fullWidth
@@ -371,6 +393,7 @@ const PracaForm = () => {
                       helperText={touched.latitude && errors.latitude}
                       placeholder="-27.5969"
                       inputProps={{ step: 'any' }}
+                      slotProps={{ input: { readOnly: true } }}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
@@ -393,6 +416,7 @@ const PracaForm = () => {
                       helperText={touched.longitude && errors.longitude}
                       placeholder="-48.5495"
                       inputProps={{ step: 'any' }}
+                      slotProps={{ input: { readOnly: true } }}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
@@ -412,7 +436,7 @@ const PracaForm = () => {
                   <Grid size={{ xs: 12, sm: 6 }}>
                     <TextField
                       fullWidth
-                      label="Metragem (m²) (Opcional)"
+                      label={mapMode === 'polygon' ? 'Metragem calculada (m²)' : 'Metragem (m²)'}
                       name="metragemM2"
                       type="number"
                       value={values.metragemM2}
@@ -421,7 +445,9 @@ const PracaForm = () => {
                       error={touched.metragemM2 && Boolean(errors.metragemM2)}
                       helperText={touched.metragemM2 && errors.metragemM2}
                       placeholder="Ex: 2500.50"
+                      required
                       inputProps={{ step: '0.01' }}
+                      slotProps={{ input: { readOnly: mapMode === 'polygon' } }}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">

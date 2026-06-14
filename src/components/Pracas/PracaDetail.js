@@ -5,6 +5,7 @@ import PracaService from '../../services/PracaService';
 import AdocaoService from '../../services/AdocaoService';
 import { resolveApiUrl } from '../../services/api';
 import HistoricoInteresses from '../Adocao/HistoricoInteresses';
+import PracaMap from './PracaMap';
 import {
   Box,
   Card,
@@ -230,6 +231,15 @@ const PracaDetail = () => {
             )}
 
             {/* Informações */}
+            <Card elevation={0} sx={{ mb: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+              <CardContent sx={{ p: 3 }}>
+                <Typography variant="h6" fontWeight={700} sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                  <MapIcon color="primary" /> Localizacao no mapa
+                </Typography>
+                <PracaMap latitude={praca.latitude} longitude={praca.longitude} polygon={praca.poligono} />
+              </CardContent>
+            </Card>
+
             <Card elevation={0} sx={{ borderRadius: 3, border: '1px solid', borderColor: 'divider', mb: 3 }}>
               <CardContent sx={{ p: 3 }}>
                 <Typography variant="h6" fontWeight={700} sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>

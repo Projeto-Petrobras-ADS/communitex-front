@@ -68,9 +68,9 @@ Communitex é uma plataforma digital que conecta empresas, cidadãos e o poder p
   - Logradouro (opcional)
   - Bairro (opcional)
   - Cidade (obrigatório)
-  - Latitude (opcional, número decimal)
-  - Longitude (opcional, número decimal)
-  - Metragem em m² (opcional, número positivo)
+  - Localização por ponto ou polígono desenhado no mapa
+  - Latitude e longitude calculadas pelo polígono ou pelo ponto marcado
+  - Metragem em m² calculada pelo polígono ou informada no modo ponto
   - Status (obrigatório: DISPONIVEL, EM_PROCESSO, ADOTADA)
   - Descrição (opcional, máximo 1000 caracteres)
   - URL da Foto (opcional, deve ser URL válida)
