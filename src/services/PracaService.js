@@ -59,22 +59,17 @@ const PracaService = {
    * @param {Object} pracaData - Dados da praça
    * @returns {Promise} Praça cadastrada
    */
-  cadastrarPraca: async (pracaData) => {
+  cadastrarPraca: async (pracaData, arquivo = null) => {
     try {
-      const response = await api.post('/api/pracas', pracaData);
+      const formData = new FormData();
+      formData.append('dados', new Blob([JSON.stringify(pracaData)], { type: 'application/json' }));
+      if (arquivo) formData.append('arquivo', arquivo);
+      const response = await api.post('/api/pracas', formData);
       return response.data;
     } catch (error) {
       console.error('Erro ao cadastrar praça:', error);
       throw error;
     }
-  },
-
-  enviarFoto: async (id, arquivo) => {
-    const formData = new FormData();
-    formData.append('arquivo', arquivo);
-    await api.put(`/api/pracas/${id}/foto`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
   },
 
 };

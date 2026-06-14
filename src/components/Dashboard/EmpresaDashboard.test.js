@@ -27,15 +27,19 @@ test('exibe indicadores consolidados da empresa', async () => {
     propostasAprovadas: 2,
     propostasRejeitadas: 1,
     pracasAdotadas: 2,
-    denunciasRealizadas: 3,
-    denunciasResolvidas: 1,
-    totalApoiosRecebidos: 12,
     areaTotalAdotadaM2: 2500,
     taxaAprovacao: 50,
     adocoesProximasDoFim: 0,
+    totalReparos: 5,
+    reparosAtivos: 3,
+    reparosAceitos: 1,
+    reparosEmAndamento: 1,
+    reparosAguardandoConfirmacao: 1,
+    reparosConfirmados: 1,
+    reparosContestados: 1,
     pracasRecomendadas: [],
     propostasRecentes: [],
-    denunciasRecentes: [],
+    reparosRecentes: [],
   });
 
   render(
@@ -46,6 +50,8 @@ test('exibe indicadores consolidados da empresa', async () => {
 
   expect(await screen.findByText('Olá, Empresa Verde')).toBeInTheDocument();
   expect(screen.getByText('Praças disponíveis')).toBeInTheDocument();
-  expect(screen.getByText('Denúncias realizadas')).toBeInTheDocument();
+  expect(screen.getByText('Reparos ativos')).toBeInTheDocument();
+  expect(screen.queryByText('Denúncias realizadas')).not.toBeInTheDocument();
+  expect(screen.getByText('Reparos recentes')).toBeInTheDocument();
   expect(screen.getByText('2.500 m²')).toBeInTheDocument();
 });

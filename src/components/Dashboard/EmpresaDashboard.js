@@ -6,15 +6,24 @@ import {
   TableCell, TableContainer, TableHead, TableRow, Typography,
 } from '@mui/material';
 import {
-  ApartmentOutlined, ArrowForward, AssignmentOutlined,
+  ArrowForward, AssignmentOutlined,
   CheckCircleOutline, DashboardOutlined, HandshakeOutlined, ParkOutlined,
-  ReportProblemOutlined, SquareFootOutlined, TrendingUpOutlined, BuildOutlined,
+  SquareFootOutlined, TrendingUpOutlined, BuildOutlined, PendingActionsOutlined, ReportProblemOutlined,
 } from '@mui/icons-material';
 import DashboardService from '../../services/DashboardService';
 import { resolveApiUrl } from '../../services/api';
-import { getIssueStatusConfig, getPropostaStatusConfig } from '../../constants';
-import { formatDate, formatNumber } from '../../utils';
+import { getPropostaStatusConfig } from '../../constants';
+import { formatDate, formatDateTime, formatNumber } from '../../utils';
 import { EmptyState, LoadingState, MetricCard, PageHeader, StatusChip } from '../common';
+
+const REPAIR_STATUS = {
+  ACEITO: { label: 'Aceito', color: 'info' },
+  EM_ANDAMENTO: { label: 'Em andamento', color: 'primary' },
+  CONCLUIDO_PELA_EMPRESA: { label: 'Aguardando confirmação', color: 'warning' },
+  CONFIRMADO_PELO_AUTOR: { label: 'Confirmado', color: 'success' },
+  CONTESTADO: { label: 'Contestado', color: 'error' },
+  CANCELADO: { label: 'Cancelado', color: 'default' },
+};
 
 const SectionHeader = ({ title, actionLabel, to }) => (
   <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
@@ -81,7 +90,7 @@ const EmpresaDashboard = () => {
           <MetricCard label="Praças adotadas" value={dashboard.pracasAdotadas} helper={`${formatNumber(dashboard.areaTotalAdotadaM2 || 0, 0)} m² cuidados`} icon={HandshakeOutlined} color="primary" onClick={() => navigate('/minhas-propostas')} />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-          <MetricCard label="Denúncias realizadas" value={dashboard.denunciasRealizadas} helper={`${dashboard.denunciasResolvidas} resolvidas`} icon={ReportProblemOutlined} color="error" onClick={() => navigate('/denuncias/lista')} />
+          <MetricCard label="Reparos ativos" value={dashboard.reparosAtivos} helper={`${dashboard.reparosAguardandoConfirmacao} aguardando confirmação`} icon={BuildOutlined} color="error" onClick={() => navigate('/reparos')} />
         </Grid>
       </Grid>
 
@@ -131,10 +140,12 @@ const EmpresaDashboard = () => {
               <Divider />
               {[
                 [SquareFootOutlined, 'Área total adotada', `${formatNumber(dashboard.areaTotalAdotadaM2 || 0, 0)} m²`],
-                [CheckCircleOutline, 'Denúncias resolvidas', dashboard.denunciasResolvidas],
-                [ApartmentOutlined, 'Apoios recebidos', dashboard.totalApoiosRecebidos],
+                [BuildOutlined, 'Total de reparos assumidos', dashboard.totalReparos],
+                [PendingActionsOutlined, 'Reparos aceitos', dashboard.reparosAceitos],
                 [BuildOutlined, 'Reparos em andamento', dashboard.reparosEmAndamento],
+                [PendingActionsOutlined, 'Aguardando confirmação', dashboard.reparosAguardandoConfirmacao],
                 [CheckCircleOutline, 'Reparos confirmados', dashboard.reparosConfirmados],
+                [ReportProblemOutlined, 'Reparos contestados', dashboard.reparosContestados],
               ].map(([Icon, label, value]) => (
                 <Stack key={label} direction="row" alignItems="center" spacing={1.5}>
                   <Icon color="primary" />
@@ -173,16 +184,22 @@ const EmpresaDashboard = () => {
 
         <Grid size={{ xs: 12, lg: 5 }}>
           <Paper variant="outlined" sx={{ p: 2.5 }}>
-            <SectionHeader title="Denúncias recentes" actionLabel="Ver denúncias" to="/denuncias/lista" />
-            {dashboard.denunciasRecentes.length === 0 ? (
-              <Typography color="text.secondary">Nenhuma denúncia registrada pelo representante da empresa.</Typography>
+            <SectionHeader title="Reparos recentes" actionLabel="Gerenciar reparos" to="/reparos" />
+            {dashboard.reparosRecentes.length === 0 ? (
+              <Typography color="text.secondary">Sua empresa ainda não assumiu reparos comunitários.</Typography>
             ) : (
               <List disablePadding>
-                {dashboard.denunciasRecentes.map((denuncia, index) => (
-                  <React.Fragment key={denuncia.id}>
+                {dashboard.reparosRecentes.map((reparo, index) => (
+                  <React.Fragment key={reparo.id}>
                     {index > 0 && <Divider />}
-                    <ListItem disableGutters secondaryAction={<StatusChip status={denuncia.status} config={getIssueStatusConfig(denuncia.status)} />}>
-                      <ListItemText primary={denuncia.titulo} secondary={`${formatDate(denuncia.dataCriacao)} • ${denuncia.totalApoios || 0} apoio(s)`} primaryTypographyProps={{ fontWeight: 700, variant: 'body2' }} />
+                    <ListItem
+                      disableGutters
+                      component={Link}
+                      to={`/denuncias?issueId=${reparo.denunciaId}`}
+                      secondaryAction={<StatusChip status={reparo.status} config={REPAIR_STATUS[reparo.status]} />}
+                      sx={{ color: 'inherit', textDecoration: 'none', pr: 14 }}
+                    >
+                      <ListItemText primary={reparo.denunciaTitulo} secondary={`Assumido em ${formatDateTime(reparo.dataAceite)}`} primaryTypographyProps={{ fontWeight: 700, variant: 'body2' }} />
                     </ListItem>
                   </React.Fragment>
                 ))}

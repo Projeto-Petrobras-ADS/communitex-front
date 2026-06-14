@@ -7,6 +7,7 @@ import { getIssueTypeConfig, getIssueStatusConfig } from '../../constants';
 // Utilitários
 import { formatDateTime } from '../../utils';
 import AtendimentoActions from './AtendimentoActions';
+import { resolveApiUrl } from '../../services/api';
 
 import {
   Box,
@@ -185,7 +186,7 @@ const IssueCard = ({
       {issue.fotoUrl && (
         <Box
           component="img"
-          src={issue.fotoUrl}
+          src={resolveApiUrl(issue.fotoUrl)}
           alt={issue.titulo}
           sx={{
             width: '100%',

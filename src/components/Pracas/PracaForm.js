@@ -122,16 +122,12 @@ const PracaForm = () => {
       latitude: values.latitude ? parseFloat(values.latitude) : null,
       longitude: values.longitude ? parseFloat(values.longitude) : null,
       descricao: values.descricao || null,
-      fotoUrl: null,
       metragemM2: values.metragemM2 ? parseFloat(values.metragemM2) : null,
       status: values.status,
     };
 
     try {
-      const pracaCriada = await PracaService.cadastrarPraca(pracaRequestDTO);
-      if (foto) {
-        await PracaService.enviarFoto(pracaCriada.id, foto);
-      }
+      await PracaService.cadastrarPraca(pracaRequestDTO, foto);
 
       setSubmitting(false);
       notifySuccess('Praça cadastrada com sucesso.');

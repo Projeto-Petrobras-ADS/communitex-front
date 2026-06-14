@@ -48,10 +48,12 @@ const IssueService = {
    * @param {number} issueData.latitude - Latitude
    * @param {number} issueData.longitude - Longitude
    * @param {string} issueData.tipo - Tipo (ILUMINACAO, BURACO, LIXO, PODA_ARVORE, VAZAMENTO, PICHACAO, CALCADA_DANIFICADA, SINALIZACAO, OUTRO)
-   * @param {string} [issueData.fotoUrl] - URL da foto (opcional)
    */
-  create: (issueData) => {
-    return api.post('/api/issues', issueData);
+  create: (issueData, arquivo = null) => {
+    const formData = new FormData();
+    formData.append('dados', new Blob([JSON.stringify(issueData)], { type: 'application/json' }));
+    if (arquivo) formData.append('arquivo', arquivo);
+    return api.post('/api/issues', formData);
   },
 
   /**
@@ -66,7 +68,12 @@ const IssueService = {
   findAtendimento: (id) => api.get(`/api/issues/${id}/atendimento`),
   assumirAtendimento: (id, descricaoPlanejada) => api.post(`/api/issues/${id}/atendimento`, { descricaoPlanejada }),
   iniciarAtendimento: (id) => api.patch(`/api/issues/${id}/atendimento/iniciar`),
-  concluirAtendimento: (id, payload) => api.post(`/api/issues/${id}/atendimento/concluir`, payload),
+  concluirAtendimento: (id, descricaoReparo, arquivo = null) => {
+    const formData = new FormData();
+    formData.append('dados', new Blob([JSON.stringify({ descricaoReparo })], { type: 'application/json' }));
+    if (arquivo) formData.append('arquivo', arquivo);
+    return api.post(`/api/issues/${id}/atendimento/concluir`, formData);
+  },
   confirmarAtendimento: (id) => api.post(`/api/issues/${id}/atendimento/confirmar`),
   contestarAtendimento: (id, motivo) => api.post(`/api/issues/${id}/atendimento/contestar`, { motivo }),
   listarReparosDisponiveis: () => api.get('/api/atendimentos/disponiveis'),

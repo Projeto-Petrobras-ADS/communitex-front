@@ -3,8 +3,9 @@ import {
   Alert, Box, Button, CircularProgress, Dialog, DialogActions, DialogContent,
   DialogTitle, Stack, TextField, Typography,
 } from '@mui/material';
-import { BuildOutlined, CheckCircleOutline, PlayArrowOutlined, ReportProblemOutlined } from '@mui/icons-material';
+import { BuildOutlined, CheckCircleOutline, PlayArrowOutlined, ReportProblemOutlined, PhotoCameraOutlined, DeleteOutline } from '@mui/icons-material';
 import IssueService from '../../services/IssueService';
+import { resolveApiUrl } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { useNotification } from '../../context/NotificationContext';
 
@@ -16,7 +17,9 @@ const AtendimentoActions = ({ issue, onChanged }) => {
   const [submitting, setSubmitting] = useState(false);
   const [dialog, setDialog] = useState(null);
   const [text, setText] = useState('');
-  const [fotoUrl, setFotoUrl] = useState('');
+  const [foto, setFoto] = useState(null);
+  const [fotoPreview, setFotoPreview] = useState('');
+  const [fotoError, setFotoError] = useState('');
   const roles = user?.roles || [];
   const isEmpresa = roles.includes('ROLE_EMPRESA');
 
@@ -42,7 +45,10 @@ const AtendimentoActions = ({ issue, onChanged }) => {
       notifySuccess(successMessage);
       setDialog(null);
       setText('');
-      setFotoUrl('');
+      if (fotoPreview) URL.revokeObjectURL(fotoPreview);
+      setFoto(null);
+      setFotoPreview('');
+      setFotoError('');
       await load();
       onChanged?.();
     } catch (err) {
@@ -54,7 +60,7 @@ const AtendimentoActions = ({ issue, onChanged }) => {
 
   const submitDialog = () => {
     if (dialog === 'assumir') return run(() => IssueService.assumirAtendimento(issue.id, text), 'Reparo assumido pela sua empresa.');
-    if (dialog === 'concluir') return run(() => IssueService.concluirAtendimento(issue.id, { descricaoReparo: text, fotoDepoisUrl: fotoUrl || null }), 'Conclusão enviada para confirmação do autor.');
+    if (dialog === 'concluir') return run(() => IssueService.concluirAtendimento(issue.id, text, foto), 'Conclusão enviada para confirmação do autor.');
     if (dialog === 'contestar') return run(() => IssueService.contestarAtendimento(issue.id, text), 'Reparo contestado e encaminhado para revisão.');
   };
 
@@ -66,7 +72,7 @@ const AtendimentoActions = ({ issue, onChanged }) => {
         <Alert severity={atendimento.status === 'CONTESTADO' ? 'error' : atendimento.status === 'CONFIRMADO_PELO_AUTOR' ? 'success' : 'info'} sx={{ mb: 1.5 }}>
           <Typography variant="body2" fontWeight={700}>{atendimento.empresaNome}</Typography>
           <Typography variant="body2">{atendimento.descricaoReparo || atendimento.descricaoPlanejada}</Typography>
-          {atendimento.fotoDepoisUrl && <Button href={atendimento.fotoDepoisUrl} target="_blank" size="small">Ver evidência</Button>}
+          {atendimento.fotoDepoisUrl && <Button href={resolveApiUrl(atendimento.fotoDepoisUrl)} target="_blank" size="small">Ver evidência</Button>}
           {atendimento.motivoContestacao && <Typography variant="caption" display="block">Contestação: {atendimento.motivoContestacao}</Typography>}
         </Alert>
       )}
@@ -98,7 +104,40 @@ const AtendimentoActions = ({ issue, onChanged }) => {
             value={text} onChange={(event) => setText(event.target.value)}
             helperText="Mínimo de 10 caracteres"
           />
-          {dialog === 'concluir' && <TextField fullWidth label="URL da evidência fotográfica (opcional)" value={fotoUrl} onChange={(event) => setFotoUrl(event.target.value)} sx={{ mt: 2 }} />}
+          {dialog === 'concluir' && (
+            <Stack spacing={1.5} sx={{ mt: 2 }}>
+              {fotoPreview && <Box component="img" src={fotoPreview} alt="Pré-visualização da evidência" sx={{ width: '100%', maxHeight: 220, objectFit: 'cover', borderRadius: 2 }} />}
+              <Stack direction="row" spacing={1}>
+                <Button component="label" variant="outlined" startIcon={<PhotoCameraOutlined />}>
+                  {foto ? 'Trocar evidência' : 'Anexar evidência'}
+                  <input hidden type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => {
+                    const arquivo = event.target.files?.[0];
+                    event.target.value = '';
+                    if (!arquivo) return;
+                    if (!['image/jpeg', 'image/png', 'image/webp'].includes(arquivo.type)) {
+                      setFotoError('Envie uma imagem JPEG, PNG ou WebP.');
+                      return;
+                    }
+                    if (arquivo.size > 5 * 1024 * 1024) {
+                      setFotoError('A imagem deve ter no máximo 5 MB.');
+                      return;
+                    }
+                    if (fotoPreview) URL.revokeObjectURL(fotoPreview);
+                    setFoto(arquivo);
+                    setFotoPreview(URL.createObjectURL(arquivo));
+                    setFotoError('');
+                  }} />
+                </Button>
+                {foto && <Button color="error" startIcon={<DeleteOutline />} onClick={() => {
+                  if (fotoPreview) URL.revokeObjectURL(fotoPreview);
+                  setFoto(null);
+                  setFotoPreview('');
+                  setFotoError('');
+                }}>Remover</Button>}
+              </Stack>
+              {fotoError && <Alert severity="error">{fotoError}</Alert>}
+            </Stack>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDialog(null)} disabled={submitting}>Cancelar</Button>
