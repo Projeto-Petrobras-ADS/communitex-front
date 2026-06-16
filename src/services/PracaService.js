@@ -14,7 +14,7 @@ const PracaService = {
   listarPracas: async () => {
     try {
       const response = await api.get('/api/pracas');
-      return response.data;
+      return response.data?.content || response.data;
     } catch (error) {
       console.error('Erro ao listar praças:', error);
       throw error;
@@ -59,9 +59,12 @@ const PracaService = {
    * @param {Object} pracaData - Dados da praça
    * @returns {Promise} Praça cadastrada
    */
-  cadastrarPraca: async (pracaData) => {
+  cadastrarPraca: async (pracaData, arquivo = null) => {
     try {
-      const response = await api.post('/api/pracas', pracaData);
+      const formData = new FormData();
+      formData.append('dados', new Blob([JSON.stringify(pracaData)], { type: 'application/json' }));
+      if (arquivo) formData.append('arquivo', arquivo);
+      const response = await api.post('/api/pracas', formData);
       return response.data;
     } catch (error) {
       console.error('Erro ao cadastrar praça:', error);
@@ -69,37 +72,6 @@ const PracaService = {
     }
   },
 
-  /**
-   * Registra interesse de adoção de uma praça
-   * POST /api/adocao/interesse
-   * @param {Object} interesseData - Dados do interesse
-   *        { pracaId, empresaId, proposta }
-   * @returns {Promise} Resposta do registro de interesse
-   */
-  registrarInteresse: async (interesseData) => {
-    try {
-      const response = await api.post('/api/adocao/interesse', interesseData);
-      return response.data;
-    } catch (error) {
-      console.error('Erro ao registrar interesse:', error);
-      throw error;
-    }
-  },
-
-  /**
-   * Busca minhas adoções (para usuário logado)
-   * GET /api/minhas-adocoes
-   * @returns {Promise} Array de adoções do usuário
-   */
-  buscarMinhasAdocoes: async () => {
-    try {
-      const response = await api.get('/api/minhas-adocoes');
-      return response.data;
-    } catch (error) {
-      console.error('Erro ao buscar minhas adoções:', error);
-      throw error;
-    }
-  },
 };
 
 export default PracaService;

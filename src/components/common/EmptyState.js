@@ -2,7 +2,7 @@
  * EmptyState - Componente para estados vazios
  */
 import React from 'react';
-import { Box, Paper, Typography, Button, Stack, Avatar, useTheme, alpha } from '@mui/material';
+import { Paper, Typography, Button, Stack, Avatar, useTheme, alpha } from '@mui/material';
 import { Nature as NatureIcon } from '@mui/icons-material';
 
 const EmptyState = ({
@@ -15,6 +15,11 @@ const EmptyState = ({
   actionComponent,
 }) => {
   const theme = useTheme();
+  const renderedIcon = React.isValidElement(Icon)
+    ? Icon
+    : Icon
+      ? React.createElement(Icon, { sx: { fontSize: 40 } })
+      : null;
 
   return (
     <Paper
@@ -38,7 +43,7 @@ const EmptyState = ({
           mb: 3,
         }}
       >
-        <Icon sx={{ fontSize: 40 }} />
+        {renderedIcon}
       </Avatar>
 
       <Typography variant="h5" fontWeight={700} color="text.primary" gutterBottom>

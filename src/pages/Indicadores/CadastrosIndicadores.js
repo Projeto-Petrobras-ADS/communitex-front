@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Cadastro from '../../components/Cadastro/Cadastro';
 import localStorageService from '../../services/localStorageService';
+import { useNotification } from '../../context/NotificationContext';
 import './CadastroIndicadores.css';
 
 const CadastroIndicadores = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const { notifyError, notifySuccess } = useNotification();
   const [comunidades, setComunidades] = useState([]);
   const [initialData, setInitialData] = useState(null);
 
@@ -91,10 +93,10 @@ const CadastroIndicadores = () => {
         taxaDesemprego: formData.taxaDesemprego ? parseFloat(formData.taxaDesemprego) : null
       };
       localStorageService.saveItem('indicadores', indicadorData);
-      alert(id ? 'Indicador atualizado com sucesso!' : 'Indicador cadastrado com sucesso!');
+      notifySuccess(id ? 'Indicador atualizado com sucesso.' : 'Indicador cadastrado com sucesso.');
       navigate('/indicadores');
     } catch (error) {
-      alert('Erro ao salvar indicador: ' + error.message);
+      notifyError(`Não foi possível salvar o indicador. ${error.message}`);
     }
   };
 

@@ -4,9 +4,11 @@ import * as XLSX from 'xlsx';
 import './ExportButton.css';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { useNotification } from '../../context/NotificationContext';
 
 
 const ExportButton = ({ data, indicator, region, year, subgroup }) => {
+  const { notifyError, notifySuccess } = useNotification();
   const [exportOptions, setExportOptions] = useState({
     includeChart: true,
     includeData: true,
@@ -86,10 +88,11 @@ const ExportButton = ({ data, indicator, region, year, subgroup }) => {
       doc.text('Gerado automaticamente - Sistema de Relatórios', 105, 285, { align: 'center' });
 
       doc.save(`relatorio_${indicator}_${year}.pdf`);
+      notifySuccess('Relatório PDF gerado com sucesso.');
 
     } catch (err) {
       console.error('Erro ao gerar PDF:', err);
-      alert('Erro na geração do PDF: ' + err.message);
+      notifyError(`Não foi possível gerar o PDF. ${err.message}`);
     }
   };
 
@@ -121,9 +124,10 @@ const ExportButton = ({ data, indicator, region, year, subgroup }) => {
       XLSX.utils.book_append_sheet(workbook, wsMeta, 'Metadados');
 
       XLSX.writeFile(workbook, `dados_${indicator}_${year}.xlsx`);
+      notifySuccess('Arquivo Excel gerado com sucesso.');
     } catch (err) {
       console.error('Erro ao gerar Excel:', err);
-      alert('Erro ao gerar o Excel. Verifique se os dados estão disponíveis.');
+      notifyError('Não foi possível gerar o Excel. Verifique se os dados estão disponíveis.');
     } finally {
       setShowExportModal(false);
     }

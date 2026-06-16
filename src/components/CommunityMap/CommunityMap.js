@@ -10,7 +10,11 @@ import useIssuesMap from '../../hooks/useIssuesMap';
 import IssueService from '../../services/IssueService';
 import IssueFormModal from './IssueFormModal';
 import IssueCard from './IssueCard';
+import HeatLayer from './HeatLayer';
+import { filterMapIssues, issuesToHeatPoints, PERIOD_OPTIONS } from './issueMapFilters';
 import { ISSUE_TYPES } from '../../constants/issueTypes';
+import { ISSUE_STATUS } from '../../constants';
+import { useAuth } from '../../context/AuthContext';
 
 import {
   Box,
@@ -22,6 +26,13 @@ import {
   Alert,
   Fab,
   Chip,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Stack,
+  ToggleButton,
+  ToggleButtonGroup,
   useTheme,
   alpha,
   Backdrop,
@@ -33,6 +44,9 @@ import {
   List as ListIcon,
   TouchApp as TouchAppIcon,
   Report as ReportIcon,
+  FilterAlt as FilterIcon,
+  Layers as LayersIcon,
+  Room as MarkerIcon,
 } from '@mui/icons-material';
 
 // Fix para ícones do Leaflet em React
@@ -142,6 +156,8 @@ const CommunityMap = () => {
   const theme = useTheme();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const canCreateIssue = user?.roles?.some((role) => role === 'ROLE_USER' || role === 'ROLE_ADMIN');
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [clickedPosition, setClickedPosition] = useState(null);
@@ -149,6 +165,8 @@ const CommunityMap = () => {
   const [selectedIssueCard, setSelectedIssueCard] = useState(null);
   const [showLocationError, setShowLocationError] = useState(false);
   const [initialLoadDone, setInitialLoadDone] = useState(false);
+  const [viewMode, setViewMode] = useState('markers');
+  const [filters, setFilters] = useState({ type: '', status: '', period: 'all' });
 
   const { position: userPosition, error: locationError, isLoading: locationLoading } = useUserLocation();
   
@@ -211,12 +229,14 @@ const CommunityMap = () => {
   }, [locationError]);
 
   const handleMapClick = useCallback((latlng) => {
+    if (!canCreateIssue) return;
+
     setClickedPosition({
       lat: latlng.lat,
       lng: latlng.lng
     });
     setIsModalOpen(true);
-  }, []);
+  }, [canCreateIssue]);
 
   const handleCloseModal = useCallback(() => {
     setIsModalOpen(false);
@@ -268,9 +288,15 @@ const CommunityMap = () => {
     }
   }, [userPosition]);
 
+  const filteredIssues = useMemo(() => filterMapIssues(issues, filters), [issues, filters]);
+  const heatPoints = useMemo(() => issuesToHeatPoints(filteredIssues), [filteredIssues]);
+  const hasActiveFilters = Boolean(filters.type || filters.status || filters.period !== 'all');
+  const updateFilter = (name) => (event) => setFilters((current) => ({ ...current, [name]: event.target.value }));
+  const clearFilters = () => setFilters({ type: '', status: '', period: 'all' });
+
   // Memoiza os marcadores para evitar re-renders
   const issueMarkers = useMemo(() => {
-    return issues.map((issue) => (
+    return filteredIssues.map((issue) => (
       <Marker
         key={issue.id}
         position={[issue.latitude, issue.longitude]}
@@ -280,7 +306,7 @@ const CommunityMap = () => {
         }}
       />
     ));
-  }, [issues, handleMarkerClick]);
+  }, [filteredIssues, handleMarkerClick]);
 
   // Loading state
   if (locationLoading) {
@@ -387,7 +413,7 @@ const CommunityMap = () => {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        <MapClickHandler onMapClick={handleMapClick} />
+        {canCreateIssue && <MapClickHandler onMapClick={handleMapClick} />}
         <MapCenterTracker onCenterChange={handleCenterChange} />
         <RecenterMap position={mapCenter} />
 
@@ -402,9 +428,74 @@ const CommunityMap = () => {
           </Marker>
         )}
 
-        {/* Marcadores de denúncias */}
-        {issueMarkers}
+        {viewMode === 'markers' ? issueMarkers : <HeatLayer points={heatPoints} />}
       </MapContainer>
+
+      <Paper
+        elevation={3}
+        sx={{
+          position: 'absolute',
+          top: 16,
+          right: 16,
+          zIndex: 1000,
+          width: { xs: 'calc(100% - 32px)', sm: 300 },
+          p: 2,
+          borderRadius: 3,
+          bgcolor: alpha(theme.palette.background.paper, 0.96),
+          backdropFilter: 'blur(10px)',
+        }}
+      >
+        <Stack spacing={1.5}>
+          <ToggleButtonGroup
+            exclusive
+            fullWidth
+            size="small"
+            value={viewMode}
+            onChange={(_, nextMode) => nextMode && setViewMode(nextMode)}
+          >
+            <ToggleButton value="markers"><MarkerIcon fontSize="small" sx={{ mr: 0.5 }} /> Marcadores</ToggleButton>
+            <ToggleButton value="heat"><LayersIcon fontSize="small" sx={{ mr: 0.5 }} /> Calor</ToggleButton>
+          </ToggleButtonGroup>
+          <Stack direction="row" spacing={1}>
+            <FormControl fullWidth size="small">
+              <InputLabel>Tipo</InputLabel>
+              <Select value={filters.type} label="Tipo" onChange={updateFilter('type')}>
+                <MenuItem value="">Todos</MenuItem>
+                {Object.entries(ISSUE_TYPES).map(([key, config]) => <MenuItem key={key} value={key}>{config.label}</MenuItem>)}
+              </Select>
+            </FormControl>
+            <FormControl fullWidth size="small">
+              <InputLabel>Status</InputLabel>
+              <Select value={filters.status} label="Status" onChange={updateFilter('status')}>
+                <MenuItem value="">Todos</MenuItem>
+                {Object.entries(ISSUE_STATUS).map(([key, config]) => <MenuItem key={key} value={key}>{config.label}</MenuItem>)}
+              </Select>
+            </FormControl>
+          </Stack>
+          <FormControl fullWidth size="small">
+            <InputLabel>Período</InputLabel>
+            <Select value={filters.period} label="Período" onChange={updateFilter('period')}>
+              {PERIOD_OPTIONS.map((option) => <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>)}
+            </Select>
+          </FormControl>
+          {hasActiveFilters && <Button size="small" startIcon={<FilterIcon />} onClick={clearFilters}>Limpar filtros</Button>}
+          {viewMode === 'heat' && (
+            <Box>
+              <Box sx={{ height: 8, borderRadius: 1, background: 'linear-gradient(90deg, #2c7bb6, #abd9e9, #ffffbf, #fdae61, #d7191c)' }} />
+              <Stack direction="row" justifyContent="space-between">
+                <Typography variant="caption" color="text.secondary">Baixa concentração</Typography>
+                <Typography variant="caption" color="text.secondary">Alta concentração</Typography>
+              </Stack>
+            </Box>
+          )}
+        </Stack>
+      </Paper>
+
+      {filteredIssues.length === 0 && (
+        <Alert severity="info" sx={{ position: 'absolute', top: { xs: 288, sm: 16 }, left: 16, zIndex: 1000 }}>
+          Nenhuma denúncia encontrada com os filtros selecionados.
+        </Alert>
+      )}
 
       {/* Controles do mapa */}
       <Paper
@@ -465,7 +556,7 @@ const CommunityMap = () => {
       </Paper>
 
       {/* Botão flutuante para nova denúncia */}
-      <Fab
+      {canCreateIssue && <Fab
         variant="extended"
         color="primary"
         onClick={() => {
@@ -487,7 +578,7 @@ const CommunityMap = () => {
       >
         <AddIcon />
         Denunciar
-      </Fab>
+      </Fab>}
 
       {/* Legenda/Info */}
       <Paper
@@ -510,12 +601,14 @@ const CommunityMap = () => {
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 0.5 }}>
           <TouchAppIcon fontSize="small" color="primary" />
           <Typography variant="body2" color="text.secondary">
-            Toque no mapa para denunciar
+            {canCreateIssue
+              ? 'Toque no mapa para denunciar'
+              : 'Selecione um marcador para acompanhar ou assumir o reparo'}
           </Typography>
         </Box>
         <Chip
           icon={<ReportIcon />}
-          label={`${issues.length} denúncia${issues.length !== 1 ? 's' : ''} na região`}
+          label={`${filteredIssues.length} denúncia${filteredIssues.length !== 1 ? 's' : ''} na região de 5 km`}
           size="small"
           color="primary"
           variant="outlined"
@@ -523,13 +616,13 @@ const CommunityMap = () => {
       </Paper>
 
       {/* Modal de formulário */}
-      <IssueFormModal
+      {canCreateIssue && <IssueFormModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         onSuccess={handleIssueCreated}
         latitude={clickedPosition?.lat}
         longitude={clickedPosition?.lng}
-      />
+      />}
 
       {/* Card de detalhes da denúncia */}
       {selectedIssueCard && (
@@ -558,6 +651,11 @@ const CommunityMap = () => {
               issue={selectedIssueCard}
               onClose={handleCloseIssueCard}
               onSupport={handleSupport}
+              onRepairChanged={async () => {
+                refetchIssues();
+                const response = await IssueService.findByIdWithDetails(selectedIssueCard.id);
+                setSelectedIssueCard(response.data);
+              }}
             />
           </Paper>
         </Backdrop>

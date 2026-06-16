@@ -3,6 +3,9 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../../services/api';
+import AddressFields from './AddressFields';
+import { isValidCnpj, maskCnpj, maskPhone, onlyDigits } from '../../utils/masks';
+import { useNotification } from '../../context/NotificationContext';
 import {
   Box,
   Card,
@@ -26,7 +29,6 @@ import {
   Person as PersonIcon,
   Lock as LockIcon,
   Park as ParkIcon,
-  Public as PublicIcon,
   Visibility as VisibilityIcon,
   VisibilityOff as VisibilityOffIcon,
   ArrowForward as ArrowForwardIcon,
@@ -47,7 +49,7 @@ const RegisterSchema = Yup.object().shape({
   razaoSocial: Yup.string()
     .required('A Razão Social é obrigatória'),
   cnpj: Yup.string()
-    .matches(/^[0-9]{14}$/, 'CNPJ deve conter 14 números (sem pontos ou traços)')
+    .test('cnpj', 'CNPJ inválido', isValidCnpj)
     .required('CNPJ é obrigatório'),
   nomeFantasia: Yup.string()
     .nullable(),
@@ -55,7 +57,15 @@ const RegisterSchema = Yup.object().shape({
     .email('Email da empresa inválido')
     .required('Email da empresa é obrigatório'),
   telefone: Yup.string()
+    .test('telefone', 'Telefone deve conter 10 ou 11 números', (value) => !value || [10, 11].includes(onlyDigits(value).length))
     .nullable(),
+  cep: Yup.string().test('cep', 'CEP deve conter 8 números', (value) => onlyDigits(value).length === 8).required('CEP é obrigatório'),
+  logradouro: Yup.string().min(3, 'Informe um logradouro válido').required('Logradouro é obrigatório'),
+  numero: Yup.string().required('Número é obrigatório'),
+  complemento: Yup.string().nullable(),
+  bairro: Yup.string().required('Bairro é obrigatório'),
+  cidade: Yup.string().required('Cidade é obrigatória'),
+  estado: Yup.string().length(2, 'Estado deve ter 2 caracteres').required('Estado é obrigatório'),
 
   // Dados do Representante
   nomeRepresentante: Yup.string()
@@ -76,6 +86,7 @@ const RegisterSchema = Yup.object().shape({
 const Register = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const { notifySuccess } = useNotification();
   const [serverError, setServerError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
@@ -84,20 +95,27 @@ const Register = () => {
     
     const newRegisterDTO = {
       razaoSocial: values.razaoSocial,
-      cnpj: values.cnpj,
+      cnpj: onlyDigits(values.cnpj),
       nomeFantasia: values.nomeFantasia || null,
       email: values.email,
-      telefone: values.telefone || null,
+      telefone: values.telefone ? onlyDigits(values.telefone) : null,
       nomeRepresentante: values.nomeRepresentante,
       emailRepresentante: values.emailRepresentante,
       senhaRepresentante: values.senhaRepresentante,
+      cep: onlyDigits(values.cep),
+      logradouro: values.logradouro,
+      numero: values.numero,
+      complemento: values.complemento || null,
+      bairro: values.bairro,
+      cidade: values.cidade,
+      estado: values.estado,
     };
 
     try {
       await api.post('/api/empresas', newRegisterDTO);
       
       setSubmitting(false);
-      alert('Cadastro realizado com sucesso! Use o EMAIL DO REPRESENTANTE para fazer o login.');
+      notifySuccess('Cadastro realizado com sucesso. Use o email do representante para entrar.');
       navigate('/login'); 
 
     } catch (err) {
@@ -363,6 +381,13 @@ const Register = () => {
                 nomeFantasia: '',
                 email: '',
                 telefone: '',
+                cep: '',
+                logradouro: '',
+                numero: '',
+                complemento: '',
+                bairro: '',
+                cidade: '',
+                estado: '',
                 nomeRepresentante: '',
                 emailRepresentante: '',
                 senhaRepresentante: '',
@@ -371,7 +396,7 @@ const Register = () => {
               validationSchema={RegisterSchema}
               onSubmit={handleSubmit}
             >
-              {({ isSubmitting, values, errors, touched, handleChange, handleBlur }) => (
+              {({ isSubmitting, values, errors, touched, handleChange, handleBlur, setFieldValue }) => (
                 <Form>
                   {/* Dados da Empresa */}
                   <Paper variant="outlined" sx={{ p: 2.5, mb: 3, borderRadius: 2 }}>
@@ -412,15 +437,15 @@ const Register = () => {
 
                     <TextField
                       fullWidth
-                      label="CNPJ (somente números)"
+                      label="CNPJ"
                       name="cnpj"
                       value={values.cnpj}
-                      onChange={handleChange}
+                      onChange={(event) => setFieldValue('cnpj', maskCnpj(event.target.value))}
                       onBlur={handleBlur}
                       error={touched.cnpj && Boolean(errors.cnpj)}
                       helperText={touched.cnpj && errors.cnpj}
-                      placeholder="12345678000199"
-                      inputProps={{ maxLength: 14 }}
+                      placeholder="00.000.000/0000-00"
+                      inputProps={{ maxLength: 18, inputMode: 'numeric' }}
                       sx={{ ...inputSx, mb: 2 }}
                     />
 
@@ -428,10 +453,10 @@ const Register = () => {
                       <TextField
                         fullWidth
                         label="Email da Empresa"
-                        name="email"
-                        type="email"
-                        value={values.email}
-                        onChange={handleChange}
+                      name="email"
+                      type="email"
+                      value={values.email}
+                      onChange={handleChange}
                         onBlur={handleBlur}
                         error={touched.email && Boolean(errors.email)}
                         helperText={touched.email && errors.email}
@@ -451,9 +476,10 @@ const Register = () => {
                         label="Telefone (Opcional)"
                         name="telefone"
                         value={values.telefone}
-                        onChange={handleChange}
+                        onChange={(event) => setFieldValue('telefone', maskPhone(event.target.value))}
                         onBlur={handleBlur}
-                        placeholder="4733333333"
+                        placeholder="(47) 99999-9999"
+                        inputProps={{ maxLength: 15, inputMode: 'tel' }}
                         InputProps={{
                           startAdornment: (
                             <InputAdornment position="start">
@@ -464,6 +490,21 @@ const Register = () => {
                         sx={inputSx}
                       />
                     </Stack>
+                  </Paper>
+
+                  {/* Endereço da Empresa */}
+                  <Paper variant="outlined" sx={{ p: 2.5, mb: 3, borderRadius: 2 }}>
+                    <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <BusinessIcon color="primary" /> Endereço da Empresa
+                    </Typography>
+                    <AddressFields
+                      values={values}
+                      errors={errors}
+                      touched={touched}
+                      handleBlur={handleBlur}
+                      setFieldValue={setFieldValue}
+                      inputSx={inputSx}
+                    />
                   </Paper>
 
                   {/* Dados do Representante */}

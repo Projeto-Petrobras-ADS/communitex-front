@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Cadastro from '../../components/Cadastro/Cadastro';
 import { useNavigate, useParams } from 'react-router-dom';
 import localStorageService from '../../services/localStorageService';
+import { useNotification } from '../../context/NotificationContext';
 import './PontoDeInterrese.css';
 
 const camposPorTipo = {
@@ -85,6 +86,7 @@ const selectField = (selectedTipo, handler) => ({
 function PontoDeInteresse() {
   const navigate = useNavigate();
   const { id } = useParams();
+  const { notifyError, notifySuccess } = useNotification();
   const [initialData, setInitialData] = useState(null);
   const [selectedTipo, setSelectedTipo] = useState('');
   const [formFields, setFormFields] = useState([selectField('', handlerInteresse)]);
@@ -108,10 +110,10 @@ function PontoDeInteresse() {
         bairroId: id
       };
       localStorageService.saveItem('pontosDeInteresse', pontoData);
-      alert(id ? 'Ponto de Interesse atualizado com sucesso!' : 'Ponto de Interesse cadastrado com sucesso!');
+      notifySuccess(id ? 'Ponto de interesse atualizado com sucesso.' : 'Ponto de interesse cadastrado com sucesso.');
       navigate(-1);
     } catch (error) {
-      alert('Erro ao salvar Ponto de Interesse: ' + error.message);
+      notifyError(`Não foi possível salvar o ponto de interesse. ${error.message}`);
     }
   };
 

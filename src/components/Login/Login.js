@@ -32,7 +32,6 @@ import {
   VisibilityOff as VisibilityOffIcon,
   ArrowForward as ArrowForwardIcon,
   ArrowBack as ArrowBackIcon,
-  CheckCircle as CheckIcon,
 } from '@mui/icons-material';
 
 const Login = () => {

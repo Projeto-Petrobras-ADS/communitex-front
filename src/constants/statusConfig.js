@@ -5,7 +5,9 @@ export const ISSUE_STATUS = {
   ABERTA: { label: 'Aberta', color: 'warning', value: 'ABERTA' },
   EM_ANALISE: { label: 'Em Análise', color: 'info', value: 'EM_ANALISE' },
   EM_ANDAMENTO: { label: 'Em Andamento', color: 'secondary', value: 'EM_ANDAMENTO' },
+  AGUARDANDO_CONFIRMACAO: { label: 'Aguardando confirmação', color: 'warning', value: 'AGUARDANDO_CONFIRMACAO' },
   RESOLVIDA: { label: 'Resolvida', color: 'success', value: 'RESOLVIDA' },
+  CONTESTADA: { label: 'Contestada', color: 'error', value: 'CONTESTADA' },
   REJEITADA: { label: 'Rejeitada', color: 'error', value: 'REJEITADA' }
 };
 

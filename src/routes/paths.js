@@ -6,6 +6,7 @@
 // Rotas Públicas
 export const PUBLIC_ROUTES = {
   HOME: '/',
+  GUIDE: '/guia',
   LOGIN: '/login',
   REGISTER: '/register',
   REGISTER_PESSOA_FISICA: '/register/pessoa-fisica',
@@ -21,6 +22,7 @@ export const PROTECTED_ROUTES = {
   MINHAS_PROPOSTAS: '/minhas-propostas',
   DENUNCIAS: '/denuncias',
   DENUNCIAS_LISTA: '/denuncias/lista',
+  REPAROS: '/reparos',
 };
 
 // Rotas de Admin
