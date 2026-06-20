@@ -87,11 +87,7 @@ const IssueFormModal = ({
           longitude
         };
 
-        if (photoPreview && photoFile) {
-          // Upload logic would go here
-        }
-
-        await IssueService.create(issueData);
+        await IssueService.create(issueData, photoFile);
         
         formik.resetForm();
         setPhotoPreview(null);
@@ -355,7 +351,7 @@ const IssueFormModal = ({
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/*"
+            accept="image/jpeg,image/png,image/webp"
             onChange={handlePhotoChange}
             style={{ display: 'none' }}
           />

@@ -3,6 +3,9 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../../services/api';
+import AddressFields from './AddressFields';
+import { isValidCpf, maskCpf, maskPhone, onlyDigits } from '../../utils/masks';
+import { useNotification } from '../../context/NotificationContext';
 import {
   Box,
   Card,
@@ -30,7 +33,6 @@ import {
   Lock as LockIcon,
   Park as ParkIcon,
   Public as PublicIcon,
-  Groups as GroupsIcon,
   Visibility as VisibilityIcon,
   VisibilityOff as VisibilityOffIcon,
   ArrowForward as ArrowForwardIcon,
@@ -39,67 +41,38 @@ import {
   Email as EmailIcon,
   Phone as PhoneIcon,
   Home as HomeIcon,
-  LocationCity as LocationCityIcon,
-  Map as MapIcon,
   Assignment as AssignmentIcon,
   TrendingUp as TrendingUpIcon,
   Handshake as HandshakeIcon,
 } from '@mui/icons-material';
 
-const RegisterPessoaFisicaSchema = Yup.object().shape({
-  nome: Yup.string()
-    .min(3, 'Nome deve ter no mínimo 3 caracteres')
-    .required('Nome é obrigatório'),
-  
-  cpf: Yup.string()
-    .matches(/^[0-9]{11}$/, 'CPF deve conter 11 números (sem pontos ou traços)')
-    .required('CPF é obrigatório'),
-  
-  email: Yup.string()
-    .email('Email inválido')
-    .required('Email é obrigatório'),
-  
-  telefone: Yup.string()
-    .matches(/^[0-9]{10,11}$/, 'Telefone deve conter 10 ou 11 números')
-    .required('Telefone é obrigatório'),
-  
-  endereco: Yup.string()
-    .min(5, 'Endereço deve ter no mínimo 5 caracteres')
-    .required('Endereço é obrigatório'),
-  
-  bairro: Yup.string()
-    .required('Bairro é obrigatório'),
-  
-  cidade: Yup.string()
-    .required('Cidade é obrigatória'),
-  
-  estado: Yup.string()
-    .length(2, 'Estado deve ter 2 caracteres (ex: SC)')
-    .required('Estado é obrigatório'),
-  
-  cep: Yup.string()
-    .matches(/^[0-9]{8}$/, 'CEP deve conter 8 números (sem traço)')
-    .required('CEP é obrigatório'),
-  
-  senha: Yup.string()
-    .min(8, 'Senha deve ter no mínimo 8 caracteres')
-    .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
-      'Senha deve conter maiúsculas, minúsculas, números e caracteres especiais'
-    )
-    .required('Senha é obrigatória'),
-  
-  confirmSenha: Yup.string()
-    .oneOf([Yup.ref('senha'), null], 'As senhas devem ser iguais')
-    .required('Confirmação de senha é obrigatória'),
-  
-  termos: Yup.boolean()
-    .oneOf([true], 'Você deve aceitar os termos de uso'),
+const RegisterPessoaFisicaSchema = Yup.object({
+  nome: Yup.string().min(3, 'Nome deve ter no mínimo 3 caracteres').required('Nome é obrigatório'),
+  cpf: Yup.string().test('cpf', 'CPF inválido', isValidCpf).required('CPF é obrigatório'),
+  email: Yup.string().email('Email inválido').required('Email é obrigatório'),
+  telefone: Yup.string().test('telefone', 'Telefone deve conter 10 ou 11 números', (value) => {
+    const length = onlyDigits(value).length;
+    return length >= 10 && length <= 11;
+  }).required('Telefone é obrigatório'),
+  cep: Yup.string().test('cep', 'CEP deve conter 8 números', (value) => onlyDigits(value).length === 8).required('CEP é obrigatório'),
+  logradouro: Yup.string().min(3, 'Informe um logradouro válido').required('Logradouro é obrigatório'),
+  numero: Yup.string().required('Número é obrigatório'),
+  complemento: Yup.string().nullable(),
+  bairro: Yup.string().required('Bairro é obrigatório'),
+  cidade: Yup.string().required('Cidade é obrigatória'),
+  estado: Yup.string().length(2, 'Estado deve ter 2 caracteres').required('Estado é obrigatório'),
+  senha: Yup.string().min(8, 'Senha deve ter no mínimo 8 caracteres').matches(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+    'Senha deve conter maiúsculas, minúsculas, números e caracteres especiais'
+  ).required('Senha é obrigatória'),
+  confirmSenha: Yup.string().oneOf([Yup.ref('senha'), null], 'As senhas devem ser iguais').required('Confirmação de senha é obrigatória'),
+  termos: Yup.boolean().oneOf([true], 'Você deve aceitar os termos de uso'),
 });
 
 const RegisterPessoaFisica = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const { notifySuccess } = useNotification();
   const [serverError, setServerError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
@@ -108,14 +81,16 @@ const RegisterPessoaFisica = () => {
     
     const pessoaFisicaDTO = {
       nome: values.nome,
-      cpf: values.cpf,
+      cpf: onlyDigits(values.cpf),
       email: values.email,
-      telefone: values.telefone,
-      endereco: values.endereco,
+      telefone: onlyDigits(values.telefone),
+      logradouro: values.logradouro,
+      numero: values.numero,
+      complemento: values.complemento || null,
       bairro: values.bairro,
       cidade: values.cidade,
       estado: values.estado,
-      cep: values.cep,
+      cep: onlyDigits(values.cep),
       senha: values.senha,
     };
 
@@ -124,7 +99,7 @@ const RegisterPessoaFisica = () => {
       
       setSubmitting(false);
       
-      alert('Cadastro realizado com sucesso! Você já pode fazer o login com seu email e senha.');
+      notifySuccess('Cadastro realizado com sucesso. Você já pode entrar com seu email e senha.');
       navigate('/login');
 
     } catch (err) {
@@ -301,7 +276,7 @@ const RegisterPessoaFisica = () => {
             </Button>
             <Button
               component={Link}
-              to="/register"
+              to="/register?tipo=empresa"
               variant="outlined"
               sx={{
                 color: 'white',
@@ -395,7 +370,9 @@ const RegisterPessoaFisica = () => {
                 cpf: '',
                 email: '',
                 telefone: '',
-                endereco: '',
+                logradouro: '',
+                numero: '',
+                complemento: '',
                 bairro: '',
                 cidade: '',
                 estado: '',
@@ -438,15 +415,15 @@ const RegisterPessoaFisica = () => {
                     <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
                       <TextField
                         fullWidth
-                        label="CPF (somente números)"
+                        label="CPF"
                         name="cpf"
                         value={values.cpf}
-                        onChange={handleChange}
+                        onChange={(event) => setFieldValue('cpf', maskCpf(event.target.value))}
                         onBlur={handleBlur}
                         error={touched.cpf && Boolean(errors.cpf)}
                         helperText={touched.cpf && errors.cpf}
-                        placeholder="12345678910"
-                        inputProps={{ maxLength: 11 }}
+                        placeholder="000.000.000-00"
+                        inputProps={{ maxLength: 14, inputMode: 'numeric' }}
                         sx={inputSx}
                       />
 
@@ -455,12 +432,12 @@ const RegisterPessoaFisica = () => {
                         label="Telefone (com DDD)"
                         name="telefone"
                         value={values.telefone}
-                        onChange={handleChange}
+                        onChange={(event) => setFieldValue('telefone', maskPhone(event.target.value))}
                         onBlur={handleBlur}
                         error={touched.telefone && Boolean(errors.telefone)}
                         helperText={touched.telefone && errors.telefone}
-                        placeholder="4733333333"
-                        inputProps={{ maxLength: 11 }}
+                        placeholder="(47) 99999-9999"
+                        inputProps={{ maxLength: 15, inputMode: 'tel' }}
                         InputProps={{
                           startAdornment: (
                             <InputAdornment position="start">
@@ -506,98 +483,14 @@ const RegisterPessoaFisica = () => {
                     <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
                       <HomeIcon color="primary" /> Endereço
                     </Typography>
-
-                    <TextField
-                      fullWidth
-                      label="Endereço (Rua, Avenida, etc.)"
-                      name="endereco"
-                      value={values.endereco}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      error={touched.endereco && Boolean(errors.endereco)}
-                      helperText={touched.endereco && errors.endereco}
-                      placeholder="Rua Principal, 123"
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <HomeIcon color="action" />
-                          </InputAdornment>
-                        ),
-                      }}
-                      sx={{ ...inputSx, mb: 2 }}
+                    <AddressFields
+                      values={values}
+                      errors={errors}
+                      touched={touched}
+                      handleBlur={handleBlur}
+                      setFieldValue={setFieldValue}
+                      inputSx={inputSx}
                     />
-
-                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 2 }}>
-                      <TextField
-                        fullWidth
-                        label="Bairro"
-                        name="bairro"
-                        value={values.bairro}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        error={touched.bairro && Boolean(errors.bairro)}
-                        helperText={touched.bairro && errors.bairro}
-                        placeholder="Centro"
-                        sx={inputSx}
-                      />
-
-                      <TextField
-                        fullWidth
-                        label="Cidade"
-                        name="cidade"
-                        value={values.cidade}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        error={touched.cidade && Boolean(errors.cidade)}
-                        helperText={touched.cidade && errors.cidade}
-                        placeholder="Florianópolis"
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <LocationCityIcon color="action" />
-                            </InputAdornment>
-                          ),
-                        }}
-                        sx={inputSx}
-                      />
-                    </Stack>
-
-                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                      <TextField
-                        fullWidth
-                        label="Estado (UF)"
-                        name="estado"
-                        value={values.estado}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        error={touched.estado && Boolean(errors.estado)}
-                        helperText={touched.estado && errors.estado}
-                        placeholder="SC"
-                        inputProps={{ maxLength: 2 }}
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <MapIcon color="action" />
-                            </InputAdornment>
-                          ),
-                        }}
-                        sx={inputSx}
-                      />
-
-                      <TextField
-                        fullWidth
-                        label="CEP (somente números)"
-                        name="cep"
-                        value={values.cep}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        error={touched.cep && Boolean(errors.cep)}
-                        helperText={touched.cep && errors.cep}
-                        placeholder="88000000"
-                        inputProps={{ maxLength: 8 }}
-                        sx={inputSx}
-                      />
-                    </Stack>
                   </Paper>
 
                   {/* Acesso ao Sistema */}

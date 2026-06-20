@@ -6,6 +6,8 @@ import { getIssueTypeConfig, getIssueStatusConfig } from '../../constants';
 
 // Utilitários
 import { formatDateTime } from '../../utils';
+import AtendimentoActions from './AtendimentoActions';
+import { resolveApiUrl } from '../../services/api';
 
 import {
   Box,
@@ -17,10 +19,8 @@ import {
   IconButton,
   TextField,
   Stack,
-  Avatar,
   Alert,
   CircularProgress,
-  useTheme,
   alpha,
   Divider,
 } from '@mui/material';
@@ -43,9 +43,9 @@ const IssueCard = ({
   onClose, 
   onSupport, 
   onViewDetails,
+  onRepairChanged,
   isCompact = false 
 }) => {
-  const theme = useTheme();
   const [isSupporting, setIsSupporting] = useState(false);
   const [supportError, setSupportError] = useState(null);
   const [showCommentInput, setShowCommentInput] = useState(false);
@@ -186,7 +186,7 @@ const IssueCard = ({
       {issue.fotoUrl && (
         <Box
           component="img"
-          src={issue.fotoUrl}
+          src={resolveApiUrl(issue.fotoUrl)}
           alt={issue.titulo}
           sx={{
             width: '100%',
@@ -249,6 +249,8 @@ const IssueCard = ({
             {supportError}
           </Alert>
         )}
+
+        <AtendimentoActions issue={issue} onChanged={onRepairChanged} />
 
         {/* Seção de Comentários */}
         {issue.interacoes && issue.interacoes.length > 0 && (

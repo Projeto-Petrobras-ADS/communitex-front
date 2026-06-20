@@ -1,1132 +1,285 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import {
+  AppBar,
+  Avatar,
   Box,
-  Container,
-  Typography,
   Button,
   Card,
   CardContent,
+  Chip,
+  Container,
+  Divider,
   Grid,
-  AppBar,
-  Toolbar,
+  IconButton,
   Menu,
   MenuItem,
-  Stack,
-  Divider,
-  Chip,
-  Avatar,
   Paper,
-  useTheme,
+  Stack,
+  Toolbar,
+  Typography,
   alpha,
-  IconButton,
+  useTheme,
 } from '@mui/material';
 import {
-  Handshake as HandshakeIcon,
-  Park as ParkIcon,
-  LocationOn as LocationIcon,
-  PersonAdd as PersonAddIcon,
-  Search as SearchIcon,
-  Description as DescriptionIcon,
-  Gavel as GavelIcon,
-  Assignment as AssignmentIcon,
-  Build as BuildIcon,
-  CleaningServices as CleaningIcon,
-  AttachMoney as MoneyIcon,
-  CheckCircle as CheckIcon,
-  Business as BusinessIcon,
-  Person as PersonIcon,
   ArrowDropDown as ArrowDropDownIcon,
   ArrowForward as ArrowForwardIcon,
-  Public as PublicIcon,
-  EnergySavingsLeaf as EcoIcon,
+  Business as BusinessIcon,
+  Campaign as CampaignIcon,
+  CheckCircle as CheckIcon,
+  CleaningServices as CleaningIcon,
   Groups as GroupsIcon,
-  Email as EmailIcon,
-  Phone as PhoneIcon,
-  Nature as NatureIcon,
-  Star as StarIcon,
-  FormatQuote as QuoteIcon,
-  LinkedIn as LinkedInIcon,
-  Instagram as InstagramIcon,
-  Twitter as TwitterIcon,
-  KeyboardArrowRight as KeyboardArrowRightIcon,
+  Handshake as HandshakeIcon,
+  LocationOn as LocationIcon,
+  Map as MapIcon,
+  Park as ParkIcon,
+  Person as PersonIcon,
+  Public as PublicIcon,
+  ReportProblem as ReportIcon,
+  VolunteerActivism as VolunteerIcon,
 } from '@mui/icons-material';
+import ImpactDashboard from './ImpactDashboard';
 
 const Landing = () => {
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = React.useState(null);
 
-  const handleMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const features = [
+  const participants = [
     {
-      icon: <HandshakeIcon sx={{ fontSize: 32 }} />,
-      title: 'Parceria Público-Privada',
-      description: 'Conectamos empresas, cidadãos e o poder público em um programa de cooperação para manter e revitalizar espaços públicos.',
-    },
-    {
-      icon: <ParkIcon sx={{ fontSize: 32 }} />,
-      title: 'Impacto Ambiental Positivo',
-      description: 'Contribua para a preservação de áreas verdes, limpeza, jardinagem e manutenção de espaços que beneficiam toda a comunidade.',
-    },
-    {
-      icon: <LocationIcon sx={{ fontSize: 32 }} />,
-      title: 'Visibilidade da Marca',
-      description: 'Adotantes têm direito de instalar placa de identificação no espaço, ganhando visibilidade de acordo com as normas do programa.',
-    },
-    {
-      icon: <EcoIcon sx={{ fontSize: 32 }} />,
-      title: 'ODS 11 - Cidades Sustentáveis',
-      description: 'Alinhado com os Objetivos de Desenvolvimento Sustentável da ONU para cidades mais inclusivas, seguras e sustentáveis.',
-    },
-    {
-      icon: <GroupsIcon sx={{ fontSize: 32 }} />,
-      title: 'Engajamento Comunitário',
-      description: 'Fortaleça o vínculo com a comunidade local através de ações que impactam diretamente a qualidade de vida dos cidadãos.',
-    },
-    {
-      icon: <AssignmentIcon sx={{ fontSize: 32 }} />,
-      title: 'Processo Transparente',
-      description: 'Acompanhe todo o processo de adoção de forma digital, desde a proposta até a formalização do termo de cooperação.',
-    },
-  ];
-
-  const steps = [
-    { number: '01', icon: <PersonAddIcon />, title: 'Cadastre-se', description: 'Crie sua conta como empresa ou pessoa física em poucos minutos.' },
-    { number: '02', icon: <SearchIcon />, title: 'Explore', description: 'Navegue pelas praças disponíveis em sua região.' },
-    { number: '03', icon: <DescriptionIcon />, title: 'Proponha', description: 'Detalhe seu plano de manutenção e melhorias.' },
-    { number: '04', icon: <BuildIcon />, title: 'Adote', description: 'Formalize a parceria e comece a transformar.' },
-  ];
-
-  const testimonials = [
-    {
-      name: 'Maria Santos',
-      role: 'Diretora de ESG',
-      company: 'TechCorp Brasil',
-      avatar: 'M',
-      content: 'O programa de adoção de praças transformou nossa estratégia de responsabilidade social. A comunidade reconhece nosso compromisso.',
-      rating: 5,
-    },
-    {
-      name: 'João Silva',
-      role: 'Empresário',
-      company: 'Padaria Bom Pão',
-      avatar: 'J',
-      content: 'Adotar a praça do nosso bairro foi a melhor decisão. Nossos clientes nos veem de forma diferente agora.',
-      rating: 5,
-    },
-    {
-      name: 'Ana Costa',
-      role: 'Cidadã',
-      company: 'Moradora do Centro',
-      avatar: 'A',
-      content: 'Como pessoa física, consegui adotar a praça onde levo meus filhos. É gratificante ver o espaço sempre bem cuidado.',
-      rating: 5,
-    },
-  ];
-
-  const stats = [
-    { value: '150+', label: 'Praças Adotadas', description: 'espaços transformados' },
-    { value: '80+', label: 'Parceiros', description: 'empresas engajadas' },
-    { value: '12', label: 'Cidades', description: 'em todo o Brasil' },
-    { value: '98%', label: 'Satisfação', description: 'dos adotantes' },
-  ];
-
-  const responsibilities = [
-    {
-      icon: <CleaningIcon />,
-      title: 'Manutenção Regular',
-      color: theme.palette.success.main,
-      items: ['Limpeza e remoção de lixo', 'Corte de grama e jardinagem', 'Cuidado com a iluminação'],
-    },
-    {
-      icon: <BuildIcon />,
-      title: 'Pequenos Reparos',
+      icon: GroupsIcon,
+      title: 'Comunidade',
+      description: 'Moradores registram necessidades, acompanham melhorias e ajudam a priorizar o cuidado com o bairro.',
       color: theme.palette.primary.main,
-      items: ['Manutenção de bancos e lixeiras', 'Conservação de estruturas', 'Cuidados gerais do espaço'],
+      items: ['Dar visibilidade aos problemas', 'Apoiar ocorrências da vizinhança', 'Indicar praças para adoção'],
     },
     {
-      icon: <MoneyIcon />,
-      title: 'Responsabilidade',
-      color: theme.palette.warning.main,
-      items: ['Custeio das atividades', 'Cumprimento do acordo', 'Relatórios periódicos'],
+      icon: HandshakeIcon,
+      title: 'Empresas parceiras',
+      description: 'Negócios locais transformam responsabilidade social em cuidado contínuo e próximo das pessoas.',
+      color: theme.palette.secondary.main,
+      items: ['Adotar e revitalizar praças', 'Apresentar planos de manutenção', 'Fortalecer vínculos locais'],
     },
+    {
+      icon: CleaningIcon,
+      title: 'Zeladoria urbana',
+      description: 'O poder público recebe informações organizadas e acompanha as ações que melhoram os espaços comuns.',
+      color: theme.palette.success.main,
+      items: ['Visualizar demandas no mapa', 'Analisar propostas de adoção', 'Acompanhar prioridades'],
+    },
+  ];
+
+  const journey = [
+    { icon: LocationIcon, title: 'Observe o bairro', text: 'Identifique uma praça que precisa de cuidado ou uma ocorrência urbana.' },
+    { icon: CampaignIcon, title: 'Compartilhe a necessidade', text: 'Registre a situação para que comunidade e zeladoria possam acompanhar.' },
+    { icon: HandshakeIcon, title: 'Conecte quem pode ajudar', text: 'Empresas encontram espaços disponíveis e apresentam propostas de adoção.' },
+    { icon: CheckIcon, title: 'Acompanhe a transformação', text: 'Todos enxergam o andamento e os resultados para a vizinhança.' },
+  ];
+
+  const careItems = [
+    { icon: CleaningIcon, label: 'Limpeza e conservação', color: 'success.main' },
+    { icon: ParkIcon, label: 'Praças vivas e acolhedoras', color: 'primary.main' },
+    { icon: ReportIcon, label: 'Problemas urbanos visíveis', color: 'secondary.main' },
+    { icon: VolunteerIcon, label: 'Participação que gera cuidado', color: 'warning.dark' },
   ];
 
   return (
     <Box sx={{ overflowX: 'hidden', bgcolor: 'background.default' }}>
-      {/* Header/AppBar - Modern Glass Effect */}
-      <AppBar 
-        position="fixed" 
+      <AppBar
+        position="fixed"
         elevation={0}
-        sx={{ 
-          background: 'rgba(255,255,255,0.8)',
-          backdropFilter: 'blur(20px)',
+        sx={{
+          bgcolor: alpha(theme.palette.background.paper, 0.92),
+          color: 'text.primary',
+          backdropFilter: 'blur(18px)',
           borderBottom: '1px solid',
-          borderColor: alpha(theme.palette.divider, 0.1),
+          borderColor: 'divider',
         }}
       >
         <Container maxWidth="lg">
-          <Toolbar sx={{ justifyContent: 'space-between', py: 1.5 }}>
-            <Stack direction="row" alignItems="center" spacing={1.5}>
-              <Box
-                sx={{
-                  width: 42,
-                  height: 42,
-                  borderRadius: 2,
-                  background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: `0 4px 14px ${alpha(theme.palette.primary.main, 0.4)}`,
-                }}
-              >
-                <ParkIcon sx={{ color: 'white', fontSize: 24 }} />
+          <Toolbar disableGutters sx={{ minHeight: 72, gap: 2 }}>
+            <Stack direction="row" alignItems="center" spacing={1.25} sx={{ flexGrow: 1 }}>
+              <Avatar sx={{ bgcolor: 'primary.main', width: 42, height: 42 }}><GroupsIcon /></Avatar>
+              <Box>
+                <Typography variant="h6" fontWeight={850} lineHeight={1}>Communitex</Typography>
+                <Typography variant="caption" color="text.secondary">Comunidade que cuida</Typography>
               </Box>
-              <Typography variant="h6" fontWeight={800} color="text.primary" sx={{ letterSpacing: '-0.5px' }}>
-                Communitex
-              </Typography>
             </Stack>
-            <Stack direction="row" spacing={2} alignItems="center">
-              <Button
-                component={Link}
-                to="/login"
-                variant="text"
-                sx={{ 
-                  fontWeight: 600,
-                  color: 'text.secondary',
-                  '&:hover': { color: 'primary.main', bgcolor: 'transparent' },
-                }}
-              >
-                Entrar
-              </Button>
-              <Button
-                onClick={handleMenuOpen}
-                variant="contained"
-                endIcon={<ArrowDropDownIcon />}
-                sx={{ 
-                  borderRadius: 2,
-                  px: 3,
-                  py: 1,
-                  textTransform: 'none',
-                  fontWeight: 600,
-                  boxShadow: `0 4px 14px ${alpha(theme.palette.primary.main, 0.4)}`,
-                  '&:hover': {
-                    boxShadow: `0 6px 20px ${alpha(theme.palette.primary.main, 0.5)}`,
-                  },
-                }}
-              >
-                Cadastre-se
-              </Button>
-              <Menu
-                anchorEl={anchorEl}
-                open={Boolean(anchorEl)}
-                onClose={handleMenuClose}
-                PaperProps={{
-                  sx: { 
-                    borderRadius: 3, 
-                    mt: 1.5, 
-                    minWidth: 220,
-                    boxShadow: '0 10px 40px rgba(0,0,0,0.12)',
-                    border: '1px solid',
-                    borderColor: 'divider',
-                  }
-                }}
-              >
-                <MenuItem component={Link} to="/register" onClick={handleMenuClose} sx={{ py: 1.5, px: 2.5 }}>
-                  <BusinessIcon sx={{ mr: 2, color: 'primary.main' }} /> Sou Empresa
-                </MenuItem>
-                <MenuItem component={Link} to="/register/pessoa-fisica" onClick={handleMenuClose} sx={{ py: 1.5, px: 2.5 }}>
-                  <PersonIcon sx={{ mr: 2, color: 'secondary.main' }} /> Pessoa Física
-                </MenuItem>
-              </Menu>
-            </Stack>
+            <Button component={Link} to="/guia" sx={{ display: { xs: 'none', md: 'inline-flex' } }}>Como funciona</Button>
+            <Button component={Link} to="/login" sx={{ display: { xs: 'none', sm: 'inline-flex' } }}>Entrar</Button>
+            <Button variant="contained" onClick={(event) => setAnchorEl(event.currentTarget)} endIcon={<ArrowDropDownIcon />}>
+              Participar
+            </Button>
+            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}>
+              <MenuItem component={Link} to="/register/pessoa-fisica" onClick={() => setAnchorEl(null)}>
+                <PersonIcon sx={{ mr: 1.5, color: 'primary.main' }} /> Sou morador
+              </MenuItem>
+              <MenuItem component={Link} to="/register?tipo=empresa" onClick={() => setAnchorEl(null)}>
+                <BusinessIcon sx={{ mr: 1.5, color: 'secondary.main' }} /> Represento uma empresa
+              </MenuItem>
+            </Menu>
           </Toolbar>
         </Container>
       </AppBar>
 
-      {/* Hero Section - Marketing Style */}
       <Box
+        component="section"
         sx={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
+          pt: { xs: 14, md: 17 },
+          pb: { xs: 8, md: 12 },
           position: 'relative',
-          background: `linear-gradient(160deg, ${alpha(theme.palette.primary.main, 0.03)} 0%, ${alpha(theme.palette.primary.main, 0.08)} 100%)`,
-          pt: { xs: 12, md: 8 },
-          pb: { xs: 8, md: 0 },
+          background: `linear-gradient(145deg, ${theme.palette.background.default} 0%, ${theme.palette.primary.lighter} 100%)`,
           overflow: 'hidden',
           '&::before': {
             content: '""',
             position: 'absolute',
-            top: '-50%',
-            right: '-20%',
-            width: '70%',
-            height: '150%',
-            background: `radial-gradient(ellipse, ${alpha(theme.palette.primary.main, 0.08)} 0%, transparent 70%)`,
-            pointerEvents: 'none',
-          },
-          '&::after': {
-            content: '""',
-            position: 'absolute',
-            bottom: '-30%',
-            left: '-10%',
-            width: '50%',
-            height: '80%',
-            background: `radial-gradient(ellipse, ${alpha(theme.palette.success.main, 0.06)} 0%, transparent 70%)`,
-            pointerEvents: 'none',
+            width: 520,
+            height: 520,
+            borderRadius: '50%',
+            right: -180,
+            top: -180,
+            bgcolor: alpha(theme.palette.secondary.main, 0.12),
           },
         }}
       >
-        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
-          <Grid container spacing={8} alignItems="center">
-            <Grid item xs={12} md={6}>
-              <Box sx={{ mb: 3 }}>
-                <Chip 
-                  label="ODS 11 - Cidades Sustentáveis" 
-                  icon={<PublicIcon sx={{ fontSize: 18 }} />}
-                  sx={{ 
-                    bgcolor: alpha(theme.palette.primary.main, 0.1),
-                    color: 'primary.main',
-                    fontWeight: 600,
-                    py: 2.5,
-                    px: 0.5,
-                    '& .MuiChip-icon': { color: 'primary.main' },
-                    '& .MuiChip-label': { px: 1 },
-                  }} 
-                />
-              </Box>
-              <Typography 
-                variant="h1" 
-                fontWeight={800} 
-                color="text.primary"
-                sx={{ 
-                  fontSize: { xs: '2.5rem', sm: '3rem', md: '3.5rem', lg: '4rem' },
-                  lineHeight: 1.1,
-                  mb: 3,
-                  letterSpacing: '-1px',
-                }}
-              >
-                Adote uma praça.{' '}
-                <Box 
-                  component="span" 
-                  sx={{ 
-                    background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.success.main} 100%)`,
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                  }}
-                >
-                  Transforme sua cidade.
-                </Box>
+        <Container maxWidth="lg" sx={{ position: 'relative' }}>
+          <Grid container spacing={{ xs: 6, md: 8 }} alignItems="center">
+            <Grid item xs={12} md={7}>
+              <Chip icon={<PublicIcon />} label="Zeladoria colaborativa para bairros melhores" color="primary" variant="outlined" sx={{ mb: 3, bgcolor: alpha(theme.palette.background.paper, 0.7) }} />
+              <Typography variant="h1" sx={{ fontSize: { xs: '2.65rem', sm: '3.6rem', lg: '4.7rem' }, lineHeight: 1.03, maxWidth: 760 }}>
+                Cuidar da cidade começa{' '}
+                <Box component="span" sx={{ color: 'primary.main' }}>perto de casa.</Box>
               </Typography>
-              <Typography 
-                variant="h6" 
-                sx={{ 
-                  mb: 4, 
-                  color: 'text.secondary',
-                  fontWeight: 400,
-                  maxWidth: 480,
-                  lineHeight: 1.7,
-                  fontSize: { xs: '1rem', md: '1.125rem' },
-                }}
-              >
-                Conectamos empresas, cidadãos e o poder público para revitalizar 
-                espaços públicos mais verdes, seguros e acessíveis.
+              <Typography variant="h6" color="text.secondary" sx={{ mt: 3, maxWidth: 650, lineHeight: 1.7, fontWeight: 400 }}>
+                Uma plataforma para moradores, empresas e poder público transformarem necessidades do bairro em ações de cuidado, adoção e manutenção dos espaços comuns.
               </Typography>
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 5 }}>
-                <Button
-                  component={Link}
-                  to="/register"
-                  variant="contained"
-                  size="large"
-                  endIcon={<ArrowForwardIcon />}
-                  sx={{ 
-                    px: 4,
-                    py: 1.5,
-                    borderRadius: 2,
-                    fontWeight: 600,
-                    fontSize: '1rem',
-                    textTransform: 'none',
-                    boxShadow: `0 8px 24px ${alpha(theme.palette.primary.main, 0.4)}`,
-                    '&:hover': { 
-                      transform: 'translateY(-2px)',
-                      boxShadow: `0 12px 32px ${alpha(theme.palette.primary.main, 0.5)}`,
-                    },
-                    transition: 'all 0.2s ease',
-                  }}
-                >
-                  Começar agora
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mt: 4 }}>
+                <Button component={Link} to="/register/pessoa-fisica" variant="contained" size="large" endIcon={<ArrowForwardIcon />} sx={{ px: 4 }}>
+                  Quero cuidar do meu bairro
                 </Button>
-                <Button
-                  component={Link}
-                  to="/login"
-                  variant="outlined"
-                  size="large"
-                  sx={{ 
-                    px: 4,
-                    py: 1.5,
-                    borderRadius: 2,
-                    fontWeight: 600,
-                    textTransform: 'none',
-                    borderWidth: 2,
-                    borderColor: 'divider',
-                    color: 'text.primary',
-                    '&:hover': { 
-                      borderWidth: 2,
-                      borderColor: 'primary.main',
-                      bgcolor: alpha(theme.palette.primary.main, 0.04),
-                    } 
-                  }}
-                >
-                  Já tenho conta
+                <Button component={Link} to="/login" variant="outlined" size="large" startIcon={<MapIcon />} sx={{ px: 4, bgcolor: alpha(theme.palette.background.paper, 0.65) }}>
+                  Acessar a plataforma
                 </Button>
               </Stack>
-              {/* Trust badges */}
-              <Stack direction="row" spacing={3} alignItems="center">
-                <Typography variant="caption" color="text.secondary" fontWeight={500}>
-                  Empresas que confiam:
-                </Typography>
-                <Stack direction="row" spacing={2}>
-                  {['TechCorp', 'EcoBrasil', 'GreenCo'].map((company) => (
-                    <Typography 
-                      key={company} 
-                      variant="body2" 
-                      color="text.secondary"
-                      sx={{ 
-                        fontWeight: 600, 
-                        opacity: 0.6,
-                        letterSpacing: '0.5px',
-                      }}
-                    >
-                      {company}
-                    </Typography>
-                  ))}
-                </Stack>
-              </Stack>
             </Grid>
-            <Grid item xs={12} md={6} sx={{ display: { xs: 'none', md: 'block' } }}>
-              {/* Stats Cards - Modern Style */}
-              <Box sx={{ position: 'relative' }}>
-                <Grid container spacing={2}>
-                  {stats.map((stat, index) => (
-                    <Grid item xs={6} key={index}>
-                      <Paper
-                        elevation={0}
-                        sx={{
-                          p: 3,
-                          borderRadius: 3,
-                          bgcolor: 'background.paper',
-                          border: '1px solid',
-                          borderColor: 'divider',
-                          textAlign: 'center',
-                          transition: 'all 0.3s ease',
-                          '&:hover': {
-                            borderColor: 'primary.main',
-                            boxShadow: `0 8px 30px ${alpha(theme.palette.primary.main, 0.12)}`,
-                            transform: 'translateY(-4px)',
-                          },
-                        }}
-                      >
-                        <Typography 
-                          variant="h3" 
-                          fontWeight={800} 
-                          sx={{ 
-                            background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
-                            WebkitBackgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent',
-                            backgroundClip: 'text',
-                            mb: 0.5,
-                          }}
-                        >
-                          {stat.value}
-                        </Typography>
-                        <Typography variant="body2" fontWeight={600} color="text.primary">
-                          {stat.label}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {stat.description}
-                        </Typography>
-                      </Paper>
-                    </Grid>
-                  ))}
-                </Grid>
-              </Box>
-            </Grid>
-          </Grid>
-        </Container>
-      </Box>
-
-      {/* Features Section - Marketing Style */}
-      <Box sx={{ py: { xs: 10, md: 14 }, bgcolor: 'background.paper' }}>
-        <Container maxWidth="lg">
-          <Box sx={{ textAlign: 'center', mb: { xs: 6, md: 10 } }}>
-            <Typography 
-              variant="overline" 
-              color="primary.main" 
-              fontWeight={700}
-              sx={{ letterSpacing: 2, mb: 2, display: 'block' }}
-            >
-              POR QUE ADOTAR
-            </Typography>
-            <Typography 
-              variant="h2" 
-              fontWeight={800} 
-              sx={{ 
-                mb: 2,
-                fontSize: { xs: '2rem', md: '2.75rem' },
-                letterSpacing: '-0.5px',
-              }}
-            >
-              Benefícios para todos
-            </Typography>
-            <Typography 
-              variant="h6" 
-              color="text.secondary" 
-              sx={{ maxWidth: 600, mx: 'auto', fontWeight: 400 }}
-            >
-              Um programa que conecta responsabilidade social, sustentabilidade e visibilidade
-            </Typography>
-          </Box>
-          <Grid container spacing={4}>
-            {features.map((feature, index) => (
-              <Grid item xs={12} sm={6} md={4} key={index}>
-                <Card 
-                  elevation={0}
-                  sx={{ 
-                    height: '100%', 
-                    p: 4,
-                    borderRadius: 3,
-                    border: '1px solid',
-                    borderColor: 'divider',
-                    bgcolor: 'background.paper',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      borderColor: 'primary.main',
-                      boxShadow: `0 20px 40px ${alpha(theme.palette.primary.main, 0.08)}`,
-                      '& .feature-icon': {
-                        bgcolor: 'primary.main',
-                        color: 'white',
-                        transform: 'scale(1.1)',
-                      }
-                    }
-                  }}
-                >
-                  <Box
-                    className="feature-icon"
-                    sx={{
-                      width: 56,
-                      height: 56,
-                      borderRadius: 2,
-                      bgcolor: alpha(theme.palette.primary.main, 0.1),
-                      color: 'primary.main',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      mb: 3,
-                      transition: 'all 0.3s ease',
-                    }}
-                  >
-                    {feature.icon}
-                  </Box>
-                  <Typography variant="h6" fontWeight={700} gutterBottom>
-                    {feature.title}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    {feature.description}
-                  </Typography>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-        </Container>
-      </Box>
-
-      {/* How It Works Section */}
-      <Box 
-        sx={{ 
-          py: { xs: 10, md: 14 }, 
-          bgcolor: alpha(theme.palette.primary.main, 0.02),
-          position: 'relative',
-        }}
-      >
-        <Container maxWidth="lg">
-          <Grid container spacing={8} alignItems="center">
             <Grid item xs={12} md={5}>
-              <Typography 
-                variant="overline" 
-                color="primary.main" 
-                fontWeight={700}
-                sx={{ letterSpacing: 2, mb: 2, display: 'block' }}
-              >
-                COMO FUNCIONA
+              <Paper sx={{ p: { xs: 2.5, md: 3 }, bgcolor: alpha(theme.palette.background.paper, 0.9), boxShadow: '0 28px 70px rgba(13,73,71,0.17)' }}>
+                <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 3 }}>
+                  <Avatar sx={{ bgcolor: 'secondary.main' }}><LocationIcon /></Avatar>
+                  <Box>
+                    <Typography fontWeight={800}>O bairro em movimento</Typography>
+                    <Typography variant="body2" color="text.secondary">Cuidado compartilhado em um só lugar</Typography>
+                  </Box>
+                </Stack>
+                <Stack spacing={1.5}>
+                  {careItems.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <Box key={item.label} sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 1.75, borderRadius: 3, bgcolor: 'background.default' }}>
+                        <Avatar sx={{ bgcolor: alpha(theme.palette.primary.main, 0.08), color: item.color, width: 38, height: 38 }}><Icon fontSize="small" /></Avatar>
+                        <Typography fontWeight={650}>{item.label}</Typography>
+                      </Box>
+                    );
+                  })}
+                </Stack>
+              </Paper>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
+
+      <ImpactDashboard />
+
+      <Box component="section" sx={{ py: { xs: 8, md: 12 }, bgcolor: 'background.paper' }}>
+        <Container maxWidth="lg">
+          <Box sx={{ maxWidth: 720, mb: 6 }}>
+            <Typography variant="overline" color="secondary.main" fontWeight={850} letterSpacing={2}>UMA REDE DE CUIDADO</Typography>
+            <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '3rem' }, mt: 1 }}>Cada pessoa tem um papel na zeladoria da cidade.</Typography>
+            <Typography color="text.secondary" sx={{ mt: 2, fontSize: '1.05rem' }}>O Communitex organiza a colaboração para que demandas locais encontrem respostas e parceiros.</Typography>
+          </Box>
+          <Grid container spacing={3}>
+            {participants.map((participant) => {
+              const Icon = participant.icon;
+              return (
+                <Grid item xs={12} md={4} key={participant.title}>
+                  <Card sx={{ height: '100%', borderTop: `5px solid ${participant.color}` }}>
+                    <CardContent sx={{ p: 3.5 }}>
+                      <Avatar sx={{ bgcolor: alpha(participant.color, 0.12), color: participant.color, width: 54, height: 54, mb: 2.5 }}><Icon /></Avatar>
+                      <Typography variant="h5" fontWeight={800}>{participant.title}</Typography>
+                      <Typography color="text.secondary" sx={{ mt: 1.5, mb: 3, lineHeight: 1.7 }}>{participant.description}</Typography>
+                      <Stack spacing={1.25}>
+                        {participant.items.map((item) => <Stack key={item} direction="row" spacing={1} alignItems="center"><CheckIcon sx={{ color: participant.color, fontSize: 18 }} /><Typography variant="body2">{item}</Typography></Stack>)}
+                      </Stack>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              );
+            })}
+          </Grid>
+        </Container>
+      </Box>
+
+      <Box component="section" sx={{ py: { xs: 8, md: 12 } }}>
+        <Container maxWidth="lg">
+          <Grid container spacing={7} alignItems="center">
+            <Grid item xs={12} md={5}>
+              <Typography variant="overline" color="primary.main" fontWeight={850} letterSpacing={2}>COMO FUNCIONA</Typography>
+              <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '3rem' }, mt: 1 }}>Do olhar atento à ação concreta.</Typography>
+              <Typography color="text.secondary" sx={{ mt: 2, lineHeight: 1.8 }}>
+                A tecnologia aproxima quem percebe um problema, quem pode ajudar e quem coordena o cuidado com a cidade.
               </Typography>
-              <Typography 
-                variant="h2" 
-                fontWeight={800} 
-                sx={{ 
-                  mb: 3,
-                  fontSize: { xs: '2rem', md: '2.75rem' },
-                  letterSpacing: '-0.5px',
-                }}
-              >
-                Simples e transparente
-              </Typography>
-              <Typography 
-                variant="body1" 
-                color="text.secondary" 
-                sx={{ mb: 4, lineHeight: 1.8 }}
-              >
-                Um processo digital completo que conecta você ao espaço público 
-                que deseja adotar. Da proposta à formalização, tudo acontece de 
-                forma rápida e transparente.
-              </Typography>
-              <Button
-                component={Link}
-                to="/register"
-                variant="contained"
-                size="large"
-                endIcon={<KeyboardArrowRightIcon />}
-                sx={{ 
-                  borderRadius: 2,
-                  px: 4,
-                  py: 1.5,
-                  textTransform: 'none',
-                  fontWeight: 600,
-                }}
-              >
-                Comece sua jornada
-              </Button>
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mt: 4 }}>
+                <Button component={Link} to="/guia" variant="contained" color="secondary" endIcon={<ArrowForwardIcon />}>Ver guia completo</Button>
+                <Button component={Link} to="/register/pessoa-fisica" variant="outlined">Começar a participar</Button>
+              </Stack>
             </Grid>
             <Grid item xs={12} md={7}>
-              <Grid container spacing={3}>
-                {steps.map((step, index) => (
-                  <Grid item xs={12} sm={6} key={index}>
-                    <Box 
-                      sx={{ 
-                        p: 3,
-                        borderRadius: 3,
-                        bgcolor: 'background.paper',
-                        border: '1px solid',
-                        borderColor: 'divider',
-                        height: '100%',
-                        transition: 'all 0.3s ease',
-                        '&:hover': {
-                          borderColor: 'primary.main',
-                          boxShadow: `0 10px 30px ${alpha(theme.palette.primary.main, 0.1)}`,
-                          '& .step-number': {
-                            bgcolor: 'primary.main',
-                            color: 'white',
-                          }
-                        }
-                      }}
-                    >
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                        <Typography 
-                          className="step-number"
-                          variant="caption"
-                          sx={{ 
-                            fontWeight: 800,
-                            color: 'primary.main',
-                            bgcolor: alpha(theme.palette.primary.main, 0.1),
-                            px: 1.5,
-                            py: 0.5,
-                            borderRadius: 1.5,
-                            transition: 'all 0.3s ease',
-                          }}
-                        >
-                          {step.number}
-                        </Typography>
-                        <Box sx={{ color: 'primary.main' }}>{step.icon}</Box>
+              <Stack spacing={2}>
+                {journey.map((step, index) => {
+                  const Icon = step.icon;
+                  return (
+                    <Paper key={step.title} variant="outlined" sx={{ p: 2.5, display: 'flex', alignItems: 'flex-start', gap: 2.5, bgcolor: 'background.paper' }}>
+                      <Avatar sx={{ bgcolor: index % 2 ? 'secondary.main' : 'primary.main', width: 48, height: 48 }}><Icon /></Avatar>
+                      <Box>
+                        <Typography variant="h6" fontWeight={800}>{index + 1}. {step.title}</Typography>
+                        <Typography color="text.secondary" sx={{ mt: 0.5 }}>{step.text}</Typography>
                       </Box>
-                      <Typography variant="subtitle1" fontWeight={700} gutterBottom>
-                        {step.title}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
-                        {step.description}
-                      </Typography>
-                    </Box>
-                  </Grid>
-                ))}
-              </Grid>
+                    </Paper>
+                  );
+                })}
+              </Stack>
             </Grid>
           </Grid>
         </Container>
       </Box>
 
-      {/* Testimonials Section */}
-      <Box sx={{ py: { xs: 10, md: 14 }, bgcolor: 'background.paper' }}>
-        <Container maxWidth="lg">
-          <Box sx={{ textAlign: 'center', mb: { xs: 6, md: 10 } }}>
-            <Typography 
-              variant="overline" 
-              color="primary.main" 
-              fontWeight={700}
-              sx={{ letterSpacing: 2, mb: 2, display: 'block' }}
-            >
-              DEPOIMENTOS
-            </Typography>
-            <Typography 
-              variant="h2" 
-              fontWeight={800} 
-              sx={{ 
-                mb: 2,
-                fontSize: { xs: '2rem', md: '2.75rem' },
-                letterSpacing: '-0.5px',
-              }}
-            >
-              O que dizem nossos parceiros
-            </Typography>
-          </Box>
-          <Grid container spacing={4}>
-            {testimonials.map((testimonial, index) => (
-              <Grid item xs={12} md={4} key={index}>
-                <Card 
-                  elevation={0}
-                  sx={{ 
-                    height: '100%',
-                    p: 4,
-                    borderRadius: 3,
-                    border: '1px solid',
-                    borderColor: 'divider',
-                    position: 'relative',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      borderColor: 'primary.main',
-                      boxShadow: `0 20px 40px ${alpha(theme.palette.primary.main, 0.08)}`,
-                    }
-                  }}
-                >
-                  <QuoteIcon 
-                    sx={{ 
-                      position: 'absolute',
-                      top: 20,
-                      right: 20,
-                      fontSize: 40,
-                      color: alpha(theme.palette.primary.main, 0.1),
-                    }} 
-                  />
-                  <Stack direction="row" spacing={0.5} sx={{ mb: 3 }}>
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                    <StarIcon key={i} sx={{ fontSize: 18, color: 'secondary.main' }} />
-                    ))}
-                  </Stack>
-                  <Typography 
-                    variant="body1" 
-                    color="text.secondary" 
-                    sx={{ mb: 4, lineHeight: 1.8, fontStyle: 'italic' }}
-                  >
-                    "{testimonial.content}"
-                  </Typography>
-                  <Stack direction="row" spacing={2} alignItems="center">
-                    <Avatar 
-                      sx={{ 
-                        bgcolor: 'primary.main',
-                        width: 48,
-                        height: 48,
-                        fontWeight: 700,
-                      }}
-                    >
-                      {testimonial.avatar}
-                    </Avatar>
-                    <Box>
-                      <Typography variant="subtitle2" fontWeight={700}>
-                        {testimonial.name}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {testimonial.role} - {testimonial.company}
-                      </Typography>
-                    </Box>
-                  </Stack>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-        </Container>
-      </Box>
-
-      {/* Responsibilities Section */}
-      <Box 
-        sx={{ 
-          py: { xs: 10, md: 14 }, 
-          bgcolor: alpha(theme.palette.primary.main, 0.02),
-        }}
-      >
-        <Container maxWidth="lg">
-          <Box sx={{ textAlign: 'center', mb: { xs: 6, md: 10 } }}>
-            <Typography 
-              variant="overline" 
-              color="primary.main" 
-              fontWeight={700}
-              sx={{ letterSpacing: 2, mb: 2, display: 'block' }}
-            >
-              COMPROMISSOS
-            </Typography>
-            <Typography 
-              variant="h2" 
-              fontWeight={800} 
-              sx={{ 
-                mb: 2,
-                fontSize: { xs: '2rem', md: '2.75rem' },
-                letterSpacing: '-0.5px',
-              }}
-            >
-              Responsabilidades do adotante
-            </Typography>
-            <Typography 
-              variant="h6" 
-              color="text.secondary" 
-              sx={{ maxWidth: 600, mx: 'auto', fontWeight: 400 }}
-            >
-              Saiba o que é esperado de quem adota um espaço público
-            </Typography>
-          </Box>
-          <Grid container spacing={4}>
-            {responsibilities.map((resp, index) => (
-              <Grid item xs={12} md={4} key={index}>
-                <Card 
-                  elevation={0}
-                  sx={{ 
-                    height: '100%',
-                    borderRadius: 3,
-                    overflow: 'hidden',
-                    border: '1px solid',
-                    borderColor: 'divider',
-                    bgcolor: 'background.paper',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      boxShadow: `0 20px 40px ${alpha(resp.color, 0.15)}`,
-                      borderColor: resp.color,
-                    },
-                  }}
-                >
-                  <Box 
-                    sx={{ 
-                      p: 3, 
-                      background: `linear-gradient(135deg, ${resp.color} 0%, ${alpha(resp.color, 0.8)} 100%)`,
-                      color: 'white',
-                    }}
-                  >
-                    <Stack direction="row" spacing={2} alignItems="center">
-                      {resp.icon}
-                      <Typography variant="h6" fontWeight={700}>
-                        {resp.title}
-                      </Typography>
-                    </Stack>
-                  </Box>
-                  <CardContent sx={{ p: 3 }}>
-                    <Stack spacing={2}>
-                      {resp.items.map((item, idx) => (
-                        <Stack key={idx} direction="row" spacing={2} alignItems="center">
-                          <CheckIcon sx={{ color: resp.color, fontSize: 20 }} />
-                          <Typography variant="body2" color="text.secondary">
-                            {item}
-                          </Typography>
-                        </Stack>
-                      ))}
-                    </Stack>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-        </Container>
-      </Box>
-
-      {/* CTA Section - Marketing Style */}
-      <Box
-        sx={{
-          py: { xs: 10, md: 14 },
-          position: 'relative',
-          overflow: 'hidden',
-          background: `linear-gradient(135deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.main} 100%)`,
-        }}
-      >
-        <Box
-          sx={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            opacity: 0.1,
-            background: `radial-gradient(circle at 20% 50%, white 0%, transparent 50%),
-                         radial-gradient(circle at 80% 80%, white 0%, transparent 40%)`,
-          }}
-        />
-        <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
-          <Typography 
-            variant="h2" 
-            fontWeight={800} 
-            color="white"
-            sx={{ 
-              mb: 3,
-              fontSize: { xs: '2rem', md: '3rem' },
-              letterSpacing: '-0.5px',
-            }}
-          >
-            Pronto para fazer a diferença?
+      <Box component="section" sx={{ py: { xs: 8, md: 11 }, bgcolor: 'primary.dark', color: 'white', position: 'relative', overflow: 'hidden' }}>
+        <Container maxWidth="md" sx={{ textAlign: 'center', position: 'relative' }}>
+          <GroupsIcon sx={{ fontSize: 54, color: 'secondary.light', mb: 2 }} />
+          <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '3.2rem' } }}>Seu bairro também pode ser mais cuidado.</Typography>
+          <Typography sx={{ mt: 2, mb: 4, color: alpha('#fff', 0.78), fontSize: '1.08rem', lineHeight: 1.7 }}>
+            Participe da rede que transforma informação, parceria e presença comunitária em espaços públicos melhores para todos.
           </Typography>
-          <Typography 
-            variant="h6" 
-            sx={{ 
-              mb: 5, 
-              color: 'rgba(255,255,255,0.85)', 
-              maxWidth: 500, 
-              mx: 'auto',
-              fontWeight: 400,
-              lineHeight: 1.7,
-            }}
-          >
-            Junte-se a mais de 80 empresas e cidadãos que já estão transformando 
-            suas cidades através da adoção de praças.
-          </Typography>
-          <Stack 
-            direction={{ xs: 'column', sm: 'row' }} 
-            spacing={2} 
-            justifyContent="center"
-          >
-            <Button
-              component={Link}
-              to="/register"
-              variant="contained"
-              size="large"
-              endIcon={<ArrowForwardIcon />}
-              sx={{ 
-                bgcolor: 'white', 
-                color: 'primary.main', 
-                px: 5,
-                py: 1.8,
-                borderRadius: 2,
-                fontWeight: 700,
-                fontSize: '1.1rem',
-                textTransform: 'none',
-                boxShadow: `0 8px 30px ${alpha(theme.palette.primary.dark, 0.35)}`,
-                '&:hover': { 
-                  bgcolor: alpha('#fff', 0.92),
-                  transform: 'translateY(-2px)',
-                  boxShadow: `0 12px 40px ${alpha(theme.palette.primary.dark, 0.45)}`,
-                },
-                transition: 'all 0.2s ease',
-              }}
-            >
-              Começar agora
-            </Button>
-            <Button
-              component={Link}
-              to="/login"
-              variant="outlined"
-              size="large"
-              sx={{ 
-                borderColor: 'rgba(255,255,255,0.4)', 
-                color: 'white',
-                px: 5,
-                py: 1.8,
-                borderRadius: 2,
-                fontWeight: 600,
-                textTransform: 'none',
-                borderWidth: 2,
-                '&:hover': { 
-                  bgcolor: 'rgba(255,255,255,0.1)',
-                  borderColor: 'white',
-                  borderWidth: 2,
-                } 
-              }}
-            >
-              Entrar
-            </Button>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center">
+            <Button component={Link} to="/register/pessoa-fisica" variant="contained" color="secondary" size="large">Cadastrar como morador</Button>
+            <Button component={Link} to="/register?tipo=empresa" variant="outlined" size="large" sx={{ color: 'white', borderColor: alpha('#fff', 0.5), '&:hover': { borderColor: 'white', bgcolor: alpha('#fff', 0.08) } }}>Quero ser empresa parceira</Button>
           </Stack>
         </Container>
       </Box>
 
-      {/* Footer - Modern Style */}
-      <Box sx={{ bgcolor: theme.palette.primary.dark, color: 'white', pt: 10, pb: 4 }}>
+      <Box component="footer" sx={{ bgcolor: '#092f2e', color: 'white', py: 5 }}>
         <Container maxWidth="lg">
-          <Grid container spacing={6} sx={{ mb: 8 }}>
-            <Grid item xs={12} md={4}>
-              <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 3 }}>
-                <Box
-                  sx={{
-                    width: 42,
-                    height: 42,
-                    borderRadius: 2,
-                    background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.light} 100%)`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <ParkIcon sx={{ color: 'white', fontSize: 24 }} />
-                </Box>
-                <Typography variant="h5" fontWeight={800}>
-                  Communitex
-                </Typography>
-              </Stack>
-              <Typography variant="body2" color="grey.400" sx={{ mb: 3, lineHeight: 1.8, maxWidth: 300 }}>
-                Transformando cidades através de praças mais verdes e sustentáveis. 
-                Juntos construímos comunidades melhores.
-              </Typography>
-              <Stack direction="row" spacing={1}>
-                <IconButton 
-                  size="small" 
-                  sx={{ 
-                    color: 'grey.400',
-                    '&:hover': { color: 'primary.light', bgcolor: alpha(theme.palette.primary.main, 0.1) }
-                  }}
-                >
-                  <LinkedInIcon fontSize="small" />
-                </IconButton>
-                <IconButton 
-                  size="small"
-                  sx={{ 
-                    color: 'grey.400',
-                    '&:hover': { color: 'primary.light', bgcolor: alpha(theme.palette.primary.main, 0.1) }
-                  }}
-                >
-                  <InstagramIcon fontSize="small" />
-                </IconButton>
-                <IconButton 
-                  size="small"
-                  sx={{ 
-                    color: 'grey.400',
-                    '&:hover': { color: 'primary.light', bgcolor: alpha(theme.palette.primary.main, 0.1) }
-                  }}
-                >
-                  <TwitterIcon fontSize="small" />
-                </IconButton>
-              </Stack>
-            </Grid>
-            <Grid item xs={6} sm={4} md={2}>
-              <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 2.5, color: 'grey.300' }}>
-                Programa
-              </Typography>
-              <Stack spacing={1.5}>
-                {['Sobre', 'Como funciona', 'Benefícios', 'FAQ'].map((link) => (
-                  <Typography 
-                    key={link} 
-                    variant="body2" 
-                    color="grey.500"
-                    sx={{ 
-                      cursor: 'pointer',
-                      transition: 'color 0.2s',
-                      '&:hover': { color: 'primary.light' }
-                    }}
-                  >
-                    {link}
-                  </Typography>
-                ))}
-              </Stack>
-            </Grid>
-            <Grid item xs={6} sm={4} md={2}>
-              <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 2.5, color: 'grey.300' }}>
-                Recursos
-              </Typography>
-              <Stack spacing={1.5}>
-                {['Praças', 'Documentação', 'Blog', 'Suporte'].map((link) => (
-                  <Typography 
-                    key={link} 
-                    variant="body2" 
-                    color="grey.500"
-                    sx={{ 
-                      cursor: 'pointer',
-                      transition: 'color 0.2s',
-                      '&:hover': { color: 'primary.light' }
-                    }}
-                  >
-                    {link}
-                  </Typography>
-                ))}
-              </Stack>
-            </Grid>
-            <Grid item xs={12} sm={4} md={4}>
-              <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 2.5, color: 'grey.300' }}>
-                Contato
-              </Typography>
-              <Stack spacing={2}>
-                <Stack direction="row" spacing={2} alignItems="center">
-                  <Box
-                    sx={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: 2,
-                      bgcolor: alpha(theme.palette.primary.main, 0.15),
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <EmailIcon sx={{ fontSize: 18, color: 'primary.light' }} />
-                  </Box>
-                  <Typography variant="body2" color="grey.400">
-                    contato@communitex.com
-                  </Typography>
-                </Stack>
-                <Stack direction="row" spacing={2} alignItems="center">
-                  <Box
-                    sx={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: 2,
-                      bgcolor: alpha(theme.palette.primary.main, 0.15),
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <PhoneIcon sx={{ fontSize: 18, color: 'primary.light' }} />
-                  </Box>
-                  <Typography variant="body2" color="grey.400">
-                    (47) 1234-5678
-                  </Typography>
-                </Stack>
-              </Stack>
-              <Chip 
-                icon={<PublicIcon sx={{ fontSize: 16 }} />} 
-                label="ODS 11 - Cidades Sustentáveis" 
-                size="small"
-                sx={{ 
-                  mt: 3,
-                  bgcolor: alpha(theme.palette.primary.main, 0.15),
-                  color: 'primary.light',
-                  '& .MuiChip-icon': { color: 'primary.light' },
-                  fontWeight: 500,
-                }}
-              />
-            </Grid>
-          </Grid>
-          <Divider sx={{ borderColor: alpha('#fff', 0.08), mb: 4 }} />
-          <Stack 
-            direction={{ xs: 'column', sm: 'row' }} 
-            justifyContent="space-between" 
-            alignItems="center"
-            spacing={2}
-          >
-            <Typography variant="body2" color={alpha('#fff', 0.5)}>
-              © {new Date().getFullYear()} Communitex. Todos os direitos reservados.
-            </Typography>
-            <Stack direction="row" spacing={3}>
-              <Typography
-                variant="body2"
-                color={alpha('#fff', 0.45)}
-                sx={{ cursor: 'pointer', '&:hover': { color: alpha('#fff', 0.8) } }}
-              >
-                Termos de Uso
-              </Typography>
-              <Typography
-                variant="body2"
-                color={alpha('#fff', 0.45)}
-                sx={{ cursor: 'pointer', '&:hover': { color: alpha('#fff', 0.8) } }}
-              >
-                Política de Privacidade
-              </Typography>
+          <Stack direction={{ xs: 'column', md: 'row' }} justifyContent="space-between" alignItems={{ md: 'center' }} spacing={3}>
+            <Stack direction="row" spacing={1.5} alignItems="center">
+              <Avatar sx={{ bgcolor: 'secondary.main' }}><GroupsIcon /></Avatar>
+              <Box><Typography variant="h6" fontWeight={850}>Communitex</Typography><Typography variant="caption" sx={{ color: alpha('#fff', 0.65) }}>Comunidade, parceria e zeladoria urbana.</Typography></Box>
+            </Stack>
+            <Stack direction="row" spacing={1}>
+              <IconButton component={Link} to="/login" sx={{ color: 'white' }} aria-label="Entrar"><PersonIcon /></IconButton>
+              <IconButton component={Link} to="/register?tipo=empresa" sx={{ color: 'white' }} aria-label="Cadastro de empresa"><BusinessIcon /></IconButton>
             </Stack>
           </Stack>
+          <Divider sx={{ my: 4, borderColor: alpha('#fff', 0.12) }} />
+          <Typography variant="body2" sx={{ color: alpha('#fff', 0.55) }}>© {new Date().getFullYear()} Communitex. Cuidar do comum aproxima pessoas.</Typography>
         </Container>
       </Box>
     </Box>

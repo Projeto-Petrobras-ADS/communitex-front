@@ -1,36 +1,40 @@
-import React, { useState } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { Formik, Form } from 'formik';
+import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
-import api from '../../services/api';
 import {
+  Alert,
   Box,
+  Button,
   Card,
   CardContent,
-  TextField,
-  Button,
-  Typography,
-  Alert,
   CircularProgress,
-  Grid,
+  LinearProgress,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
+  Stack,
+  TextField,
+  Typography,
 } from '@mui/material';
 import {
-  ArrowBack as ArrowBackIcon,
-  Park as ParkIcon,
-  LightbulbOutlined as LightbulbIcon,
   CheckCircleOutline as CheckIcon,
-  HelpOutline as HelpIcon,
+  Handshake as HandshakeIcon,
+  LightbulbOutlined as LightbulbIcon,
+  Send as SendIcon,
 } from '@mui/icons-material';
+import AdocaoService from '../../services/AdocaoService';
+import PracaService from '../../services/PracaService';
+import { PageHeader } from '../common';
 
-const manifestacaoSchema = Yup.object().shape({
+const MAX_LENGTH = 2000;
+
+const manifestacaoSchema = Yup.object({
   proposta: Yup.string()
-    .min(20, 'A proposta deve ter pelo menos 20 caracteres')
-    .max(2000, 'A proposta não pode exceder 2000 caracteres')
-    .required('A proposta é obrigatória'),
+    .min(20, 'Descreva sua proposta com pelo menos 20 caracteres.')
+    .max(MAX_LENGTH, `A proposta não pode exceder ${MAX_LENGTH} caracteres.`)
+    .required('A descrição da proposta é obrigatória.'),
 });
 
 const ManifestacaoInteresse = () => {
@@ -38,143 +42,110 @@ const ManifestacaoInteresse = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [serverError, setServerError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [pracaNome] = useState(location.state?.pracaNome || 'Praça');
+  const [pracaDisponivel, setPracaDisponivel] = useState(null);
+  const pracaNome = location.state?.pracaNome || 'esta praça';
+
+  useEffect(() => {
+    PracaService.buscarPracaSimples(id)
+      .then((praca) => setPracaDisponivel(praca.status === 'DISPONIVEL'))
+      .catch(() => {
+        setPracaDisponivel(false);
+        setServerError('Não foi possível validar a disponibilidade desta praça.');
+      });
+  }, [id]);
 
   const handleSubmit = async (values, { setSubmitting }) => {
     setServerError('');
-    setLoading(true);
-
     try {
-      const interesseDTO = {
-        pracaId: parseInt(id),
-        proposta: values.proposta,
-      };
-
-      await api.post('/api/adocao/interesse', interesseDTO);
-
-      navigate(`/pracas/${id}`, { 
-        state: { successMessage: 'Manifestação de interesse enviada com sucesso!' } 
-      });
+      await AdocaoService.registrarInteresse(id, values.proposta);
+      navigate('/minhas-propostas', { state: { successMessage: 'Manifestação de interesse enviada com sucesso!' } });
     } catch (err) {
-      console.error('Erro ao manifestar interesse:', err);
-      setServerError(err.response?.data?.message || 'Erro ao enviar manifestação.');
-    } finally {
+      setServerError(err.message || 'Não foi possível enviar sua manifestação.');
       setSubmitting(false);
-      setLoading(false);
     }
   };
 
   const tips = [
-    'Seja específico sobre as melhorias',
-    'Mencione cronograma realista',
-    'Descreva estrutura de manutenção',
-    'Inclua equipe responsável',
+    'Explique quais melhorias serão realizadas.',
+    'Apresente uma frequência realista de manutenção.',
+    'Descreva a equipe ou parceiros envolvidos.',
+    'Mostre como a comunidade será beneficiada.',
   ];
 
   return (
     <Box>
-      <Button startIcon={<ArrowBackIcon />} onClick={() => navigate(`/pracas/${id}`)} sx={{ mb: 3 }}>
-        Voltar
-      </Button>
+      <PageHeader
+        title="Manifestar interesse"
+        subtitle={`Conte como sua empresa pretende cuidar de ${pracaNome}.`}
+        icon={HandshakeIcon}
+        backLink={`/pracas/${id}`}
+        backLabel="Voltar para a praça"
+      />
 
-      <Typography variant="h4" fontWeight={700} gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <ParkIcon color="primary" /> Manifestar Interesse - {pracaNome}
-      </Typography>
+      <Stack direction={{ xs: 'column', lg: 'row' }} spacing={3} alignItems="flex-start">
+        <Card sx={{ flex: 1, width: '100%' }}>
+          <CardContent sx={{ p: { xs: 2.5, md: 4 } }}>
+            <Typography variant="h5" fontWeight={800} gutterBottom>Plano inicial de adoção</Typography>
+            <Typography color="text.secondary" sx={{ mb: 3 }}>
+              Esta manifestação será enviada ao poder público para avaliação. Seja objetivo e apresente compromissos possíveis de cumprir.
+            </Typography>
 
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={8}>
-          <Card sx={{ mb: 3, bgcolor: 'primary.light', color: 'primary.contrastText' }}>
-            <CardContent>
-              <Typography>
-                📋 Preencha os detalhes de sua proposta para adoção dessa praça. 
-                Seja claro e conciso sobre como sua empresa planeja cuidar do espaço.
-              </Typography>
-            </CardContent>
-          </Card>
+            {serverError && <Alert severity="error" sx={{ mb: 3 }}>{serverError}</Alert>}
+            {pracaDisponivel === false && (
+              <Alert severity="warning" sx={{ mb: 3 }}>
+                Esta praça não está disponível para receber novas propostas.
+              </Alert>
+            )}
 
-          {serverError && (
-            <Alert severity="error" sx={{ mb: 3 }}>{serverError}</Alert>
-          )}
-
-          <Card>
-            <CardContent>
-              <Formik
-                initialValues={{ proposta: '' }}
-                validationSchema={manifestacaoSchema}
-                onSubmit={handleSubmit}
-              >
-                {({ isSubmitting, values, handleChange, handleBlur, errors, touched }) => (
+            <Formik initialValues={{ proposta: '' }} validationSchema={manifestacaoSchema} onSubmit={handleSubmit}>
+              {({ isSubmitting, values, handleChange, handleBlur, errors, touched }) => {
+                const progress = Math.min((values.proposta.length / MAX_LENGTH) * 100, 100);
+                return (
                   <Form>
-                    <Typography variant="h6" gutterBottom>📝 Descrição do Projeto *</Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      Descreva como sua empresa planeja cuidar da praça, quais melhorias pretende realizar e o cronograma.
-                    </Typography>
-
                     <TextField
                       fullWidth
                       multiline
-                      rows={8}
+                      minRows={10}
                       name="proposta"
-                      placeholder="Ex: Nossa empresa pretende realizar manutenção mensal incluindo jardinagem, limpeza e pequenos reparos..."
+                      label="Descrição da proposta"
+                      placeholder="Ex.: Nossa empresa realizará jardinagem quinzenal, limpeza semanal e recuperação dos bancos..."
                       value={values.proposta}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       error={touched.proposta && Boolean(errors.proposta)}
-                      helperText={(touched.proposta && errors.proposta) || `${values.proposta.length} / 2000 caracteres`}
+                      helperText={(touched.proposta && errors.proposta) || `${values.proposta.length} de ${MAX_LENGTH} caracteres`}
+                      inputProps={{ maxLength: MAX_LENGTH }}
                     />
-
-                    <Box sx={{ display: 'flex', gap: 2, mt: 3, justifyContent: 'flex-end' }}>
-                      <Button variant="outlined" onClick={() => navigate(`/pracas/${id}`)} disabled={isSubmitting}>
-                        Cancelar
+                    <LinearProgress variant="determinate" value={progress} sx={{ mt: 1, borderRadius: 10, height: 5 }} />
+                    <Stack direction={{ xs: 'column-reverse', sm: 'row' }} spacing={2} justifyContent="flex-end" sx={{ mt: 3 }}>
+                      <Button variant="outlined" onClick={() => navigate(`/pracas/${id}`)} disabled={isSubmitting}>Cancelar</Button>
+                      <Button type="submit" variant="contained" disabled={isSubmitting || pracaDisponivel !== true} startIcon={isSubmitting ? <CircularProgress size={18} color="inherit" /> : <SendIcon />}>
+                        {isSubmitting ? 'Enviando...' : 'Enviar manifestação'}
                       </Button>
-                      <Button
-                        type="submit"
-                        variant="contained"
-                        disabled={isSubmitting || loading}
-                        startIcon={isSubmitting || loading ? <CircularProgress size={20} color="inherit" /> : <ParkIcon />}
-                      >
-                        {isSubmitting || loading ? 'Enviando...' : 'Enviar Manifestação'}
-                      </Button>
-                    </Box>
+                    </Stack>
                   </Form>
-                )}
-              </Formik>
-            </CardContent>
-          </Card>
-        </Grid>
+                );
+              }}
+            </Formik>
+          </CardContent>
+        </Card>
 
-        <Grid item xs={12} md={4}>
-          <Card sx={{ mb: 2 }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <LightbulbIcon color="primary" /> Dicas para sua proposta
-              </Typography>
-              <List dense>
-                {tips.map((tip, index) => (
-                  <ListItem key={index} disableGutters>
-                    <ListItemIcon sx={{ minWidth: 32 }}>
-                      <CheckIcon color="success" fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText primary={tip} />
-                  </ListItem>
-                ))}
-              </List>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <HelpIcon color="primary" /> Dúvidas?
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Entre em contato conosco através do email contato@communitex.com
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+        <Card sx={{ width: { xs: '100%', lg: 340 }, position: { lg: 'sticky' }, top: { lg: 92 } }}>
+          <CardContent>
+            <Typography variant="h6" fontWeight={800} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <LightbulbIcon color="secondary" /> Uma boa proposta inclui
+            </Typography>
+            <List dense>
+              {tips.map((tip) => (
+                <ListItem key={tip} disableGutters>
+                  <ListItemIcon sx={{ minWidth: 34 }}><CheckIcon color="success" fontSize="small" /></ListItemIcon>
+                  <ListItemText primary={tip} />
+                </ListItem>
+              ))}
+            </List>
+          </CardContent>
+        </Card>
+      </Stack>
     </Box>
   );
 };

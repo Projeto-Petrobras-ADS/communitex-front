@@ -9,8 +9,22 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f4f7f4;
-  color: #1a2e1e;
+  background-color: #f7f3ea;
+  color: #263633;
+}
+
+button, a, input, textarea, select {
+  font: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid #56a5a0;
+  outline-offset: 2px;
+}
+
+::selection {
+  background: #dcefed;
+  color: #0d4947;
 }
 
 code {

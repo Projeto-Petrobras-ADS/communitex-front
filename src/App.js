@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useParams } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
@@ -11,6 +11,7 @@ import { PUBLIC_ROUTES, PROTECTED_ROUTES, ADMIN_ROUTES, USER_ROUTES } from './ro
 
 // Context
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { NotificationProvider } from './context/NotificationContext';
 
 // Layout
 import AppLayout from './components/Layout/AppLayout';
@@ -18,8 +19,8 @@ import AppLayout from './components/Layout/AppLayout';
 // Pages - Auth
 import Login from './components/Login/Login';
 import Register from './components/Register/Register';
-import RegisterPessoaFisica from './components/Register/RegisterPessoaFisica';
 import { Landing } from './components/Landing/Landing';
+import PublicGuide from './components/Guide/PublicGuide';
 
 // Pages - Praças
 import PracaList from './components/Pracas/PracaList';
@@ -27,19 +28,22 @@ import PracaDetail from './components/Pracas/PracaDetail';
 import PracaForm from './components/Pracas/PracaForm';
 
 // Pages - Adoção
-import PropostaAdocaoForm from './components/Adocao/PropostaAdocaoForm';
 import MinhasPropostas from './components/Adocao/MinhasPropostas';
 import ManifestacaoInteresse from './components/Adocao/ManifestacaoInteresse';
+import RoleDashboard from './components/Dashboard/RoleDashboard';
+import ProfilePage from './components/Profile/ProfilePage';
 
 // Pages - Admin
 import GerenciamentoPropostas from './components/Admin/GerenciamentoPropostas';
 
 // Pages - Community Map
 import { CommunityMap, IssueList } from './components/CommunityMap';
+import ReparosEmpresa from './components/CommunityMap/ReparosEmpresa';
 
 // Route Guards
 import AdminRoute from './components/Auth/AdminRoute';
 import UserRoute from './components/Auth/UserRoute';
+import EmpresaRoute from './components/Auth/EmpresaRoute';
 
 /**
  * Componente de Rota Protegida
@@ -59,6 +63,11 @@ const ProtectedLayout = ({ children }) => (
   </ProtectedRoute>
 );
 
+const LegacyProposalRedirect = () => {
+  const { id } = useParams();
+  return <Navigate to={`/pracas/${id}/manifestar-interesse`} replace />;
+};
+
 /**
  * Componente principal da aplicação
  */
@@ -66,22 +75,26 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <AuthProvider>
-        <BrowserRouter>
+      <NotificationProvider>
+        <AuthProvider>
+          <BrowserRouter>
           <Routes>
             {/* === ROTAS PÚBLICAS === */}
             <Route path={PUBLIC_ROUTES.HOME} element={<Landing />} />
+            <Route path={PUBLIC_ROUTES.GUIDE} element={<PublicGuide />} />
             <Route path={PUBLIC_ROUTES.LOGIN} element={<Login />} />
             <Route path={PUBLIC_ROUTES.REGISTER} element={<Register />} />
-            <Route path={PUBLIC_ROUTES.REGISTER_PESSOA_FISICA} element={<RegisterPessoaFisica />} />
+            <Route path={PUBLIC_ROUTES.REGISTER_PESSOA_FISICA} element={<Navigate to="/register?tipo=morador" replace />} />
 
             {/* === ROTAS PROTEGIDAS === */}
             <Route path={PROTECTED_ROUTES.PRACAS} element={<ProtectedLayout><PracaList /></ProtectedLayout>} />
             <Route path={PROTECTED_ROUTES.PRACA_DETAIL} element={<ProtectedLayout><PracaDetail /></ProtectedLayout>} />
-            <Route path={PROTECTED_ROUTES.PRACA_MANIFESTAR} element={<ProtectedLayout><ManifestacaoInteresse /></ProtectedLayout>} />
-            <Route path={PROTECTED_ROUTES.PRACA_PROPOR} element={<ProtectedLayout><PropostaAdocaoForm /></ProtectedLayout>} />
-            <Route path={PROTECTED_ROUTES.MINHAS_PROPOSTAS} element={<ProtectedLayout><MinhasPropostas /></ProtectedLayout>} />
-            <Route path={PROTECTED_ROUTES.DASHBOARD} element={<Navigate to={PROTECTED_ROUTES.PRACAS} replace />} />
+            <Route path={PROTECTED_ROUTES.PRACA_MANIFESTAR} element={<EmpresaRoute><AppLayout><ManifestacaoInteresse /></AppLayout></EmpresaRoute>} />
+            <Route path={PROTECTED_ROUTES.PRACA_PROPOR} element={<EmpresaRoute><LegacyProposalRedirect /></EmpresaRoute>} />
+            <Route path={PROTECTED_ROUTES.MINHAS_PROPOSTAS} element={<EmpresaRoute><AppLayout><MinhasPropostas /></AppLayout></EmpresaRoute>} />
+            <Route path={PROTECTED_ROUTES.REPAROS} element={<EmpresaRoute><AppLayout><ReparosEmpresa /></AppLayout></EmpresaRoute>} />
+            <Route path={PROTECTED_ROUTES.DASHBOARD} element={<ProtectedLayout><RoleDashboard /></ProtectedLayout>} />
+            <Route path={PROTECTED_ROUTES.PROFILE} element={<ProtectedLayout><ProfilePage /></ProtectedLayout>} />
 
             {/* === ROTAS DE ADMIN === */}
             <Route path={ADMIN_ROUTES.NOVA_PRACA} element={<AdminRoute><AppLayout><PracaForm /></AppLayout></AdminRoute>} />
@@ -94,8 +107,9 @@ function App() {
             <Route path={PROTECTED_ROUTES.DENUNCIAS} element={<ProtectedLayout><CommunityMap /></ProtectedLayout>} />
             <Route path={PROTECTED_ROUTES.DENUNCIAS_LISTA} element={<ProtectedLayout><IssueList /></ProtectedLayout>} />
           </Routes>
-        </BrowserRouter>
-      </AuthProvider>
+          </BrowserRouter>
+        </AuthProvider>
+      </NotificationProvider>
     </ThemeProvider>
   );
 }

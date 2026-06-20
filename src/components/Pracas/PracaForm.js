@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
-import api from '../../services/api';
+import PracaService from '../../services/PracaService';
+import PracaMap from './PracaMap';
 
 // Constantes centralizadas
 import { PRACA_STATUS_OPTIONS } from '../../constants';
 
 import {
   Box,
-  Card,
   CardContent,
   TextField,
   Button,
@@ -20,8 +20,6 @@ import {
   Stack,
   MenuItem,
   useTheme,
-  alpha,
-  Snackbar,
   InputAdornment,
   Grid,
 } from '@mui/material';
@@ -32,14 +30,14 @@ import {
   LocationCity as CityIcon,
   Map as MapIcon,
   SquareFoot as SquareFootIcon,
-  Description as DescriptionIcon,
   Image as ImageIcon,
   ArrowBack as ArrowBackIcon,
-  ArrowForward as ArrowForwardIcon,
-  CheckCircle as CheckCircleIcon,
   Settings as SettingsIcon,
   Save as SaveIcon,
+  DeleteOutline as DeleteIcon,
+  CloudUpload as CloudUploadIcon,
 } from '@mui/icons-material';
+import { useNotification } from '../../context/NotificationContext';
 
 const PracaSchema = Yup.object().shape({
   nome: Yup.string()
@@ -64,25 +62,58 @@ const PracaSchema = Yup.object().shape({
     .max(1000, 'Descrição não pode exceder 1000 caracteres')
     .nullable(),
 
-  fotoUrl: Yup.string()
-    .url('Deve ser uma URL válida (ex: http://.../imagem.png)')
-    .nullable(),
-
   metragemM2: Yup.number()
     .typeError('Metragem deve ser um número (ex: 2500.5)')
     .positive('Metragem deve ser um valor positivo')
-    .nullable(),
+    .required('A metragem é obrigatória'),
 
   status: Yup.string()
     .oneOf(PRACA_STATUS_OPTIONS.map(opt => opt.value), 'Status inválido')
     .required('O status é obrigatório'),
-});
+}).test('location', 'Marque um ponto ou desenhe a area da praca', (values) => (
+  Boolean(values?.poligono) || (values?.latitude !== '' && values?.latitude != null && values?.longitude !== '' && values?.longitude != null)
+));
 
 const PracaForm = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const { notifySuccess } = useNotification();
   const [serverError, setServerError] = useState('');
-  const [showSuccess, setShowSuccess] = useState(false);
+  const [foto, setFoto] = useState(null);
+  const [fotoPreview, setFotoPreview] = useState('');
+  const [fotoError, setFotoError] = useState('');
+  const [mapMode, setMapMode] = useState('point');
+
+  useEffect(() => () => {
+    if (fotoPreview) URL.revokeObjectURL(fotoPreview);
+  }, [fotoPreview]);
+
+  const handleFotoChange = (event) => {
+    const arquivo = event.target.files?.[0];
+    event.target.value = '';
+    if (!arquivo) return;
+
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(arquivo.type)) {
+      setFotoError('Envie uma imagem JPEG, PNG ou WebP.');
+      return;
+    }
+    if (arquivo.size > 5 * 1024 * 1024) {
+      setFotoError('A imagem deve ter no máximo 5 MB.');
+      return;
+    }
+
+    if (fotoPreview) URL.revokeObjectURL(fotoPreview);
+    setFoto(arquivo);
+    setFotoPreview(URL.createObjectURL(arquivo));
+    setFotoError('');
+  };
+
+  const removeFoto = () => {
+    if (fotoPreview) URL.revokeObjectURL(fotoPreview);
+    setFoto(null);
+    setFotoPreview('');
+    setFotoError('');
+  };
 
   const handleSubmit = async (values, { setSubmitting }) => {
     setServerError('');
@@ -92,19 +123,19 @@ const PracaForm = () => {
       logradouro: values.logradouro || null,
       bairro: values.bairro || null,
       cidade: values.cidade,
-      latitude: values.latitude ? parseFloat(values.latitude) : null,
-      longitude: values.longitude ? parseFloat(values.longitude) : null,
+      latitude: values.latitude !== '' && values.latitude != null ? parseFloat(values.latitude) : null,
+      longitude: values.longitude !== '' && values.longitude != null ? parseFloat(values.longitude) : null,
+      poligono: values.poligono || null,
       descricao: values.descricao || null,
-      fotoUrl: values.fotoUrl || null,
       metragemM2: values.metragemM2 ? parseFloat(values.metragemM2) : null,
       status: values.status,
     };
 
     try {
-      await api.post('/api/pracas', pracaRequestDTO);
+      await PracaService.cadastrarPraca(pracaRequestDTO, foto);
 
       setSubmitting(false);
-      setShowSuccess(true);
+      notifySuccess('Praça cadastrada com sucesso.');
 
       setTimeout(() => {
         navigate('/pracas');
@@ -154,16 +185,6 @@ const PracaForm = () => {
         </Typography>
       </Paper>
 
-      <Snackbar
-        open={showSuccess}
-        autoHideDuration={3000}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        <Alert severity="success" icon={<CheckCircleIcon />} sx={{ borderRadius: 2 }}>
-          <strong>Praça cadastrada com sucesso!</strong> Redirecionando para a lista...
-        </Alert>
-      </Snackbar>
-
       <Paper elevation={1} sx={{ borderRadius: 2, overflow: 'hidden' }}>
         <CardContent sx={{ p: { xs: 3, md: 4 } }}>
           <Formik
@@ -174,15 +195,15 @@ const PracaForm = () => {
               cidade: '',
               latitude: '',
               longitude: '',
+              poligono: null,
               descricao: '',
-              fotoUrl: '',
               metragemM2: '',
               status: 'DISPONIVEL', 
             }}
             validationSchema={PracaSchema}
             onSubmit={handleSubmit}
           >
-            {({ isSubmitting, values, errors, touched, handleChange, handleBlur }) => (
+            {({ isSubmitting, values, errors, touched, handleChange, handleBlur, setFieldValue }) => (
               <Form>
                 {serverError && (
                   <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
@@ -237,24 +258,47 @@ const PracaForm = () => {
                     </TextField>
                   </Grid>
                   <Grid size={{ xs: 12 }}>
-                    <TextField
-                      fullWidth
-                      label="URL da Foto Principal (Opcional)"
-                      name="fotoUrl"
-                      value={values.fotoUrl}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      error={touched.fotoUrl && Boolean(errors.fotoUrl)}
-                      helperText={touched.fotoUrl && errors.fotoUrl}
-                      placeholder="http://exemplo.com/foto.jpg"
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <ImageIcon color="action" />
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
+                    <Paper
+                      variant="outlined"
+                      sx={{ p: 2, borderStyle: 'dashed', borderColor: fotoError ? 'error.main' : 'divider', bgcolor: 'background.default' }}
+                    >
+                      {fotoPreview ? (
+                        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
+                          <Box
+                            component="img"
+                            src={fotoPreview}
+                            alt="Pré-visualização da praça"
+                            sx={{ width: { xs: '100%', sm: 220 }, height: 140, objectFit: 'cover', borderRadius: 2 }}
+                          />
+                          <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+                            <Typography fontWeight={700} noWrap>{foto.name}</Typography>
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                              {(foto.size / 1024 / 1024).toFixed(2)} MB
+                            </Typography>
+                            <Stack direction="row" spacing={1}>
+                              <Button component="label" variant="outlined" startIcon={<ImageIcon />}>
+                                Trocar foto
+                                <input hidden type="file" accept="image/jpeg,image/png,image/webp" onChange={handleFotoChange} />
+                              </Button>
+                              <Button color="error" onClick={removeFoto} startIcon={<DeleteIcon />}>Remover</Button>
+                            </Stack>
+                          </Box>
+                        </Stack>
+                      ) : (
+                        <Stack alignItems="center" spacing={1} sx={{ py: 3, textAlign: 'center' }}>
+                          <CloudUploadIcon color="primary" sx={{ fontSize: 42 }} />
+                          <Typography fontWeight={700}>Adicione uma foto da praça</Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            JPEG, PNG ou WebP, com no máximo 5 MB.
+                          </Typography>
+                          <Button component="label" variant="outlined" startIcon={<ImageIcon />}>
+                            Escolher do dispositivo
+                            <input hidden type="file" accept="image/jpeg,image/png,image/webp" onChange={handleFotoChange} />
+                          </Button>
+                        </Stack>
+                      )}
+                      {fotoError && <Typography color="error" variant="caption">{fotoError}</Typography>}
+                    </Paper>
                   </Grid>
                 </Grid>
 
@@ -299,6 +343,22 @@ const PracaForm = () => {
                       }}
                     />
                   </Grid>
+                  <Grid size={{ xs: 12 }}>
+                    <PracaMap
+                      editable
+                      mode={mapMode}
+                      onModeChange={setMapMode}
+                      latitude={values.latitude}
+                      longitude={values.longitude}
+                      polygon={values.poligono}
+                      onChange={({ polygon, latitude, longitude, metragemM2 }) => {
+                        setFieldValue('poligono', polygon);
+                        setFieldValue('latitude', latitude ?? '');
+                        setFieldValue('longitude', longitude ?? '');
+                        if (mapMode === 'polygon' || polygon) setFieldValue('metragemM2', metragemM2 ? Number(metragemM2.toFixed(2)) : '');
+                      }}
+                    />
+                  </Grid>
                   <Grid size={{ xs: 12, sm: 6 }}>
                     <TextField
                       fullWidth
@@ -333,6 +393,7 @@ const PracaForm = () => {
                       helperText={touched.latitude && errors.latitude}
                       placeholder="-27.5969"
                       inputProps={{ step: 'any' }}
+                      slotProps={{ input: { readOnly: true } }}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
@@ -355,6 +416,7 @@ const PracaForm = () => {
                       helperText={touched.longitude && errors.longitude}
                       placeholder="-48.5495"
                       inputProps={{ step: 'any' }}
+                      slotProps={{ input: { readOnly: true } }}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
@@ -374,7 +436,7 @@ const PracaForm = () => {
                   <Grid size={{ xs: 12, sm: 6 }}>
                     <TextField
                       fullWidth
-                      label="Metragem (m²) (Opcional)"
+                      label={mapMode === 'polygon' ? 'Metragem calculada (m²)' : 'Metragem (m²)'}
                       name="metragemM2"
                       type="number"
                       value={values.metragemM2}
@@ -383,7 +445,9 @@ const PracaForm = () => {
                       error={touched.metragemM2 && Boolean(errors.metragemM2)}
                       helperText={touched.metragemM2 && errors.metragemM2}
                       placeholder="Ex: 2500.50"
+                      required
                       inputProps={{ step: '0.01' }}
+                      slotProps={{ input: { readOnly: mapMode === 'polygon' } }}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
