@@ -19,7 +19,6 @@ import AppLayout from './components/Layout/AppLayout';
 // Pages - Auth
 import Login from './components/Login/Login';
 import Register from './components/Register/Register';
-import RegisterPessoaFisica from './components/Register/RegisterPessoaFisica';
 import { Landing } from './components/Landing/Landing';
 import PublicGuide from './components/Guide/PublicGuide';
 
@@ -32,6 +31,7 @@ import PracaForm from './components/Pracas/PracaForm';
 import MinhasPropostas from './components/Adocao/MinhasPropostas';
 import ManifestacaoInteresse from './components/Adocao/ManifestacaoInteresse';
 import RoleDashboard from './components/Dashboard/RoleDashboard';
+import ProfilePage from './components/Profile/ProfilePage';
 
 // Pages - Admin
 import GerenciamentoPropostas from './components/Admin/GerenciamentoPropostas';
@@ -84,7 +84,7 @@ function App() {
             <Route path={PUBLIC_ROUTES.GUIDE} element={<PublicGuide />} />
             <Route path={PUBLIC_ROUTES.LOGIN} element={<Login />} />
             <Route path={PUBLIC_ROUTES.REGISTER} element={<Register />} />
-            <Route path={PUBLIC_ROUTES.REGISTER_PESSOA_FISICA} element={<RegisterPessoaFisica />} />
+            <Route path={PUBLIC_ROUTES.REGISTER_PESSOA_FISICA} element={<Navigate to="/register?tipo=morador" replace />} />
 
             {/* === ROTAS PROTEGIDAS === */}
             <Route path={PROTECTED_ROUTES.PRACAS} element={<ProtectedLayout><PracaList /></ProtectedLayout>} />
@@ -94,6 +94,7 @@ function App() {
             <Route path={PROTECTED_ROUTES.MINHAS_PROPOSTAS} element={<EmpresaRoute><AppLayout><MinhasPropostas /></AppLayout></EmpresaRoute>} />
             <Route path={PROTECTED_ROUTES.REPAROS} element={<EmpresaRoute><AppLayout><ReparosEmpresa /></AppLayout></EmpresaRoute>} />
             <Route path={PROTECTED_ROUTES.DASHBOARD} element={<ProtectedLayout><RoleDashboard /></ProtectedLayout>} />
+            <Route path={PROTECTED_ROUTES.PROFILE} element={<ProtectedLayout><ProfilePage /></ProtectedLayout>} />
 
             {/* === ROTAS DE ADMIN === */}
             <Route path={ADMIN_ROUTES.NOVA_PRACA} element={<AdminRoute><AppLayout><PracaForm /></AppLayout></AdminRoute>} />

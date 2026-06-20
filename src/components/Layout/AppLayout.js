@@ -9,6 +9,7 @@ import {
   DashboardOutlined, EnergySavingsLeaf, ExpandLess, ExpandMore, ListAltOutlined,
   Logout, MapOutlined, Menu, ParkOutlined, ReportProblemOutlined,
   BuildOutlined,
+  ManageAccountsOutlined,
 } from '@mui/icons-material';
 import { useAuth } from '../../context/AuthContext';
 import { ADMIN_ROUTES, PROTECTED_ROUTES } from '../../routes/paths';
@@ -41,6 +42,15 @@ const AppLayout = ({ children }) => {
       show: isEmpresa || isUser,
       children: [
         { label: 'Visão geral', icon: DashboardOutlined, path: PROTECTED_ROUTES.DASHBOARD },
+      ],
+    },
+    {
+      id: 'conta',
+      label: 'Conta',
+      icon: ManageAccountsOutlined,
+      show: isEmpresa || isUser,
+      children: [
+        { label: 'Meu perfil', icon: ManageAccountsOutlined, path: PROTECTED_ROUTES.PROFILE },
       ],
     },
     {

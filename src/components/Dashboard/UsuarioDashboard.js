@@ -13,6 +13,7 @@ import DashboardService from '../../services/DashboardService';
 import { getIssueStatusConfig, getPracaStatusConfig } from '../../constants';
 import { formatDate } from '../../utils';
 import { LoadingState, MetricCard, PageHeader, StatusChip } from '../common';
+import ProfileCompletionPrompt from '../Profile/ProfileCompletionPrompt';
 
 const SectionHeader = ({ title, actionLabel, to }) => (
   <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
@@ -65,6 +66,8 @@ const UsuarioDashboard = () => {
           <Button key="issue" component={Link} to="/denuncias" variant="contained" startIcon={<CampaignOutlined />}>Registrar denúncia</Button>,
         ]}
       />
+
+      <ProfileCompletionPrompt />
 
       {dashboard.confirmacoesPendentes > 0 && (
         <Alert severity="warning" action={<Button component={Link} to="/denuncias/lista">Ver denúncias</Button>}>

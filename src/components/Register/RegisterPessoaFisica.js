@@ -276,7 +276,7 @@ const RegisterPessoaFisica = () => {
             </Button>
             <Button
               component={Link}
-              to="/register"
+              to="/register?tipo=empresa"
               variant="outlined"
               sx={{
                 color: 'white',

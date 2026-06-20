@@ -15,6 +15,7 @@ export const PUBLIC_ROUTES = {
 // Rotas Protegidas (Autenticado)
 export const PROTECTED_ROUTES = {
   DASHBOARD: '/dashboard',
+  PROFILE: '/perfil',
   PRACAS: '/pracas',
   PRACA_DETAIL: '/pracas/:id',
   PRACA_MANIFESTAR: '/pracas/:id/manifestar-interesse',

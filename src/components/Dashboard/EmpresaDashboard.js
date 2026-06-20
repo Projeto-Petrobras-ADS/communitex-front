@@ -15,6 +15,7 @@ import { resolveApiUrl } from '../../services/api';
 import { getPropostaStatusConfig } from '../../constants';
 import { formatDate, formatDateTime, formatNumber } from '../../utils';
 import { EmptyState, LoadingState, MetricCard, PageHeader, StatusChip } from '../common';
+import ProfileCompletionPrompt from '../Profile/ProfileCompletionPrompt';
 
 const REPAIR_STATUS = {
   ACEITO: { label: 'Aceito', color: 'info' },
@@ -78,6 +79,8 @@ const EmpresaDashboard = () => {
           <Button key="parks" component={Link} to="/pracas" variant="contained" startIcon={<ParkOutlined />}>Encontrar praça</Button>,
         ]}
       />
+
+      <ProfileCompletionPrompt />
 
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, sm: 6, lg: 3 }}>

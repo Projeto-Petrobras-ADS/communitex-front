@@ -197,7 +197,7 @@ const PublicGuide = () => {
             <Typography sx={{ mt: 2, color: alpha('#fff', 0.75) }}>Escolha seu perfil e comece a contribuir com o cuidado da cidade.</Typography>
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center" sx={{ mt: 4 }}>
               <Button component={Link} to="/register/pessoa-fisica" variant="contained" color="secondary" endIcon={<ArrowForward />}>Cadastrar como morador</Button>
-              <Button component={Link} to="/register" variant="outlined" sx={{ color: 'white', borderColor: alpha('#fff', 0.5) }}>Cadastrar empresa</Button>
+              <Button component={Link} to="/register?tipo=empresa" variant="outlined" sx={{ color: 'white', borderColor: alpha('#fff', 0.5) }}>Cadastrar empresa</Button>
             </Stack>
           </Container>
         </Box>

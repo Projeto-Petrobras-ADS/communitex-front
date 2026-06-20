@@ -29,5 +29,5 @@ test('oferece caminhos publicos de cadastro e retorno', () => {
 
   expect(screen.getByRole('link', { name: 'Voltar' })).toHaveAttribute('href', '/');
   expect(screen.getByRole('link', { name: 'Cadastrar como morador' })).toHaveAttribute('href', '/register/pessoa-fisica');
-  expect(screen.getByRole('link', { name: 'Cadastrar empresa' })).toHaveAttribute('href', '/register');
+  expect(screen.getByRole('link', { name: 'Cadastrar empresa' })).toHaveAttribute('href', '/register?tipo=empresa');
 });

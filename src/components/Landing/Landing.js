@@ -113,7 +113,7 @@ const Landing = () => {
               <MenuItem component={Link} to="/register/pessoa-fisica" onClick={() => setAnchorEl(null)}>
                 <PersonIcon sx={{ mr: 1.5, color: 'primary.main' }} /> Sou morador
               </MenuItem>
-              <MenuItem component={Link} to="/register" onClick={() => setAnchorEl(null)}>
+              <MenuItem component={Link} to="/register?tipo=empresa" onClick={() => setAnchorEl(null)}>
                 <BusinessIcon sx={{ mr: 1.5, color: 'secondary.main' }} /> Represento uma empresa
               </MenuItem>
             </Menu>
@@ -261,7 +261,7 @@ const Landing = () => {
           </Typography>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center">
             <Button component={Link} to="/register/pessoa-fisica" variant="contained" color="secondary" size="large">Cadastrar como morador</Button>
-            <Button component={Link} to="/register" variant="outlined" size="large" sx={{ color: 'white', borderColor: alpha('#fff', 0.5), '&:hover': { borderColor: 'white', bgcolor: alpha('#fff', 0.08) } }}>Quero ser empresa parceira</Button>
+            <Button component={Link} to="/register?tipo=empresa" variant="outlined" size="large" sx={{ color: 'white', borderColor: alpha('#fff', 0.5), '&:hover': { borderColor: 'white', bgcolor: alpha('#fff', 0.08) } }}>Quero ser empresa parceira</Button>
           </Stack>
         </Container>
       </Box>
@@ -275,7 +275,7 @@ const Landing = () => {
             </Stack>
             <Stack direction="row" spacing={1}>
               <IconButton component={Link} to="/login" sx={{ color: 'white' }} aria-label="Entrar"><PersonIcon /></IconButton>
-              <IconButton component={Link} to="/register" sx={{ color: 'white' }} aria-label="Cadastro de empresa"><BusinessIcon /></IconButton>
+              <IconButton component={Link} to="/register?tipo=empresa" sx={{ color: 'white' }} aria-label="Cadastro de empresa"><BusinessIcon /></IconButton>
             </Stack>
           </Stack>
           <Divider sx={{ my: 4, borderColor: alpha('#fff', 0.12) }} />

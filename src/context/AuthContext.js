@@ -54,6 +54,12 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const establishSession = ({ accessToken, refreshToken }) => {
+    localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('refreshToken', refreshToken);
+    setUser(jwtDecode(accessToken));
+  };
+
   const logout = () => {
     setUser(null);
     clearAuthTokens();
@@ -62,7 +68,7 @@ export const AuthProvider = ({ children }) => {
   const isAuthenticated = () => Boolean(user);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated, loading }}>
+    <AuthContext.Provider value={{ user, login, establishSession, logout, isAuthenticated, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   );

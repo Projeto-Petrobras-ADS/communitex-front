@@ -14,6 +14,8 @@ jest.mock('../../services/DashboardService', () => ({
   obterDashboardEmpresa: jest.fn(),
 }));
 
+jest.mock('../Profile/ProfileCompletionPrompt', () => () => null);
+
 jest.mock('../../services/api', () => ({
   resolveApiUrl: (url) => url,
 }));

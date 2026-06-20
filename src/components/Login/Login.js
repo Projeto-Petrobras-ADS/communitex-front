@@ -196,7 +196,7 @@ const Login = () => {
             <Stack direction="row" spacing={1.5}>
               <Button
                 component={Link}
-                to="/register"
+                to="/register?tipo=empresa"
                 variant="contained"
                 endIcon={<ArrowForwardIcon />}
                 sx={{
@@ -396,7 +396,7 @@ const Login = () => {
             <Stack spacing={1.5}>
               <Button
                 component={Link}
-                to="/register"
+                to="/register?tipo=empresa"
                 variant="outlined"
                 fullWidth
                 sx={{ 

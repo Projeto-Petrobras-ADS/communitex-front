@@ -14,6 +14,8 @@ jest.mock('../../services/DashboardService', () => ({
   obterDashboardUsuario: jest.fn(),
 }));
 
+jest.mock('../Profile/ProfileCompletionPrompt', () => () => null);
+
 test('exibe indicadores comunitários do cidadão', async () => {
   DashboardService.obterDashboardUsuario.mockResolvedValue({
     usuarioNome: 'Maria Silva',
