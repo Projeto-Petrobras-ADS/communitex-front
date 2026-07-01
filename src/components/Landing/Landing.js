@@ -156,8 +156,8 @@ const Landing = () => {
                 <Button component={Link} to="/register/pessoa-fisica" variant="contained" size="large" endIcon={<ArrowForwardIcon />} sx={{ px: 4 }}>
                   Quero cuidar do meu bairro
                 </Button>
-                <Button component={Link} to="/login" variant="outlined" size="large" startIcon={<MapIcon />} sx={{ px: 4, bgcolor: alpha(theme.palette.background.paper, 0.65) }}>
-                  Acessar a plataforma
+                <Button component={Link} to="/denuncias" variant="outlined" size="large" startIcon={<MapIcon />} sx={{ px: 4, bgcolor: alpha(theme.palette.background.paper, 0.65) }}>
+                  Ver mapa público
                 </Button>
               </Stack>
             </Grid>

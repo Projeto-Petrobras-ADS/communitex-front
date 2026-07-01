@@ -54,7 +54,7 @@ const PracaService = {
   },
 
   /**
-   * Cadastra uma nova praça (apenas para Pessoa Física)
+   * Cadastra uma nova praça.
    * POST /api/pracas
    * @param {Object} pracaData - Dados da praça
    * @returns {Promise} Praça cadastrada
@@ -68,6 +68,20 @@ const PracaService = {
       return response.data;
     } catch (error) {
       console.error('Erro ao cadastrar praça:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Exclui uma praça.
+   * DELETE /api/pracas/{id}
+   * @param {number} id - ID da praça
+   */
+  excluirPraca: async (id) => {
+    try {
+      await api.delete(`/api/pracas/${id}`);
+    } catch (error) {
+      console.error(`Erro ao excluir praça ID ${id}:`, error);
       throw error;
     }
   },
