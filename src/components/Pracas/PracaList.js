@@ -1,7 +1,9 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import api, { resolveApiUrl } from '../../services/api';
+import PracaService from '../../services/PracaService';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useNotification } from '../../context/NotificationContext';
 
 // Constantes centralizadas
 import { PRACA_STATUS, getPracaStatusConfig } from '../../constants';
@@ -9,6 +11,7 @@ import { PRACA_STATUS, getPracaStatusConfig } from '../../constants';
 import {
   Box,
   Card,
+  CardActions,
   CardContent,
   CardActionArea,
   CardMedia,
@@ -30,6 +33,10 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from '@mui/material';
 import {
   Park as ParkIcon,
@@ -45,6 +52,7 @@ import {
   HourglassEmpty as HourglassIcon,
   Block as BlockIcon,
   FilterList as FilterIcon,
+  DeleteOutline as DeleteIcon,
 } from '@mui/icons-material';
 
 // Ícones para status (usado apenas internamente)
@@ -54,7 +62,7 @@ const STATUS_ICONS = {
   ADOTADA: <BlockIcon />,
 };
 
-const PracaCard = ({ praca, isEmpresa, onClick }) => {
+const PracaCard = ({ praca, isEmpresa, isAdmin, onClick, onDelete }) => {
   const theme = useTheme();
   const statusConfig = getPracaStatusConfig(praca.status);
   const statusIcon = STATUS_ICONS[praca.status];
@@ -151,6 +159,22 @@ const PracaCard = ({ praca, isEmpresa, onClick }) => {
           </Box>
         </CardContent>
       </CardActionArea>
+      {isAdmin && (
+        <CardActions sx={{ justifyContent: 'space-between', px: 2, pb: 2, pt: 0 }}>
+          <Button size="small" onClick={() => onClick(praca)}>
+            Abrir detalhes
+          </Button>
+          <Button
+            size="small"
+            color="error"
+            variant="outlined"
+            startIcon={<DeleteIcon />}
+            onClick={() => onDelete(praca)}
+          >
+            Excluir
+          </Button>
+        </CardActions>
+      )}
     </Card>
   );
 };
@@ -165,8 +189,11 @@ const PracaList = () => {
   const [searchNome, setSearchNome] = useState('');
   const [searchCidade, setSearchCidade] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   const { user } = useAuth(); 
+  const { notifyError, notifySuccess } = useNotification();
 
   const isAdmin = user && user.roles && user.roles.includes('ROLE_ADMIN');
   const isEmpresa = user && user.roles && user.roles.includes('ROLE_EMPRESA');
@@ -223,6 +250,21 @@ const PracaList = () => {
 
   const handlePracaClick = (praca) => {
     navigate(`/pracas/${praca.id}`);
+  };
+
+  const handleDeletePraca = async () => {
+    if (!deleteTarget) return;
+    try {
+      setDeleting(true);
+      await PracaService.excluirPraca(deleteTarget.id);
+      setPracas((current) => current.filter((praca) => praca.id !== deleteTarget.id));
+      notifySuccess('Praça excluída com sucesso.');
+      setDeleteTarget(null);
+    } catch (err) {
+      notifyError(err.message || 'Não foi possível excluir a praça.');
+    } finally {
+      setDeleting(false);
+    }
   };
 
   // Aplica filtro de status localmente
@@ -466,7 +508,9 @@ const PracaList = () => {
               <PracaCard 
                 praca={praca} 
                 isEmpresa={isEmpresa}
+                isAdmin={isAdmin}
                 onClick={handlePracaClick}
+                onDelete={setDeleteTarget}
               />
             </Grid>
           ))}
@@ -490,6 +534,26 @@ const PracaList = () => {
           <AddIcon />
         </Fab>
       )}
+
+      <Dialog open={Boolean(deleteTarget)} onClose={() => !deleting && setDeleteTarget(null)} fullWidth maxWidth="xs">
+        <DialogTitle>Excluir praça?</DialogTitle>
+        <DialogContent>
+          <Typography color="text.secondary">
+            A praça "{deleteTarget?.nome}" será removida da plataforma. Esta ação não pode ser desfeita.
+          </Typography>
+          {deleteTarget?.status !== 'DISPONIVEL' && (
+            <Alert severity="warning" sx={{ mt: 2 }}>
+              Praças em adoção ou adotadas podem estar vinculadas a propostas e o backend pode bloquear a exclusão.
+            </Alert>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteTarget(null)} disabled={deleting}>Cancelar</Button>
+          <Button color="error" variant="contained" onClick={handleDeletePraca} disabled={deleting}>
+            {deleting ? 'Excluindo...' : 'Excluir'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

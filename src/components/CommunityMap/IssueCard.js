@@ -44,6 +44,7 @@ const IssueCard = ({
   onSupport, 
   onViewDetails,
   onRepairChanged,
+  showRepairActions = true,
   isCompact = false 
 }) => {
   const [isSupporting, setIsSupporting] = useState(false);
@@ -56,6 +57,7 @@ const IssueCard = ({
 
   const typeConfig = getIssueTypeConfig(issue.tipo);
   const statusConfig = getIssueStatusConfig(issue.status);
+  const canInteract = Boolean(onSupport);
 
   const handleSupport = async () => {
     if (!onSupport || isSupporting) return;
@@ -114,15 +116,17 @@ const IssueCard = ({
           </Typography>
           
           <Stack direction="row" spacing={1}>
-            <Button
-              size="small"
-              variant="outlined"
-              startIcon={isSupporting ? <CircularProgress size={14} /> : <ThumbUpIcon />}
-              onClick={handleSupport}
-              disabled={isSupporting}
-            >
-              {issue.totalApoios || 0}
-            </Button>
+            {canInteract && (
+              <Button
+                size="small"
+                variant="outlined"
+                startIcon={isSupporting ? <CircularProgress size={14} /> : <ThumbUpIcon />}
+                onClick={handleSupport}
+                disabled={isSupporting}
+              >
+                {issue.totalApoios || 0}
+              </Button>
+            )}
             {onViewDetails && (
               <Button
                 size="small"
@@ -250,7 +254,7 @@ const IssueCard = ({
           </Alert>
         )}
 
-        <AtendimentoActions issue={issue} onChanged={onRepairChanged} />
+        {showRepairActions && <AtendimentoActions issue={issue} onChanged={onRepairChanged} />}
 
         {/* Seção de Comentários */}
         {issue.interacoes && issue.interacoes.length > 0 && (
@@ -288,7 +292,7 @@ const IssueCard = ({
         )}
 
         {/* Input de Comentário */}
-        {showCommentInput && (
+        {canInteract && showCommentInput && (
           <Box sx={{ mb: 2 }}>
             <TextField
               multiline
@@ -333,28 +337,34 @@ const IssueCard = ({
         )}
       </CardContent>
 
-      <Divider />
+      {(canInteract || onViewDetails) && (
+        <>
+          <Divider />
 
-      {/* Actions */}
-      <Stack direction="row" spacing={1} sx={{ p: 1.5 }}>
-        <Button
-          size="small"
-          variant="outlined"
-          startIcon={isSupporting ? <CircularProgress size={14} /> : <ThumbUpIcon />}
-          onClick={handleSupport}
-          disabled={isSupporting}
-        >
-          Apoiar
-        </Button>
-        <Button
-          size="small"
-          variant="outlined"
-          startIcon={<ChatBubbleIcon />}
-          onClick={() => setShowCommentInput(!showCommentInput)}
-        >
-          Comentar
-        </Button>
-        {onViewDetails && (
+          {/* Actions */}
+          <Stack direction="row" spacing={1} sx={{ p: 1.5 }}>
+            {canInteract && (
+              <>
+                <Button
+                  size="small"
+                  variant="outlined"
+                  startIcon={isSupporting ? <CircularProgress size={14} /> : <ThumbUpIcon />}
+                  onClick={handleSupport}
+                  disabled={isSupporting}
+                >
+                  Apoiar
+                </Button>
+                <Button
+                  size="small"
+                  variant="outlined"
+                  startIcon={<ChatBubbleIcon />}
+                  onClick={() => setShowCommentInput(!showCommentInput)}
+                >
+                  Comentar
+                </Button>
+              </>
+            )}
+            {onViewDetails && (
           <Button
             size="small"
             variant="contained"
@@ -363,8 +373,10 @@ const IssueCard = ({
           >
             Ver Detalhes
           </Button>
-        )}
-      </Stack>
+            )}
+          </Stack>
+        </>
+      )}
     </Card>
   );
 };

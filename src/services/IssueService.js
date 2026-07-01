@@ -5,8 +5,10 @@ const IssueService = {
   /**
    * Lista todas as denúncias
    */
-  findAll: () => {
-    return api.get('/api/issues').then((response) => ({
+  findAll: ({ incluirInativas = false } = {}) => {
+    return api.get('/api/issues', {
+      params: incluirInativas ? { incluirInativas: true } : undefined,
+    }).then((response) => ({
       ...response,
       data: response.data?.content || response.data,
     }));
@@ -64,6 +66,10 @@ const IssueService = {
   updateStatus: (id, status) => {
     return api.patch(`/api/issues/${id}/status`, { status });
   },
+
+  inativarIssue: (id) => api.patch(`/api/issues/${id}/inativar`),
+
+  reativarIssue: (id) => api.patch(`/api/issues/${id}/reativar`),
 
   findAtendimento: (id) => api.get(`/api/issues/${id}/atendimento`),
   assumirAtendimento: (id, descricaoPlanejada) => api.post(`/api/issues/${id}/atendimento`, { descricaoPlanejada }),

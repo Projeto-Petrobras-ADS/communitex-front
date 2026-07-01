@@ -37,9 +37,9 @@ const AppLayout = ({ children }) => {
   const menuGroups = useMemo(() => [
     {
       id: 'dashboard',
-      label: isEmpresa ? 'Painel da empresa' : 'Painel do cidadão',
+      label: isAdmin ? 'Painel administrativo' : isEmpresa ? 'Painel da empresa' : 'Painel do cidadão',
       icon: DashboardOutlined,
-      show: isEmpresa || isUser,
+      show: isAdmin || isEmpresa || isUser,
       children: [
         { label: 'Visão geral', icon: DashboardOutlined, path: PROTECTED_ROUTES.DASHBOARD },
       ],

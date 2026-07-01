@@ -63,6 +63,13 @@ const ProtectedLayout = ({ children }) => (
   </ProtectedRoute>
 );
 
+const DenunciasMapRoute = () => {
+  const { isAuthenticated } = useAuth();
+  const map = <CommunityMap publicView={!isAuthenticated()} />;
+
+  return isAuthenticated() ? <AppLayout>{map}</AppLayout> : map;
+};
+
 const LegacyProposalRedirect = () => {
   const { id } = useParams();
   return <Navigate to={`/pracas/${id}/manifestar-interesse`} replace />;
@@ -85,6 +92,7 @@ function App() {
             <Route path={PUBLIC_ROUTES.LOGIN} element={<Login />} />
             <Route path={PUBLIC_ROUTES.REGISTER} element={<Register />} />
             <Route path={PUBLIC_ROUTES.REGISTER_PESSOA_FISICA} element={<Navigate to="/register?tipo=morador" replace />} />
+            <Route path={PROTECTED_ROUTES.DENUNCIAS} element={<DenunciasMapRoute />} />
 
             {/* === ROTAS PROTEGIDAS === */}
             <Route path={PROTECTED_ROUTES.PRACAS} element={<ProtectedLayout><PracaList /></ProtectedLayout>} />
@@ -104,7 +112,6 @@ function App() {
             <Route path={USER_ROUTES.NOVA_PRACA} element={<UserRoute><AppLayout><PracaForm /></AppLayout></UserRoute>} />
 
             {/* === DENÚNCIAS COMUNITÁRIAS === */}
-            <Route path={PROTECTED_ROUTES.DENUNCIAS} element={<ProtectedLayout><CommunityMap /></ProtectedLayout>} />
             <Route path={PROTECTED_ROUTES.DENUNCIAS_LISTA} element={<ProtectedLayout><IssueList /></ProtectedLayout>} />
           </Routes>
           </BrowserRouter>

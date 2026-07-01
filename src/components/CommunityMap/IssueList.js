@@ -24,6 +24,7 @@ import {
   InputAdornment,
   Chip,
   Card,
+  CardActions,
   CardContent,
   CardActionArea,
   Grid,
@@ -32,6 +33,10 @@ import {
   Avatar,
   Stack,
   IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from '@mui/material';
 import {
   Search as SearchIcon,
@@ -45,14 +50,19 @@ import {
   Add as AddIcon,
   ReportProblem as ReportIcon,
   FilterList as FilterIcon,
+  Block as BlockIcon,
+  Replay as ReplayIcon,
+  Edit as EditIcon,
 } from '@mui/icons-material';
+import { useNotification } from '../../context/NotificationContext';
 
 /**
  * Componente de Card individual
  */
-const IssueListCard = ({ issue, onClick }) => {
+const IssueListCard = ({ issue, isAdmin, onClick, onStatusClick, onInactiveClick, onReactivateClick }) => {
   const typeConfig = getIssueTypeConfig(issue.tipo);
   const statusConfig = getIssueStatusConfig(issue.status);
+  const isInactive = issue.ativa === false;
 
   return (
     <Card
@@ -84,8 +94,8 @@ const IssueListCard = ({ issue, onClick }) => {
               {typeConfig.icon}
             </Avatar>
             <Chip
-              label={statusConfig.label}
-              color={statusConfig.color}
+              label={isInactive ? 'Inativa' : statusConfig.label}
+              color={isInactive ? 'default' : statusConfig.color}
               size="small"
               sx={{ fontWeight: 500 }}
             />
@@ -154,6 +164,25 @@ const IssueListCard = ({ issue, onClick }) => {
           </Box>
         </CardContent>
       </CardActionArea>
+      {isAdmin && (
+        <CardActions sx={{ px: 2, pb: 2, pt: 0, gap: 1, flexWrap: 'wrap' }}>
+          {!isInactive && (
+            <>
+              <Button size="small" variant="outlined" startIcon={<EditIcon />} onClick={() => onStatusClick(issue)}>
+                Alterar status
+              </Button>
+              <Button size="small" color="error" variant="outlined" startIcon={<BlockIcon />} onClick={() => onInactiveClick(issue)}>
+                Inativar
+              </Button>
+            </>
+          )}
+          {isInactive && (
+            <Button size="small" color="success" variant="contained" startIcon={<ReplayIcon />} onClick={() => onReactivateClick(issue)}>
+              Reativar
+            </Button>
+          )}
+        </CardActions>
+      )}
     </Card>
   );
 };
@@ -164,10 +193,15 @@ const IssueListCard = ({ issue, onClick }) => {
 const IssueList = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { notifyError, notifySuccess } = useNotification();
   const canCreateIssue = user?.roles?.some((role) => role === 'ROLE_USER' || role === 'ROLE_ADMIN');
+  const isAdmin = user?.roles?.includes('ROLE_ADMIN');
   const [issues, setIssues] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [statusDialog, setStatusDialog] = useState({ open: false, issue: null, status: '' });
+  const [inactiveDialog, setInactiveDialog] = useState({ open: false, issue: null });
+  const [submittingAdminAction, setSubmittingAdminAction] = useState(false);
   
   // Filtros
   const [searchTerm, setSearchTerm] = useState('');
@@ -181,7 +215,7 @@ const IssueList = () => {
     setError(null);
     
     try {
-      const response = await IssueService.findAll();
+      const response = await IssueService.findAll({ incluirInativas: isAdmin });
       setIssues(response.data || []);
     } catch (err) {
       console.error('Erro ao buscar denúncias:', err);
@@ -189,7 +223,7 @@ const IssueList = () => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [isAdmin]);
 
   useEffect(() => {
     fetchIssues();
@@ -245,6 +279,65 @@ const IssueList = () => {
     navigate(`/denuncias?lat=${issue.latitude}&lng=${issue.longitude}&issueId=${issue.id}`);
   };
 
+  const openStatusDialog = (issue) => {
+    setStatusDialog({ open: true, issue, status: issue.status });
+  };
+
+  const closeStatusDialog = () => {
+    if (!submittingAdminAction) setStatusDialog({ open: false, issue: null, status: '' });
+  };
+
+  const closeInactiveDialog = () => {
+    if (!submittingAdminAction) setInactiveDialog({ open: false, issue: null });
+  };
+
+  const refreshIssueInList = (updatedIssue) => {
+    setIssues((current) => current.map((issue) => issue.id === updatedIssue.id ? updatedIssue : issue));
+  };
+
+  const handleStatusUpdate = async () => {
+    if (!statusDialog.issue || !statusDialog.status) return;
+    try {
+      setSubmittingAdminAction(true);
+      const response = await IssueService.updateStatus(statusDialog.issue.id, statusDialog.status);
+      refreshIssueInList(response.data);
+      notifySuccess('Status da denúncia atualizado.');
+      setStatusDialog({ open: false, issue: null, status: '' });
+    } catch (err) {
+      notifyError(err.message || 'Não foi possível atualizar o status da denúncia.');
+    } finally {
+      setSubmittingAdminAction(false);
+    }
+  };
+
+  const handleInativar = async () => {
+    if (!inactiveDialog.issue) return;
+    try {
+      setSubmittingAdminAction(true);
+      const response = await IssueService.inativarIssue(inactiveDialog.issue.id);
+      refreshIssueInList(response.data);
+      notifySuccess('Denúncia inativada.');
+      setInactiveDialog({ open: false, issue: null });
+    } catch (err) {
+      notifyError(err.message || 'Não foi possível inativar a denúncia.');
+    } finally {
+      setSubmittingAdminAction(false);
+    }
+  };
+
+  const handleReativar = async (issue) => {
+    try {
+      setSubmittingAdminAction(true);
+      const response = await IssueService.reativarIssue(issue.id);
+      refreshIssueInList(response.data);
+      notifySuccess('Denúncia reativada.');
+    } catch (err) {
+      notifyError(err.message || 'Não foi possível reativar a denúncia.');
+    } finally {
+      setSubmittingAdminAction(false);
+    }
+  };
+
   // Limpa todos os filtros
   const clearFilters = () => {
     setSearchTerm('');
@@ -280,8 +373,8 @@ const IssueList = () => {
     <Box sx={{ minHeight: '100%' }}>
       {/* Header */}
       <PageHeader
-        title="Denúncias comunitárias"
-        subtitle={`${issues.length} ocorrência${issues.length === 1 ? '' : 's'} registrada${issues.length === 1 ? '' : 's'} pela comunidade.`}
+        title={isAdmin ? 'Manutenção de denúncias' : 'Denúncias comunitárias'}
+        subtitle={`${issues.length} ocorrência${issues.length === 1 ? '' : 's'} registrada${issues.length === 1 ? '' : 's'}${isAdmin ? ', incluindo inativas.' : ' pela comunidade.'}`}
         icon={ReportIcon}
         actions={<Button
             variant="outlined"
@@ -406,7 +499,11 @@ const IssueList = () => {
             <Grid size={{ xs: 12, sm: 6, lg: 4 }} key={issue.id}>
               <IssueListCard 
                 issue={issue} 
+                isAdmin={isAdmin}
                 onClick={handleIssueClick}
+                onStatusClick={openStatusDialog}
+                onInactiveClick={(issue) => setInactiveDialog({ open: true, issue })}
+                onReactivateClick={handleReativar}
               />
             </Grid>
           ))}
@@ -427,6 +524,45 @@ const IssueList = () => {
       >
         <AddIcon />
       </Fab>}
+
+      <Dialog open={statusDialog.open} onClose={closeStatusDialog} fullWidth maxWidth="xs">
+        <DialogTitle>Alterar status da denúncia</DialogTitle>
+        <DialogContent>
+          <FormControl fullWidth size="small" sx={{ mt: 1 }}>
+            <InputLabel>Status</InputLabel>
+            <Select
+              value={statusDialog.status}
+              label="Status"
+              onChange={(event) => setStatusDialog((current) => ({ ...current, status: event.target.value }))}
+            >
+              {Object.entries(ISSUE_STATUS).map(([key, { label }]) => (
+                <MenuItem key={key} value={key}>{label}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeStatusDialog} disabled={submittingAdminAction}>Cancelar</Button>
+          <Button variant="contained" onClick={handleStatusUpdate} disabled={submittingAdminAction || !statusDialog.status}>
+            {submittingAdminAction ? 'Salvando...' : 'Salvar'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={inactiveDialog.open} onClose={closeInactiveDialog} fullWidth maxWidth="xs">
+        <DialogTitle>Inativar denúncia?</DialogTitle>
+        <DialogContent>
+          <Typography color="text.secondary">
+            A denúncia "{inactiveDialog.issue?.titulo}" deixará de aparecer para visitantes, usuários e empresas.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeInactiveDialog} disabled={submittingAdminAction}>Cancelar</Button>
+          <Button color="error" variant="contained" onClick={handleInativar} disabled={submittingAdminAction}>
+            {submittingAdminAction ? 'Inativando...' : 'Inativar'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

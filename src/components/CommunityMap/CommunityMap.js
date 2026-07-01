@@ -47,6 +47,7 @@ import {
   FilterAlt as FilterIcon,
   Layers as LayersIcon,
   Room as MarkerIcon,
+  ArrowBack as ArrowBackIcon,
 } from '@mui/icons-material';
 
 // Fix para ícones do Leaflet em React
@@ -152,12 +153,13 @@ const MapCenterTracker = ({ onCenterChange }) => {
 /**
  * Componente principal do mapa comunitário
  */
-const CommunityMap = () => {
+const CommunityMap = ({ publicView = false }) => {
   const theme = useTheme();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user } = useAuth();
   const canCreateIssue = user?.roles?.some((role) => role === 'ROLE_USER' || role === 'ROLE_ADMIN');
+  const canInteract = Boolean(user);
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [clickedPosition, setClickedPosition] = useState(null);
@@ -238,6 +240,15 @@ const CommunityMap = () => {
     setIsModalOpen(true);
   }, [canCreateIssue]);
 
+  const handlePublicBack = useCallback(() => {
+    if (window.history.length > 1) {
+      navigate(-1);
+      return;
+    }
+
+    navigate('/', { replace: true });
+  }, [navigate]);
+
   const handleCloseModal = useCallback(() => {
     setIsModalOpen(false);
     setClickedPosition(null);
@@ -308,12 +319,39 @@ const CommunityMap = () => {
     ));
   }, [filteredIssues, handleMarkerClick]);
 
+  const publicBackButton = publicView ? (
+    <Button
+      variant="contained"
+      startIcon={<ArrowBackIcon />}
+      onClick={handlePublicBack}
+      aria-label="Voltar para a tela anterior"
+      sx={{
+        position: 'absolute',
+        top: 16,
+        left: 16,
+        zIndex: 1100,
+        borderRadius: 2,
+        px: 2,
+        bgcolor: alpha(theme.palette.background.paper, 0.96),
+        color: 'text.primary',
+        boxShadow: 3,
+        backdropFilter: 'blur(10px)',
+        '&:hover': {
+          bgcolor: theme.palette.background.paper,
+        },
+      }}
+    >
+      Voltar
+    </Button>
+  ) : null;
+
   // Loading state
   if (locationLoading) {
     return (
       <Box
         sx={{
-          height: 'calc(100vh - 64px)',
+          position: 'relative',
+          height: publicView ? '100vh' : 'calc(100vh - 64px)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -323,6 +361,7 @@ const CommunityMap = () => {
           gap: 2,
         }}
       >
+        {publicBackButton}
         <CircularProgress color="inherit" size={60} />
         <Typography variant="h6">Obtendo sua localização...</Typography>
         <Typography variant="body2" sx={{ opacity: 0.8 }}>
@@ -338,11 +377,13 @@ const CommunityMap = () => {
     <Box
       sx={{
         position: 'relative',
-        height: 'calc(100vh - 64px)',
+        height: publicView ? '100vh' : 'calc(100vh - 64px)',
         width: '100%',
         overflow: 'hidden',
       }}
     >
+      {publicBackButton}
+
       {/* Notificações de erro */}
       {showLocationError && locationError && (
         <Alert
@@ -435,7 +476,7 @@ const CommunityMap = () => {
         elevation={3}
         sx={{
           position: 'absolute',
-          top: 16,
+          top: publicView ? { xs: 72, sm: 16 } : 16,
           right: 16,
           zIndex: 1000,
           width: { xs: 'calc(100% - 32px)', sm: 300 },
@@ -511,26 +552,28 @@ const CommunityMap = () => {
           flexDirection: 'column',
         }}
       >
-        <IconButton
-          onClick={() => navigate('/denuncias/lista')}
-          title="Ver lista de denúncias"
-          sx={{
-            borderRadius: 0,
-            p: 1.5,
-            '&:hover': {
-              bgcolor: alpha(theme.palette.primary.main, 0.1),
-            },
-          }}
-        >
-          <ListIcon />
-        </IconButton>
+        {canInteract && (
+          <IconButton
+            onClick={() => navigate('/denuncias/lista')}
+            title="Ver lista de denúncias"
+            sx={{
+              borderRadius: 0,
+              p: 1.5,
+              '&:hover': {
+                bgcolor: alpha(theme.palette.primary.main, 0.1),
+              },
+            }}
+          >
+            <ListIcon />
+          </IconButton>
+        )}
         <IconButton
           onClick={recenterOnUser}
           title="Centralizar na minha localização"
           sx={{
             borderRadius: 0,
             p: 1.5,
-            borderTop: `1px solid ${alpha(theme.palette.divider, 0.5)}`,
+            borderTop: canInteract ? `1px solid ${alpha(theme.palette.divider, 0.5)}` : 0,
             '&:hover': {
               bgcolor: alpha(theme.palette.primary.main, 0.1),
             },
@@ -603,7 +646,7 @@ const CommunityMap = () => {
           <Typography variant="body2" color="text.secondary">
             {canCreateIssue
               ? 'Toque no mapa para denunciar'
-              : 'Selecione um marcador para acompanhar ou assumir o reparo'}
+              : 'Selecione um marcador para acompanhar a denúncia'}
           </Typography>
         </Box>
         <Chip
@@ -650,7 +693,8 @@ const CommunityMap = () => {
             <IssueCard
               issue={selectedIssueCard}
               onClose={handleCloseIssueCard}
-              onSupport={handleSupport}
+              onSupport={canInteract ? handleSupport : undefined}
+              showRepairActions={canInteract}
               onRepairChanged={async () => {
                 refetchIssues();
                 const response = await IssueService.findByIdWithDetails(selectedIssueCard.id);
