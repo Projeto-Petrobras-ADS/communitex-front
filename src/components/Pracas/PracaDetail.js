@@ -40,7 +40,6 @@ import {
   CheckCircle as CheckCircleIcon,
   HourglassEmpty as HourglassIcon,
   Block as BlockIcon,
-  Lock as LockIcon,
   ArrowForward as ArrowForwardIcon,
 } from '@mui/icons-material';
 
@@ -142,6 +141,7 @@ const PracaDetail = () => {
   const isDisponivel = praca.status === 'DISPONIVEL';
   const emProcesso = praca.status === 'EM_PROCESSO';
   const adotada = praca.status === 'ADOTADA';
+  const exibirCardAcao = (isDisponivel && isEmpresa) || emProcesso || adotada;
   const statusConfig = getStatusConfig(praca.status);
 
   return (
@@ -380,108 +380,95 @@ const PracaDetail = () => {
             )}
           </Grid>
 
-          {/* Sidebar - Action Card */}
-          <Grid size={{ xs: 12, md: 4 }}>
-            <Card
-              elevation={0}
-              sx={{
-                borderRadius: 3,
-                border: '1px solid',
-                borderColor: 'divider',
-                position: 'sticky',
-                top: 100,
-              }}
-            >
-              <CardContent sx={{ p: 3 }}>
-                {isDisponivel && isEmpresa ? (
-                  <>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-                      <Avatar sx={{ bgcolor: alpha(theme.palette.success.main, 0.1), color: 'success.main' }}>
-                        <HandshakeIcon />
-                      </Avatar>
-                      <Typography variant="h6" fontWeight={700}>
-                        Inicie a Adoção
+          {exibirCardAcao && (
+            <Grid size={{ xs: 12, md: 4 }}>
+              <Card
+                elevation={0}
+                sx={{
+                  borderRadius: 3,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  position: 'sticky',
+                  top: 100,
+                }}
+              >
+                <CardContent sx={{ p: 3 }}>
+                  {isDisponivel && isEmpresa ? (
+                    <>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                        <Avatar sx={{ bgcolor: alpha(theme.palette.success.main, 0.1), color: 'success.main' }}>
+                          <HandshakeIcon />
+                        </Avatar>
+                        <Typography variant="h6" fontWeight={700}>
+                          Inicie a Adoção
+                        </Typography>
+                      </Box>
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                        Sua empresa pode ser a próxima a cuidar deste espaço, melhorando o bairro e ganhando visibilidade.
                       </Typography>
-                    </Box>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                      Sua empresa pode ser a próxima a cuidar deste espaço, melhorando o bairro e ganhando visibilidade.
-                    </Typography>
-                    <Button
-                      onClick={propostaExistente ? () => navigate('/minhas-propostas') : handleAbrirManifestacao}
-                      variant="contained"
-                      fullWidth
-                      size="large"
-                      endIcon={<ArrowForwardIcon />}
-                      sx={{
-                        py: 1.5,
-                        borderRadius: 2,
-                        fontWeight: 700,
-                        boxShadow: '0 8px 20px rgba(45, 106, 79, 0.35)',
-                        '&:hover': {
-                          boxShadow: '0 12px 30px rgba(45, 106, 79, 0.45)',
-                          transform: 'translateY(-2px)',
-                        },
-                        transition: 'all 0.3s ease',
-                      }}
-                    >
-                      {propostaExistente ? 'Acompanhar proposta' : 'Manifestar Interesse'}
-                    </Button>
-                  </>
-                ) : emProcesso ? (
-                  <>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-                      <Avatar sx={{ bgcolor: alpha(theme.palette.warning.main, 0.1), color: 'warning.main' }}>
-                        <HourglassIcon />
-                      </Avatar>
-                      <Typography variant="h6" fontWeight={700}>
-                        Processo em Andamento
+                      <Button
+                        onClick={propostaExistente ? () => navigate('/minhas-propostas') : handleAbrirManifestacao}
+                        variant="contained"
+                        fullWidth
+                        size="large"
+                        endIcon={<ArrowForwardIcon />}
+                        sx={{
+                          py: 1.5,
+                          borderRadius: 2,
+                          fontWeight: 700,
+                          boxShadow: '0 8px 20px rgba(45, 106, 79, 0.35)',
+                          '&:hover': {
+                            boxShadow: '0 12px 30px rgba(45, 106, 79, 0.45)',
+                            transform: 'translateY(-2px)',
+                          },
+                          transition: 'all 0.3s ease',
+                        }}
+                      >
+                        {propostaExistente ? 'Acompanhar proposta' : 'Manifestar Interesse'}
+                      </Button>
+                    </>
+                  ) : emProcesso ? (
+                    <>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                        <Avatar sx={{ bgcolor: alpha(theme.palette.warning.main, 0.1), color: 'warning.main' }}>
+                          <HourglassIcon />
+                        </Avatar>
+                        <Typography variant="h6" fontWeight={700}>
+                          Processo em Andamento
+                        </Typography>
+                      </Box>
+                      <Typography variant="body2" color="text.secondary">
+                        Esta praça está em processo de adoção. Aguarde a conclusão da análise.
                       </Typography>
-                    </Box>
-                    <Typography variant="body2" color="text.secondary">
-                      Esta praça está em processo de adoção. Aguarde a conclusão da análise.
-                    </Typography>
-                  </>
-                ) : adotada ? (
-                  <>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-                      <Avatar sx={{ bgcolor: alpha(theme.palette.info.main, 0.1), color: 'info.main' }}>
-                        <CheckCircleIcon />
-                      </Avatar>
-                      <Typography variant="h6" fontWeight={700}>
-                        Praça Adotada
+                    </>
+                  ) : (
+                    <>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                        <Avatar sx={{ bgcolor: alpha(theme.palette.info.main, 0.1), color: 'info.main' }}>
+                          <CheckCircleIcon />
+                        </Avatar>
+                        <Typography variant="h6" fontWeight={700}>
+                          Praça Adotada
+                        </Typography>
+                      </Box>
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                        Esta praça já foi adotada por uma empresa. Conheça outras praças disponíveis!
                       </Typography>
-                    </Box>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                      Esta praça já foi adotada por uma empresa. Conheça outras praças disponíveis!
-                    </Typography>
-                    <Button
-                      component={Link}
-                      to="/pracas"
-                      variant="outlined"
-                      fullWidth
-                      startIcon={<ParkIcon />}
-                    >
-                      Ver todas as praças
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-                      <Avatar sx={{ bgcolor: alpha(theme.palette.grey[500], 0.1), color: 'text.secondary' }}>
-                        <LockIcon />
-                      </Avatar>
-                      <Typography variant="h6" fontWeight={700}>
-                        Acesso Restrito
-                      </Typography>
-                    </Box>
-                    <Typography variant="body2" color="text.secondary">
-                      Apenas empresas autenticadas podem manifestar interesse em adotar praças.
-                    </Typography>
-                  </>
-                )}
-              </CardContent>
-            </Card>
-          </Grid>
+                      <Button
+                        component={Link}
+                        to="/pracas"
+                        variant="outlined"
+                        fullWidth
+                        startIcon={<ParkIcon />}
+                      >
+                        Ver todas as praças
+                      </Button>
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+          )}
         </Grid>
 
         {praca.historicoInteresses && (
